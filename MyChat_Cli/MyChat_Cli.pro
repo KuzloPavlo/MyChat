@@ -27,6 +27,7 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+
 INCLUDEPATH += "C:/MyChat/MyChat/MyChat_Lib"
 
 LIBS += "C:/MyChat/MyChat/build-MyChat_Lib-Desktop_Qt_5_5_1_MSVC2013_64bit-Release/release/MyChat_Lib.lib"

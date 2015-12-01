@@ -20,6 +20,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+
+
+
+    void on_WelOkBut_clicked();
+
+    void on_LogRegistrationBut_clicked();
+
+
+    void on_RegBackBut_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
