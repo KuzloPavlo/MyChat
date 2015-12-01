@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QSystemTrayIcon>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,7 +30,7 @@ this->setStyleSheet ("color: rgb(255, 120, 0)");
 
 
 
-   // this->setWindowFlags (Qt::Window | Qt::WindowMinimizeButtonHint  | Qt::Tool);
+   this->setWindowFlags ( Qt::FramelessWindowHint);
 }
 
 MainWindow::~MainWindow()
@@ -54,4 +55,16 @@ void MainWindow::on_RegBackBut_clicked()
 {
     ui->RegistrationPage->setVisible (false);
     ui->LoginPage->setVisible (true);
+}
+
+void MainWindow::on_Close_clicked()
+{
+  close ();
+}
+
+void MainWindow::on_Roll_up_clicked()
+{
+
+
+    this->hide ();
 }

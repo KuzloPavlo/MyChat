@@ -31,6 +31,10 @@ private slots:
 
     void on_RegBackBut_clicked();
 
+    void on_Close_clicked();
+
+    void on_Roll_up_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
