@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QString>
 
 class Server : public QObject
 {
@@ -15,10 +16,13 @@ public:
 signals:
 public slots:
 
-    void newConnection ();
+    void SlotnewConnection ();
+    void slotReadClient();
 
 private:
     QTcpServer *server;
+    quint16 nextBlockSize;
+
 };
 
 #endif // SERVER_H

@@ -14,23 +14,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-//---------------------------------------+
-//  Test connect with library            |
-//---------------------------------------+
-    User us;
-    us.Test ();
-    Users usrs;
-    usrs.Test ();
-    Community comm;
-    comm.Test ();
-    Friends fr;
-    fr.Test ();
-    ParticipantsChat pr;
-    pr.Test ();
-//---------------------------------------+
-//  Test connect with library            |
-//---------------------------------------+
-    Users users;
     Server server;
+
     return a.exec();
 }
