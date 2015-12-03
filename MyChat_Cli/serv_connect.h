@@ -10,14 +10,21 @@ class Serv_Connect : public QObject
     Q_OBJECT
 public:
     explicit Serv_Connect(QObject *parent = 0);
-     void Connect ();
-signals:
-
-public slots:
+    void ConnectToServer ();
+    void Registration(QByteArray *RegBlok);
+    // QTcpSocket *socket;
 
 private:
 
      QTcpSocket *socket;
+     quint16 nextBlockSize;
+
+     void closeConnection();
+
+private slots:
+
+     void connectedServ ();
+
 };
 
 #endif // SERV_CONNECT_H
