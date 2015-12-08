@@ -1,3 +1,4 @@
+#pragma once
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -8,6 +9,8 @@
 #include "friends.h"
 #include "community.h"
 #include <serv_connect.h>
+
+class Serv_Connect;
 
 namespace Ui {
 class MainWindow;
@@ -21,9 +24,12 @@ public:
      MainWindow(QWidget *parent = 0, Serv_Connect *pSERVER = 0);
     ~MainWindow();
 
+    void RegServerResponsYes (QString *login=0 , QString *password = 0);
+
+    void RegServerResponsNo (char *Ch);
+
+
 private slots:
-
-
 
     void on_WelOkBut_clicked();
 
@@ -37,6 +43,7 @@ private slots:
 
     void on_RegRegistrationBut_clicked();
 
+    void on_LogLoginBut_clicked();
 
 private:
 
