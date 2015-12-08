@@ -7,6 +7,8 @@
 class User
 {
 private:
+
+    // 12:29
     QString name;
     QString surname ;
     QString login ;
@@ -27,7 +29,11 @@ public:
     //--------------------------------------------------+
 
 
-    void Test();
+    QString showName();
+    QString showSurname();
+    QString showLogin();
+    QString showPassword();
+    QString showIP_address();
 };
 
 #endif // USER_H
