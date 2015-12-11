@@ -9,11 +9,7 @@ int main(int argc, char *argv[])
     Serv_Connect connect;
     MainWindow WINDOW(0, &connect);
 
-   // connect.setPtoWindow (&WINDOW);
-
     WINDOW.show();
-
-    connect.setPtoWindow (&WINDOW);
 
    return app.exec();
 }

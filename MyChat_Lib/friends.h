@@ -7,7 +7,7 @@ class Friends:public Community
 {
 public:
     Friends();
-     void Test();
+
 };
 
 #endif // FRIENDS_H

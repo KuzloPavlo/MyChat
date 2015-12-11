@@ -2,128 +2,168 @@
 #include <QString>
 #include <QDataStream>
 
-Serv_Connect::Serv_Connect(QObject *parent) : QObject(parent),nextBlockSize(0)
-{
-    socket = new QTcpSocket(this);
-    socket->connectToHost ("127.0.0.1", 3030);
 
-    if (socket->waitForConnected (3000))
+Serv_Connect::Serv_Connect(QObject *parent) : QObject(parent), m_nnextBlockSize(0)
+{
+    m_psocket = new QTcpSocket(this);
+    m_psocket->connectToHost ("127.0.0.1", 3030);
+
+    if (m_psocket->waitForConnected(3000))
     {
-        qDebug () << "Connected!";
+        qDebug() << "Connected!";
     }
 
     else
     {
-        qDebug () << "Not connected!";
+        qDebug() << "Not connected!";
     }
 
-    connect (socket, SIGNAL (readyRead ()), this, SLOT (slotReadServer ()));
-    nextBlockSize = 0;
+    connect(m_psocket, SIGNAL(readyRead()), this, SLOT(slotReadServer()));
+    m_nnextBlockSize = 0;
 }
 
-void Serv_Connect::slotReadServer ()
+
+
+
+void Serv_Connect::slotReadServer()
 {
     quint8 requestType;
-    QDataStream in(socket);
-    in.setVersion (QDataStream::Qt_5_5);
+    QDataStream in (m_psocket);
+    in.setVersion(QDataStream::Qt_5_5);
 
-    if (nextBlockSize == 0)
+    if (m_nnextBlockSize == 0)
     {
-        if (socket->bytesAvailable ()< sizeof(quint16))
+        if (m_psocket->bytesAvailable() < sizeof(quint16))
             return;
-        in>>nextBlockSize;
+        in >> m_nnextBlockSize;
     }
 
-    if (socket->bytesAvailable ()< nextBlockSize)
+    if (m_psocket->bytesAvailable() < m_nnextBlockSize)
         return;
 
-    in>>requestType;
-    qDebug() << (char)requestType;  // здесь печатаю
-    qDebug()<< "server_connect.cpp stroka 43";
+    in >> requestType;
 
-    switch ((char)requestType)
+    qDebug() << static_cast<MagicNumber> (requestType);  // здесь печатаю
+    qDebug() << "server_connect.cpp stroka 43";
+
+    switch (static_cast<MagicNumber>(requestType))
     {
-    case 'R': this->RegServerRespons (&in);
+    case REGISTRATION:
+        this->regServerRespons(&in);
         break;
+
+    case AUTHORIZATION:
+        this->authServerRespons(&in);
+        break;
+
     default:
         break;
     }
 
-    requestType =0;
-    nextBlockSize = 0;
+    requestType = 0;
+    m_nnextBlockSize = 0;
 }
 
-void Serv_Connect::Registration (QString *name,QString *surname, QString *login, QString *password)
-{
-    QByteArray RegBlock;
 
-    QDataStream out (&RegBlock, QIODevice::WriteOnly);
-    out.setVersion (QDataStream::Qt_5_5);
+
+
+void Serv_Connect::registration(QString *pname, QString *psurname, QString *plogin, QString *ppassword)
+{
+    QByteArray regBlock;
+
+    QDataStream out (&regBlock, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_5);
     out << quint16 (0)
-        << quint8 ('R')
-        << *name
-        << *surname
-        << *login
-        << *password;
+        << quint8 (REGISTRATION)
+        << *pname
+        << *psurname
+        << *plogin
+        << *ppassword;
 
-    out.device ()->seek (0);
-    out <<quint16 (RegBlock.size ()- sizeof (quint16));
-    socket->write(RegBlock);
+    out.device()->seek (0);
+    out << quint16 (regBlock.size() - sizeof(quint16));
+    m_psocket->write(regBlock);
 }
 
-void Serv_Connect::Authorization (QString *login, QString *password)
-{
-    QByteArray AuthBlock;
 
-    QDataStream out (&AuthBlock,QIODevice::WriteOnly);
+
+
+void Serv_Connect::authorization (QString *plogin, QString *ppassword)
+{
+    QByteArray authBlock;
+
+    QDataStream out (&authBlock,QIODevice::WriteOnly);
     out.setVersion (QDataStream::Qt_5_5);
-    out << quint16 (0)
-        << quint8 ('A')
-        << *login
-        << *password;
 
-    out.device ()->seek (0);
-    out <<quint16 (AuthBlock.size ()-sizeof (quint16));
-    socket->write(AuthBlock);
+    out << quint16 (0)
+        << quint8 (AUTHORIZATION)
+        << *plogin
+        << *ppassword;
+
+    out.device()->seek (0);
+    out << quint16 (authBlock.size() - sizeof(quint16));
+    m_psocket->write(authBlock);
 }
 
-//---------------------------------------------
-// ServerRespons
-//--------------------------------------------
-void Serv_Connect::RegServerRespons(QDataStream *RegInfo)
-{
-    quint8 registered;
-    RegInfo->setVersion (QDataStream::Qt_5_5);
-    *RegInfo>> registered;
-    qDebug() << registered;
-    qDebug() << "serv_connect.cpp 102";
 
-    if ('N' == (char)registered )
+
+
+void Serv_Connect::regServerRespons(QDataStream *pregInfo)
+{
+    quint8 response;
+    pregInfo->setVersion (QDataStream::Qt_5_5);
+    *pregInfo >> response;
+    qDebug() << static_cast<MagicNumber>(response);
+    qDebug() << "serv_connect.cpp 112";
+
+    switch (static_cast<MagicNumber>(response))
     {
-        // не зарегистрировано
-        quint8 why;
-        *RegInfo>> why;
-        if ('L' == (char)why) {
-            // такой логин уже имеется
-        }
-        else {
-            // для другой причины
-        }
+
+    case REGISTERED:
+        emit signalRegServerResponseRegistered();
+        break;
+
+    case LOGIN_BUSY:
+        emit signalRegServerResponseLoginBusy();
+        break;
+
+    default:
+        break;
+    }
+}
+
+
+
+
+void Serv_Connect::authServerRespons(QDataStream *pauthInfo)
+{
+    quint8 response;
+    pauthInfo->setVersion (QDataStream::Qt_5_5);
+    *pauthInfo >> response;
+    qDebug() << static_cast<MagicNumber>(response);
+    qDebug() << "serv_connect.cpp 140";
+
+    switch (static_cast<MagicNumber>(response))
+    {
+
+    case AUTHORIZED:
+        emit signalAuthServerResponseAuthorized();
+        break;
+
+    case WRONG_LOGIN:
+        emit signalAuthServerResponseWrongLogin();
+        break;
+
+    case WRONG_PASSWORD:
+        emit signalAuthServerResponseWrongPassword();
+        break;
+
+    case IS_EMPTY:
+        emit signalAuthServerResponseIsEmty();
+        break;
+
+    default:
+        break;
     }
 
-    if ('Y'==(char)registered)
-    {
-        QString login_ServerRespons;
-        QString password_ServerRespons;
-        *RegInfo >> login_ServerRespons
-                >> password_ServerRespons;
-
-    }
-}
-
-//--------------------------------------------------------
-
-void Serv_Connect::setPtoWindow (MainWindow *pWINDOW )
-{
-    WINDOW = pWINDOW;                   // ХЗХЗХЗХЗХЗХЗХЗХЗ
 }

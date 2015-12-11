@@ -20,5 +20,6 @@ HEADERS += \
     ../MyChat_Lib/community.h \
     ../MyChat_Lib/friends.h \
     ../MyChat_Lib/participantschat.h \
-    ../MyChat_Lib/users.h \
+    ../MyChat_Lib/arrayofusers.h \
+    ../MyChat_Lib/magicnumber.h \
     server.h

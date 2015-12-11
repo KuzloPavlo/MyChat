@@ -11,16 +11,17 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 SOURCES += user.cpp \
-    users.cpp \
     friends.cpp \
     participantschat.cpp \
-    community.cpp
+    community.cpp \
+    arrayofusers.cpp
 
 HEADERS += user.h \
-    users.h \
     friends.h \
     participantschat.h \
-    community.h
+    community.h \
+    arrayofusers.h \
+    magicnumber.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

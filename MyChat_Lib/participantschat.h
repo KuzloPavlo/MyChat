@@ -7,7 +7,6 @@ class ParticipantsChat:public Community
 {
 public:
     ParticipantsChat();
-     void Test();
 };
 
 #endif // PARTICIPANTSCHAT_H

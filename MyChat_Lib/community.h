@@ -6,7 +6,6 @@ class Community
 {
 public:
     Community();
-     void Test();
 };
 
 #endif // COMMUNITY_H

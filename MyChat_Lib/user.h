@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef USER_H
 #define USER_H
 
@@ -6,34 +8,28 @@
 
 class User
 {
-private:
-
-    // 12:29
-    QString name;
-    QString surname ;
-    QString login ;
-    QString password ;
-    QString ip_address;
 public:
     User();
-    //--------------------------------------------------+
-    //  Add new User Function                           |
-    //--------------------------------------------------+
-    User( QString name,
-          QString surname,
-          QString login,
-          QString password,
-          QString ip_address);
-    //--------------------------------------------------+
-    //  Add new User Function                           |
-    //--------------------------------------------------+
-
+    User( QString *pname,
+          QString *psurname,
+          QString *plogin,
+          QString *ppassword,
+          QString *pipAddress);
 
     QString showName();
     QString showSurname();
     QString showLogin();
     QString showPassword();
-    QString showIP_address();
+    QString showIPAddress();
+
+private:
+    QString m_name;
+    QString m_surname ;
+    QString m_login ;
+    QString m_password ;
+    QString m_ipAddress;
+
+
 };
 
 #endif // USER_H

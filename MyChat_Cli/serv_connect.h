@@ -5,9 +5,8 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QDebug>
-#include "mainwindow.h"
 
-class MainWindow;
+#include "magicnumber.h"
 
 class Serv_Connect : public QObject
 {
@@ -15,25 +14,31 @@ class Serv_Connect : public QObject
 public:
     explicit Serv_Connect(QObject *parent = 0);
 
-    void setPtoWindow (MainWindow *pWINDOW=0);
+    void registration(QString *pname,
+                      QString *psurname,
+                      QString *plogin,
+                      QString *ppassword);
 
-    void Registration(QString *name,
-                      QString *surname,
-                      QString *login,
-                      QString *password);
+    void authorization(QString *plogin, QString *ppassword);
 
-    void Authorization(QString *login,
-                      QString *password);
+signals:
+    void signalRegServerResponseRegistered();
+    void signalRegServerResponseLoginBusy();
+
+    void signalAuthServerResponseAuthorized();
+    void signalAuthServerResponseWrongLogin();
+    void signalAuthServerResponseWrongPassword();
+    void signalAuthServerResponseIsEmty();
 
 private:
-     QTcpSocket *socket;
-     quint16 nextBlockSize;
-     MainWindow *WINDOW;
+    QTcpSocket *m_psocket;
+    quint16 m_nnextBlockSize;
 
-     void RegServerRespons(QDataStream *RegInfo);
-     //void AuthServerRespons;
+    void regServerRespons(QDataStream *pregInfo);
+    void authServerRespons(QDataStream *pauthInfo);
+
 private slots:
-      void slotReadServer();
+    void slotReadServer();
 };
 
 #endif // SERV_CONNECT_H
