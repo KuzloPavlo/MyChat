@@ -9,7 +9,8 @@
 #include <QString>
 
 #include "arrayofusers.h"
-#include "MagicNumber.h"
+#include "returnvalues.h"
+#include "messagetypes.h"
 
 class Server : public QObject
 {
@@ -25,13 +26,23 @@ private:
     QTcpServer *m_pserver;
     quint16 m_nnextBlockSize;
 
-    void regProcessingResponses(MagicNumber respond,
+    void regProcessingResponses(ReturnValues respond,
                                 QTcpSocket *psocketForAnswers);
 
-    void authProcessingResponses(MagicNumber respond,
+    void authProcessingResponses(ReturnValues respond,
                                  QTcpSocket *psocketForAnswers);
 
+    void searchFriend(QVector<User> potentialFriends,
+                       QTcpSocket *psocketForAnswers);
 
+    void addFriendProcessingResponses(ReturnValues respond,
+                                      QTcpSocket *psocketForAnswers);
+
+    void getUserFriends(QVector<User> friends,
+                        QTcpSocket *psocketForAnswers);
+
+    void removingFriend(ReturnValues respond,
+                        QTcpSocket *psocketForAnswers);
 
 };
 

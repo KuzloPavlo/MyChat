@@ -6,6 +6,9 @@ User::User()
 
 }
 
+
+
+
 User::User( QString *pname,
             QString *psurname,
             QString *plogin,
@@ -25,6 +28,50 @@ User::User( QString *pname,
     qDebug()<< this->m_ipAddress;
     qDebug()<< "LIB user.cpp s 20-25";
 }
+
+
+
+void User::addFriend(User *pfriend)
+{
+    m_friends.push_back(pfriend);
+}
+
+
+
+QVector<User> User::getFriends()
+{
+
+ QVector<User> friends;
+
+ for (int i = 0; i < m_friends.size(); i++)
+ {
+  User temp = *m_friends[i];
+
+  friends.push_back(temp);
+ }
+
+ return friends;
+}
+
+
+
+
+void User::removingFriend(QString* friendLogin)
+{
+
+QVector<User*>::iterator p = m_friends.begin();
+
+while ((*p)->showLogin() != *friendLogin)
+{
+p++;
+}
+
+m_friends.erase(p);
+
+}
+
+
+
 
 QString User::showName()
 {

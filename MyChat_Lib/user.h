@@ -5,6 +5,7 @@
 
 #include <QDebug>
 #include <QString>
+#include "returnvalues.h"
 
 class User
 {
@@ -22,6 +23,12 @@ public:
     QString showPassword();
     QString showIPAddress();
 
+    void addFriend(User *pfriend);
+    QVector<User> getFriends();
+    void removingFriend(QString* friendLogin);
+
+
+
 private:
     QString m_name;
     QString m_surname ;
@@ -29,7 +36,7 @@ private:
     QString m_password ;
     QString m_ipAddress;
 
-
+    QVector<User*> m_friends;
 };
 
 #endif // USER_H

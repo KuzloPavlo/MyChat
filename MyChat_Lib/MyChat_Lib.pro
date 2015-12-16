@@ -21,7 +21,8 @@ HEADERS += user.h \
     participantschat.h \
     community.h \
     arrayofusers.h \
-    magicnumber.h
+    messagetypes.h \
+    returnvalues.h
 unix {
     target.path = /usr/lib
     INSTALLS += target
