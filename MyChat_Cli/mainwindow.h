@@ -9,6 +9,7 @@
 #include "friends.h"
 #include "community.h"
 #include <serv_connect.h>
+#include <user.h>
 
 
 namespace Ui {
@@ -42,22 +43,68 @@ private slots:
 
     void on_LogLoginBut_clicked();
 
-    void slotRegServerResponseRegistered();
+    void slotRegRegistered(
+            QString *pname,
+            QString *psurname,
+            QString *plogin,
+            QString *ppassword,
+            QString *pipAddress);
 
-    void slotRegServerResponseLoginBusy();
+    void slotRegLoginBusy();
 
-    void slotAuthServerResponseAuthorized();
+    void slotAuthAuthorized(
+            QString *pname,
+            QString *psurname,
+            QString *plogin,
+            QString *ppassword,
+            QString *pipAddress);
 
-    void slotAuthServerResponseWrongLogin();
+    void slotAuthWrongLogin();
 
-    void slotAuthServerResponseWrongPassword();
+    void slotAuthWrongPassword();
 
-    void slotAuthServerResponseIsEmty();
+    void slotAuthIsEmty();
 
+
+
+    void slotSearchFriendResponsNotFound();
+
+    void slotSearchFriendResponsFound(QVector<User> potentialFriends);
+
+
+
+    void on_MainConnBut_clicked();
+
+    void on_MainChatsBut_clicked();
+
+    void on_MainCloseSearchButt_clicked();
+
+    void on_MainSearchEdit_textChanged(const QString &arg1);
+
+    void on_MainSearchBut_clicked();
+
+    void on_MainListWidget_currentTextChanged(const QString &currentText);
+
+    void on_MainAddFrinedBut_clicked();
+
+    void on_MainUserBut_clicked();
+
+
+    void on_ConntactsListWidget_currentTextChanged(const QString &currentText);
+
+signals:
+
+    void signalAddDataUser(QString *pname,
+                           QString *psurname,
+                           QString *plogin,
+                           QString *ppassword,
+                           QString *pipAddress);
 
 private:
 
     Serv_Connect *m_pSERVER;
+
+   // QVector<User> m_potentialFriends;
 
     Ui::MainWindow *ui;
 };

@@ -13,7 +13,7 @@ User::User( QString *pname,
             QString *psurname,
             QString *plogin,
             QString *ppassword,
-            QString *pipAddress)
+            QString *pipAddress) //:m_name (*pname),  сделай так
 {
     this->m_name = *pname;
     this->m_surname = *psurname;
@@ -21,12 +21,6 @@ User::User( QString *pname,
     this->m_password = *ppassword;
     this->m_ipAddress = *pipAddress;
 
-    qDebug()<< this->m_name;
-    qDebug()<< this->m_surname;
-    qDebug()<< this->m_login;
-    qDebug()<< this->m_password;
-    qDebug()<< this->m_ipAddress;
-    qDebug()<< "LIB user.cpp s 20-25";
 }
 
 
@@ -41,16 +35,16 @@ void User::addFriend(User *pfriend)
 QVector<User> User::getFriends()
 {
 
- QVector<User> friends;
+    QVector<User> friends;
 
- for (int i = 0; i < m_friends.size(); i++)
- {
-  User temp = *m_friends[i];
+    for (int i = 0; i < m_friends.size(); i++)
+    {
+        User temp = *m_friends[i];
 
-  friends.push_back(temp);
- }
+        friends.push_back(temp);
+    }
 
- return friends;
+    return friends;
 }
 
 
@@ -59,14 +53,14 @@ QVector<User> User::getFriends()
 void User::removingFriend(QString* friendLogin)
 {
 
-QVector<User*>::iterator p = m_friends.begin();
+    QVector<User*>::iterator p = m_friends.begin();
 
-while ((*p)->showLogin() != *friendLogin)
-{
-p++;
-}
+    while ((*p)->showLogin() != *friendLogin)
+    {
+        p++;
+    }
 
-m_friends.erase(p);
+    m_friends.erase(p);
 
 }
 
@@ -96,4 +90,34 @@ QString User::showPassword()
 QString User::showIPAddress()
 {
     return this->m_ipAddress;
+}
+
+
+void User::setName(QString *pname)
+{
+    this->m_name =* pname;
+
+}
+
+void User::setSurname(QString *psurname)
+{
+
+    this->m_surname = *psurname;
+}
+
+
+void User::setLogin(QString *plogin)
+{
+
+    this->m_login = *plogin;
+}
+
+void User::setPassword(QString *ppassword)
+{
+    this->m_password = *ppassword;
+}
+
+void User::setIPAddress(QString *pipAddress)
+{
+    this->m_ipAddress = *pipAddress;
 }

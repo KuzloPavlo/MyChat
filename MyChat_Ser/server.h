@@ -26,14 +26,22 @@ private:
     QTcpServer *m_pserver;
     quint16 m_nnextBlockSize;
 
-    void regProcessingResponses(ReturnValues respond,
-                                QTcpSocket *psocketForAnswers);
 
-    void authProcessingResponses(ReturnValues respond,
-                                 QTcpSocket *psocketForAnswers);
 
-    void searchFriend(QVector<User> potentialFriends,
+    void registration(QDataStream *pNewUserInfo,
+                      QTcpSocket *psocketForAnswers);
+
+    void authorization(QDataStream *pAuthoInfo,
                        QTcpSocket *psocketForAnswers);
+
+    void searchFriend(QDataStream *pFriendInfo,
+                      QTcpSocket *psocketForAnswers);
+
+
+//    void searchFriend(QVector<User> potentialFriends,
+//                      QTcpSocket *psocketForAnswers);
+
+//void addFriend(Qstring* userLogin, QString* friendLogin);  // продолжай
 
     void addFriendProcessingResponses(ReturnValues respond,
                                       QTcpSocket *psocketForAnswers);

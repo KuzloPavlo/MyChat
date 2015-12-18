@@ -15,22 +15,33 @@ class ArrayOfUsers:public Community
 {
 
 public:
-     ReturnValues addUser(QDataStream *pNewUserInfo);
-     int showUsersLogin(QDataStream *pAuthoInfo);
-     ReturnValues authorizeUser(QDataStream *pAuthoInfo);
-     QVector<User> seatrchFriend (QDataStream *pFriendInfo);
-     ReturnValues addFriend(QDataStream *pNewFriendInfo);
-     QVector<User> getUserFriends(QDataStream *pUserInfo);
-     ReturnValues removingFriend(QDataStream *pRemoveFriendInfo);
-signals:
-     //registration signals
-     void signalRegistered (QString login, QString password);
-     void signalLoginBusu ();
 
-     //authorization signals
-     void signalAuthorized (); // в етом сигнале будет отправлятся многое ПОМНИ
-     void signalLoginWrong ();
-     void signalPasswordWrong();
+    ReturnValues addUser(QString *pname,
+                         QString *psurname,
+                         QString *plogin,
+                         QString *ppassword,
+                         QString *pipAddress);
+
+    ReturnValues authorizeUser(QString *plogin,
+                               QString *ppassword);
+    QVector<User> seatrchFriend (QString *pdataFriend);
+
+    User getUser(QString *pUserLogin);                  // !!!! Обсуди с Романом
+    int showUsersLogin(QDataStream *pAuthoInfo);
+
+
+    ReturnValues addFriend(QDataStream *pNewFriendInfo);
+    QVector<User> getUserFriends(QDataStream *pUserInfo);
+    ReturnValues removingFriend(QDataStream *pRemoveFriendInfo);
+signals:
+    //registration signals
+    // void signalRegistered (QString login, QString password);
+    void signalLoginBusu ();
+
+    //authorization signals
+    void signalAuthorized (); // в етом сигнале будет отправлятся многое ПОМНИ
+    void signalLoginWrong ();
+    void signalPasswordWrong();
 
 private:
     // 12:30

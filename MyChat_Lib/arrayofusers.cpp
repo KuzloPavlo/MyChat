@@ -1,79 +1,46 @@
 #include "arrayofusers.h"
 
-ReturnValues ArrayOfUsers::addUser(QDataStream *pNewUserInfo)
+
+
+ReturnValues ArrayOfUsers::addUser(
+        QString *pname,
+        QString *psurname,
+        QString *plogin,
+        QString *ppassword,
+        QString *pipAddress)
 {
-    qDebug() << "LIB users.cpp 5";
-    QString name ;
-    QString surname;
-    QString login;
-    QString password;
-    QString ipAddress = "127.0.0.1";  // Нужно реализовввать получение IP адреса.
 
-    pNewUserInfo->setVersion (QDataStream::Qt_5_5);
-    *pNewUserInfo >> name
-            >> surname
-            >> login
-            >> password;
-
-    qDebug() << name;
-    qDebug() << surname;
-    qDebug() << login;
-    qDebug() << password;
-    qDebug() << "LIB users.cpp s 14-18";
-
-    if (m_users.size())
-    {
         for (int i = 0; i < m_users.size(); i++)
         {
-            if (login == m_users[i].showLogin())
+            if (*plogin == m_users[i].showLogin())
 
                 return login_busy;
         }
 
-        User newUser(&name,&surname,&login,&password,&ipAddress);
-        m_users.push_back (newUser);
-        signalRegistered (m_users[m_users.size ()-1].showLogin(),
-                m_users[m_users.size ()-1].showPassword());
+        User newUser(pname,psurname,plogin,ppassword,pipAddress);
+        m_users.push_back(newUser);
 
         return registered;
-    }
 
-    if (!m_users.size ())
-    {
-        User newUser(&name,&surname,&login,&password,&ipAddress);
-        m_users.push_back (newUser);
-        signalRegistered (m_users[m_users.size ()-1].showLogin(),
-                m_users[m_users.size ()-1].showPassword());
-
-        return registered;
-    }
-
-    return  return_null;
 }
 
 
 
-ReturnValues ArrayOfUsers::authorizeUser(QDataStream *pAuthoInfo)
+ReturnValues ArrayOfUsers::authorizeUser(QString *plogin,
+                                         QString *ppassword)
 {
-    QString login;
-    QString password;
-
-    pAuthoInfo->setVersion(QDataStream::Qt_5_5);
-    *pAuthoInfo >> login
-            >> password;
-
     if (m_users.size())
     {
         for (int i = 0; i < m_users.size(); i++)
         {
-            if (login == m_users[i].showLogin() &&
-                    password == m_users[i].showPassword())
+            if (*plogin == m_users[i].showLogin() &&
+                    *ppassword == m_users[i].showPassword())
             {
                 return authorized;
             }
 
-            if (login == m_users[i].showLogin() &&
-                    password != m_users[i].showPassword())
+            if (*plogin == m_users[i].showLogin() &&
+                    *ppassword != m_users[i].showPassword())
             {
                 return wrong_password;
             }
@@ -88,24 +55,39 @@ ReturnValues ArrayOfUsers::authorizeUser(QDataStream *pAuthoInfo)
     }
 
     return return_null;
+
+}
+
+
+User ArrayOfUsers::getUser(QString *pUserLogin)
+{
+    User user;
+    for (int i = 0; i < m_users.size(); i++)
+    {
+        if (*pUserLogin == m_users[i].showLogin())
+        {
+            user =  m_users[i];
+        }
+
+    }
+    // QString empty = "";        // ??????
+    //user.setPassword(&empty);  // remove password
+    return user;
 }
 
 
 
 
-QVector<User> ArrayOfUsers::seatrchFriend (QDataStream *pFriendInfo)
+QVector<User> ArrayOfUsers::seatrchFriend (QString *pdataFriend)  //
 {
-    QString dataUser;
-    QVector<User> potentialFriends;
 
-    pFriendInfo->setVersion(QDataStream::Qt_5_5);
-    *pFriendInfo >> dataUser;
+    QVector<User> potentialFriends;
 
     for (int i = 0; i < m_users.size(); i++)
     {
-        if (m_users[i].showName().indexOf(dataUser) != -1 ||
-                m_users[i].showSurname().indexOf(dataUser) != -1 ||
-                m_users[i].showLogin().indexOf(dataUser) != -1 )
+        if (m_users[i].showName().indexOf(*pdataFriend) != -1 ||
+                m_users[i].showSurname().indexOf(*pdataFriend) != -1 ||
+                m_users[i].showLogin().indexOf(*pdataFriend) != -1 )
         {
             User tempUser = m_users[i];
             potentialFriends.push_back(tempUser);
@@ -228,15 +210,5 @@ int ArrayOfUsers::showUsersLogin(QDataStream *pAuthoInfo)
 
 
 
-void ArrayOfUsers::signalRegistered(QString login, QString password)
-{
-
-}
 
 
-
-
-void  ArrayOfUsers::signalLoginBusu()
-{
-
-}

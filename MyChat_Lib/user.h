@@ -23,6 +23,12 @@ public:
     QString showPassword();
     QString showIPAddress();
 
+    void setName(QString *pname);          //  Make a copy constructor!!!
+    void setSurname(QString *psurname);    //  Make a copy constructor!!!
+    void setLogin(QString *plogin);        //  Make a copy constructor!!!
+    void setPassword(QString *ppassword);  //  Make a copy constructor!!!
+    void setIPAddress(QString *pipAddress);
+
     void addFriend(User *pfriend);
     QVector<User> getFriends();
     void removingFriend(QString* friendLogin);

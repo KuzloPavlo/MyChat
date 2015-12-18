@@ -23,8 +23,9 @@ HEADERS  += mainwindow.h \
     ../MyChat_Lib/participantschat.h \
     ../MyChat_Lib/user.h \
     ../MyChat_Lib/arrayofusers.h \
-    ../MyChat_Lib/magicnumber.h \
-    serv_connect.h
+    serv_connect.h \
+    ../MyChat_Lib/messagetypes.h \
+    ../MyChat_Lib/returnvalues.h
 
 FORMS    += mainwindow.ui
 
