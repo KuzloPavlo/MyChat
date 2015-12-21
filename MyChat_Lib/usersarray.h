@@ -11,22 +11,22 @@
 #include "messagetypes.h"
 #include "returnvalues.h"
 
-class ArrayOfUsers:public Community
+class UsersArray:public Community
 {
 
 public:
 
-    ReturnValues addUser(QString *pname,
-                         QString *psurname,
-                         QString *plogin,
-                         QString *ppassword,
-                         QString *pipAddress);
+    ReturnValues addUser(const QString &name,
+                         const QString &surname,
+                         const QString &login,
+                         const QString &password,
+                         const QString &ipAddress);
 
-    ReturnValues authorizeUser(QString *plogin,
-                               QString *ppassword);
-    QVector<User> seatrchFriend (QString *pdataFriend);
+    ReturnValues authorizeUser(const QString &login, const QString &password);
 
-    User getUser(QString *pUserLogin);                  // !!!! Обсуди с Романом
+    QVector<User> findFriend (const QString &tokenFriend);
+
+    User getUser(const QString &login);                  // !!!! Обсуди с Романом
     int showUsersLogin(QDataStream *pAuthoInfo);
 
 

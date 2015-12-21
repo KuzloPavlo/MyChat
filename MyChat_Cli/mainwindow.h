@@ -4,7 +4,7 @@
 
 #include <QMainWindow>
 #include "user.h"
-#include "arrayofusers.h"
+#include "usersarray.h"
 #include "participantschat.h"
 #include "friends.h"
 #include "community.h"
@@ -43,33 +43,26 @@ private slots:
 
     void on_LogLoginBut_clicked();
 
-    void slotRegRegistered(
-            QString *pname,
-            QString *psurname,
-            QString *plogin,
-            QString *ppassword,
-            QString *pipAddress);
+    void slotRegistered(const QString &plogin, const QString &ppassword);
 
-    void slotRegLoginBusy();
+    void slotLoginBusy();
 
-    void slotAuthAuthorized(
-            QString *pname,
-            QString *psurname,
-            QString *plogin,
-            QString *ppassword,
-            QString *pipAddress);
+    void slotAuthorized(
+            const QString &name,
+            const QString &surname,
+            const QString &login);
 
-    void slotAuthWrongLogin();
+    void slotWrongLogin();
 
-    void slotAuthWrongPassword();
+    void slotWrongPassword();
 
-    void slotAuthIsEmty();
+    void slotIsEmty();
 
 
 
-    void slotSearchFriendResponsNotFound();
 
-    void slotSearchFriendResponsFound(QVector<User> potentialFriends);
+
+    void slotFoundFriend(QVector<User> potentialFriends);
 
 
 
@@ -104,7 +97,7 @@ private:
 
     Serv_Connect *m_pSERVER;
 
-   // QVector<User> m_potentialFriends;
+     QVector<User> m_potentialFriends;
 
     Ui::MainWindow *ui;
 };

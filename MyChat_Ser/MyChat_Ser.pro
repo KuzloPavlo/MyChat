@@ -20,7 +20,7 @@ HEADERS += \
     ../MyChat_Lib/community.h \
     ../MyChat_Lib/friends.h \
     ../MyChat_Lib/participantschat.h \
-    ../MyChat_Lib/arrayofusers.h \
+    ../MyChat_Lib/usersarray.h \
     server.h \
     ../MyChat_Lib/messagetypes.h \
     ../MyChat_Lib/returnvalues.h

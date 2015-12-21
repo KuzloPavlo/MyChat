@@ -40,58 +40,54 @@ MainWindow::MainWindow(QWidget *parent, Serv_Connect *pSERVER) :
 
     connect(
                 m_pSERVER,
-                SIGNAL (signalRegRegistered(QString*,QString*,QString*,QString*,QString*)),
+                SIGNAL (signalRegistered(const QString& ,const QString&)),
                 this,
-                SLOT (slotRegRegistered(QString*,QString*,QString*,QString*,QString*))
+                SLOT (slotRegistered(const QString&, const QString&))
                 );
 
     connect(
                 m_pSERVER,
-                SIGNAL (signalRegLoginBusy()),
+                SIGNAL (signalLoginBusy()),
                 this,
-                SLOT (slotRegLoginBusy()));
+                SLOT (slotLoginBusy()));
 
     connect(
                 m_pSERVER,
-                SIGNAL (signalAuthAuthorized(QString*,QString*,QString*,QString*,QString*)),
+                SIGNAL (signalAuthorized(const QString&, const QString&, const QString&)),
                 this,
-                SLOT (slotAuthAuthorized(QString*,QString*,QString*,QString*,QString*)));
+                SLOT (slotAuthorized(const QString&, const QString&, const QString&)));
 
     connect(
                 m_pSERVER,
-                SIGNAL (signalAuthWrongLogin ()),
+                SIGNAL (signalWrongLogin ()),
                 this,
-                SLOT (slotAuthWrongLogin()));
+                SLOT (slotWrongLogin()));
 
     connect(
                 m_pSERVER,
-                SIGNAL (signalAuthWrongPassword()),
+                SIGNAL (signalWrongPassword()),
                 this,
-                SLOT (slotAuthWrongPassword()));
+                SLOT (slotWrongPassword()));
 
     connect(
                 m_pSERVER,
-                SIGNAL (signalAuthIsEmty()),
+                SIGNAL (signalIsEmty()),
                 this,
-                SLOT (slotAuthIsEmty()));
+                SLOT (slotIsEmty()));
+
+
 
     connect(
                 m_pSERVER,
-                SIGNAL (signalSearchFriendResponsNotFound()),
+                SIGNAL (signalFoundFriend(QVector<User>)),
                 this,
-                SLOT (slotSearchFriendResponsNotFound()));
+                SLOT (slotFoundFriend(QVector<User>)));
 
-    connect(
-                m_pSERVER,
-                SIGNAL (signalSearchFriendResponsFound(QVector<User>)),
-                this,
-                SLOT (slotSearchFriendResponsFound(QVector<User>)));
-
-    connect(
-                m_pSERVER,
-                SIGNAL (signalSearchFriendResponsFound(QVector<User>)),
-                m_pSERVER,
-                SLOT (slotSearchFriendResponsFound(QVector<User>)));
+//    connect(
+//                m_pSERVER,
+//                SIGNAL (signalSearchFriendResponsFound(QVector<User>)),
+//                m_pSERVER,
+//                SLOT (slotSearchFriendResponsFound(QVector<User>)));
 }
 
 
@@ -152,43 +148,25 @@ void MainWindow::on_Roll_up_clicked()
 void MainWindow::on_RegRegistrationBut_clicked()
 {
 
-    ui->RegEnterNameLabel->setVisible(false);                    // What's the difference,
-    ui->RegEnterSurameLabel->setVisible(false);                  // check four times the visibility
-    ui->RegEnterLoginLabel->setVisible(false);                   // or made invisible!!!
-    ui->RegEnterPasswordLabel->setVisible(false);                // !I think it is better to make the invisible
-
     if (!ui->RegNameEdit->text().isEmpty() &&             // if all the fields are full
             !ui->RegSurnameEdit->text().isEmpty() &&      //
             !ui->RegLoginEdit->text().isEmpty() &&        //
             !ui->RegPasswordEdit->text().isEmpty())       //
     {
-        m_pSERVER->registration (
-                    &ui->RegNameEdit->text(),
-                    &ui->RegSurnameEdit->text(),
-                    &ui->RegLoginEdit->text(),
-                    &ui->RegPasswordEdit->text());
-
+        m_pSERVER->registerUser (
+                    ui->RegNameEdit->text(),
+                    ui->RegSurnameEdit->text(),
+                    ui->RegLoginEdit->text(),
+                    ui->RegPasswordEdit->text());
     }
 
-    if (ui->RegNameEdit->text().isEmpty())
-    {
-        ui->RegEnterNameLabel->setVisible(true);
-    }
+    ui->RegEnterNameLabel->setVisible(ui->RegNameEdit->text().isEmpty());
 
-    if (ui->RegSurnameEdit->text().isEmpty())
-    {
-        ui->RegEnterSurameLabel->setVisible(true);
-    }
+    ui->RegEnterSurameLabel->setVisible(ui->RegSurnameEdit->text().isEmpty());
 
-    if (ui->RegLoginEdit->text().isEmpty())
-    {
-        ui->RegEnterLoginLabel->setVisible(true);
-    }
+    ui->RegEnterLoginLabel->setVisible(ui->RegLoginEdit->text().isEmpty());
 
-    if (ui->RegPasswordEdit->text().isEmpty())
-    {
-        ui->RegEnterPasswordLabel->setVisible(true);
-    }
+    ui->RegEnterPasswordLabel->setVisible(ui->RegPasswordEdit->text().isEmpty());
 
     // Добавить обработку отсутствия соединение с сервером
 }
@@ -199,24 +177,15 @@ void MainWindow::on_RegRegistrationBut_clicked()
 void MainWindow::on_LogLoginBut_clicked()
 {
 
-    ui->LogEnterLoginLabel->setVisible(false);
-    ui->LogEnterPasswordLabel->setVisible(false);
-
     if (!ui->LogLoginEdit->text().isEmpty() && !ui->LogPasswordEdit->text().isEmpty())
     {
-        m_pSERVER->authorization(&ui->LogLoginEdit->text(),
-                                 &ui->LogPasswordEdit->text());
+        m_pSERVER->authorizationUser(ui->LogLoginEdit->text(),
+                                     ui->LogPasswordEdit->text());
     }
 
-    if (ui->LogLoginEdit->text().isEmpty())
-    {
-        ui->LogEnterLoginLabel->setVisible(true);
-    }
+    ui->LogEnterLoginLabel->setVisible(ui->LogLoginEdit->text().isEmpty());
 
-    if (ui->LogPasswordEdit->text().isEmpty())
-    {
-        ui->LogEnterPasswordLabel->setVisible(true);
-    }
+    ui->LogEnterPasswordLabel->setVisible(ui->LogPasswordEdit->text().isEmpty());
 
     // Добавить обработку отсутствия соединение с сервером
 }
@@ -224,62 +193,54 @@ void MainWindow::on_LogLoginBut_clicked()
 
 
 
-void MainWindow::slotRegRegistered(QString *pname,
-                                   QString *psurname,
-                                   QString *plogin,
-                                   QString *ppassword,
-                                   QString *pipAddress)
+void MainWindow::slotRegistered(const QString &login, const QString &password)
 {
     ui->RegLoginBusyEdit->setVisible(false);    // if showed
     ui->RegistrationPage->setVisible (false);
     ui->WelcomePage->setVisible (true);
 
-    ui->WelLoginEdit->setText(*plogin);         // copy Data user
-    ui->WelPasswordEdit->setText(*ppassword);   // copy Data user
+    ui->WelLoginEdit->setText(login);         // copy Data user
+    ui->WelPasswordEdit->setText(password);   // copy Data user
 
-    ui->LogLoginEdit->setText(*plogin);         // copy Data user
-    ui->LogPasswordEdit->setText(*ppassword);   // copy Data user
+    ui->LogLoginEdit->setText(login);         // copy Data user
+    ui->LogPasswordEdit->setText(password);   // copy Data user
 }
 
 
 
 
-void MainWindow::slotRegLoginBusy()
+void MainWindow::slotLoginBusy()
 {
     ui->RegLoginBusyEdit->setVisible(true);
 }
 
 
 
-void MainWindow::slotAuthAuthorized( QString *pname,
-                                     QString *psurname,
-                                     QString *plogin,
-                                     QString *ppassword,
-                                     QString *pipAddress)
+void MainWindow::slotAuthorized(const QString &name,
+                                const QString &surname,
+                                const QString &login)
 {
-
     ui->LoginPage->setVisible(false);
     ui->MainPage->setVisible(true);
 
-    ui->UserNameLabel->setText(*pname);
-    ui->UserSurnameLabel->setText(*psurname);
-    ui->UserLoginLabel->setText(*plogin);
-
+    ui->UserNameLabel->setText(name);
+    ui->UserSurnameLabel->setText(surname);
+    ui->UserLoginLabel->setText(login);
 }
 
 
-void MainWindow::slotAuthWrongLogin()
+void MainWindow::slotWrongLogin()
 {
     ui->LogWrongLoginLabel->setVisible(true);
 }
 
 
-void MainWindow::slotAuthWrongPassword()
+void MainWindow::slotWrongPassword()
 {
     ui->LogWrongPasswordLabel->setVisible(true);
 }
 
-void MainWindow::slotAuthIsEmty()
+void MainWindow::slotIsEmty()
 
 {
 
@@ -287,28 +248,18 @@ void MainWindow::slotAuthIsEmty()
 }
 
 
-void MainWindow::slotSearchFriendResponsNotFound()
 
+
+void MainWindow::slotFoundFriend(QVector<User> potentialFriends)
 {
+    this->m_potentialFriends = potentialFriends;
 
-    // добавь что ничего не найдено
-
-}
-
-
-
-void MainWindow::slotSearchFriendResponsFound(QVector<User> potentialFriends)
-{
-    //  m_potentialFriends = potentialFriends;  // ВОТ ТАК СДЕЛАЙ!!!
-    ui->MainListWidget->clear();
+    ui->MainListWidget->clear();  // перенеси в слот визову пошуку друзів по кнопці
 
     for (int i = 0; i < potentialFriends.size(); i++)
     {
-
-        ui->MainListWidget->addItem(potentialFriends[i].showLogin());
-
+        ui->MainListWidget->addItem(potentialFriends[i].getLogin());
     }
-
 }
 
 
@@ -365,7 +316,7 @@ void MainWindow::on_MainSearchBut_clicked()
     ui->MainPage->setVisible(false);
     ui->LoginPage->setVisible(true);*/
 
-    m_pSERVER->searchFriend(&ui->MainSearchEdit->text());
+    m_pSERVER->findFriend(ui->MainSearchEdit->text());
 
 
 
@@ -384,11 +335,11 @@ void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText
     for(int i = 0; i < m_pSERVER->m_potentialFriends.size(); i++)
     {
 
-        if (currentText == m_pSERVER->m_potentialFriends[i].showLogin())
+        if (currentText == m_pSERVER->m_potentialFriends[i].getLogin())
         {
-            ui->SearchFriendNameLabel->setText(m_pSERVER->m_potentialFriends[i].showName());
-            ui->SearchFriendSurnameLabel->setText(m_pSERVER->m_potentialFriends[i].showSurname());
-            ui->SearchFriendLoginLabel->setText(m_pSERVER->m_potentialFriends[i].showLogin());
+            ui->SearchFriendNameLabel->setText(m_pSERVER->m_potentialFriends[i].getName());
+            ui->SearchFriendSurnameLabel->setText(m_pSERVER->m_potentialFriends[i].getSurname());
+            ui->SearchFriendLoginLabel->setText(m_pSERVER->m_potentialFriends[i].getLogin());
         }
     }
 }

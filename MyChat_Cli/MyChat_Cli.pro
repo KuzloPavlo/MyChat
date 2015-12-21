@@ -22,7 +22,7 @@ HEADERS  += mainwindow.h \
     ../MyChat_Lib/friends.h \
     ../MyChat_Lib/participantschat.h \
     ../MyChat_Lib/user.h \
-    ../MyChat_Lib/arrayofusers.h \
+    ../MyChat_Lib/usersarray.h \
     serv_connect.h \
     ../MyChat_Lib/messagetypes.h \
     ../MyChat_Lib/returnvalues.h

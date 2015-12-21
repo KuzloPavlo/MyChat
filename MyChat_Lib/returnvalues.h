@@ -2,16 +2,26 @@
 
 enum ReturnValues
 {
-return_null,
+//return_null,
+returnNull,
 registered,
-not_registered,
-login_busy,
-login_free,
+//not_registered,
+notRegistered,
+//login_busy,
+loginBusy,
+//login_free,
+loginFree,
 authorized,
-not_authorized,
-wrong_login,
-wrong_password,
-added_friend,
-removed_friend,
-is_empty
+//not_authorized,
+notAuthorized,
+//wrong_login,
+wrongLogin,
+//wrong_password,
+wrongPassword,
+//added_friend,
+addedFriend,
+//removed_friend,
+removedFriend,
+//is_empty
+isEmpty
 };

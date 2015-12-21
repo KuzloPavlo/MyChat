@@ -8,7 +8,7 @@
 #include <QTcpSocket>
 #include <QString>
 
-#include "arrayofusers.h"
+#include "usersarray.h"
 #include "returnvalues.h"
 #include "messagetypes.h"
 
@@ -22,20 +22,17 @@ public slots:
     void slotNewConnection ();
     void slotReadClient();
 private:
-    ArrayOfUsers m_users;
+    UsersArray m_users;
     QTcpServer *m_pserver;
     quint16 m_nnextBlockSize;
 
 
 
-    void registration(QDataStream *pNewUserInfo,
-                      QTcpSocket *psocketForAnswers);
+    void registerUser(QDataStream *in, QDataStream *out);
 
-    void authorization(QDataStream *pAuthoInfo,
-                       QTcpSocket *psocketForAnswers);
+    void authorizationUser(QDataStream *in, QDataStream *out);
 
-    void searchFriend(QDataStream *pFriendInfo,
-                      QTcpSocket *psocketForAnswers);
+    void findFriend(QDataStream *in, QDataStream *out);
 
 
 //    void searchFriend(QVector<User> potentialFriends,

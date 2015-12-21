@@ -14,15 +14,15 @@ SOURCES += user.cpp \
     friends.cpp \
     participantschat.cpp \
     community.cpp \
-    arrayofusers.cpp
+    usersarray.cpp
 
 HEADERS += user.h \
     friends.h \
     participantschat.h \
     community.h \
-    arrayofusers.h \
     messagetypes.h \
-    returnvalues.h
+    returnvalues.h \
+    usersarray.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

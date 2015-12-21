@@ -29,6 +29,7 @@ Serv_Connect::Serv_Connect(QObject *parent) : QObject(parent), m_nnextBlockSize(
 void Serv_Connect::slotReadServer()
 {
     quint8 requestType;
+
     QDataStream in (m_psocket);
     in.setVersion(QDataStream::Qt_5_5);
 
@@ -44,21 +45,18 @@ void Serv_Connect::slotReadServer()
 
     in >> requestType;
 
-    //    qDebug() << static_cast<MessageTypes> (requestType);  // здесь печатаю
-    //    qDebug() << "server_connect.cpp stroka 43";
-
     switch (static_cast<MessageTypes>(requestType))
     {
     case MessageTypes::registration:
-        this->regServerResponding (&in);
+        this->processRegistrationResponse(&in);
         break;
 
     case MessageTypes::authorization:
-        this->authServerResponding(&in);
+        this->processAuthorizationResponse(&in);
         break;
 
-    case MessageTypes::search_friend:
-        this->searchFriendServerResponding(&in);
+    case MessageTypes::searchFriend:
+        this->processFindFriendResponse(&in);
         break;
 
     default:
@@ -71,11 +69,11 @@ void Serv_Connect::slotReadServer()
 
 
 
-void Serv_Connect::slotSetUser(QString *pname,      // Возможно етот слот и НЕНУЖЕН
-                               QString *psurname,
-                               QString *plogin,
-                               QString *ppassword,
-                               QString *pipAddress)
+void Serv_Connect::slotSetUser(const QString &pname,      // Возможно етот слот и НЕНУЖЕН
+                               const QString &psurname,
+                               const QString &plogin,
+                               const QString &ppassword,
+                               const QString &pipAddress)
 {
     User user(pname,psurname,plogin,ppassword,pipAddress);
     this->m_user = user;
@@ -84,19 +82,15 @@ void Serv_Connect::slotSetUser(QString *pname,      // Возможно етот
 
 
 
-void Serv_Connect::slotSearchFriendResponsFound(QVector<User> potentialFriends)
-{
-    this->m_potentialFriends = potentialFriends;
-}
 
 
 
 void Serv_Connect::addDataUser(
-        QString *pname,
-        QString *psurname,
-        QString *plogin,
-        QString *ppassword,
-        QString *pipAddress)
+        const QString &pname,
+        const QString &psurname,
+        const QString &plogin,
+        const QString &ppassword,
+        const QString &pipAddress)
 {
     User temp(pname,psurname, plogin, ppassword, pipAddress);
     m_user = temp;
@@ -113,64 +107,65 @@ User Serv_Connect::getUser()
 
 
 
-void Serv_Connect::registration(QString *pname, QString *psurname, QString *plogin, QString *ppassword)
+void Serv_Connect::registerUser(const QString &name, const QString &surname, const QString &login, const QString &password)
 {
-    QByteArray regBlock;
+    QByteArray block;
 
-    QDataStream out (&regBlock, QIODevice::WriteOnly);
+    QDataStream out (&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_5);
+
     out << quint16 (0)
         << quint8 (MessageTypes::registration)
-        << *pname
-        << *psurname
-        << *plogin
-        << *ppassword;
+        << name
+        << surname
+        << login
+        << password;
 
     out.device()->seek (0);
-    out << quint16 (regBlock.size() - sizeof(quint16));
-    m_psocket->write(regBlock);
+    out << quint16 (block.size() - sizeof(quint16));
+    m_psocket->write(block);
 }
 
 
 
 
-void Serv_Connect::authorization (QString *plogin, QString *ppassword)
+void Serv_Connect::authorizationUser (const QString &login, const QString &password)
 {
-    QByteArray authBlock;
+    QByteArray block;
 
-    QDataStream out (&authBlock,QIODevice::WriteOnly);
+    QDataStream out (&block,QIODevice::WriteOnly);
     out.setVersion (QDataStream::Qt_5_5);
 
     out << quint16 (0)
         << quint8 (MessageTypes::authorization)
-        << *plogin
-        << *ppassword;
+        << login
+        << password;
 
     out.device()->seek (0);
-    out << quint16 (authBlock.size() - sizeof(quint16));
-    m_psocket->write(authBlock);
+    out << quint16 (block.size() - sizeof(quint16));
+    m_psocket->write(block);
 }
 
 
 
 
-void Serv_Connect::searchFriend(QString *pdataFriend)  // надо конст ссілку
+void Serv_Connect::findFriend(const QString &tokenFriend)//searchFriend(QString *pdataFriend)  // надо конст ссілку
 {
 
     // qDebug() << "Serv_connect, searchFriend" << *pdataFriend;
 
-    QByteArray searchFriendBlock;
+    QByteArray block;
 
-    QDataStream out (&searchFriendBlock, QIODevice::WriteOnly);
+    QDataStream out (&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_5);
 
     out << quint16(0)
-        << quint8(MessageTypes::search_friend)
-        << *pdataFriend;
+        << quint8(MessageTypes::searchFriend)
+        << tokenFriend;
 
     out.device()->seek(0);
-    out << quint16 (searchFriendBlock.size() - sizeof(quint16));
-    m_psocket->write(searchFriendBlock);
+    out << quint16 (block.size() - sizeof(quint16));
+    m_psocket->write(block);
 
 }
 
@@ -185,8 +180,8 @@ void Serv_Connect::addFriend (QString *pLoginFriend)
     out.setVersion(QDataStream::Qt_5_5);
 
     out << quint16(0)
-        << quint8 (MessageTypes::add_friend)
-        << m_user.showLogin()
+        << quint8 (MessageTypes::addFriend)
+        << m_user.getLogin()
         << *pLoginFriend;
 
     out.device()->seek(0);
@@ -198,49 +193,28 @@ void Serv_Connect::addFriend (QString *pLoginFriend)
 
 
 
-void Serv_Connect::regServerResponding(QDataStream *pregInfo)
+void Serv_Connect::processRegistrationResponse(QDataStream *in)
 {
     quint8 response;
-    pregInfo->setVersion (QDataStream::Qt_5_5);
-    *pregInfo >> response;
+    in->setVersion (QDataStream::Qt_5_5);
+    *in >> response;
 
     switch (static_cast<ReturnValues>(response))
     {
 
-    case registered:
+    case ReturnValues::registered:
     {
-
-        QString userName;
-        QString userSurname;
         QString userLogin;
         QString userPassword;
-        QString userIPAddress;
 
-        *pregInfo >> userName
-                >> userSurname
-                >> userLogin
-                >> userPassword
-                >> userIPAddress;
+        *in >> userLogin >> userPassword;
 
-        User tempUser(&userName,   // Обсуди с Романом
-                      &userSurname,  // Обсуди с Романом
-                      &userLogin,
-                      &userPassword,
-                      &userIPAddress);
-
-        this->m_user = tempUser;   // Обсуди с Романом
-
-        emit signalRegRegistered(
-                    &userName,
-                    &userSurname,
-                    &userLogin,
-                    &userPassword,
-                    &userIPAddress );
+        emit signalRegistered(userLogin, userPassword);
     }
         break;
 
-    case login_busy:
-        emit signalRegLoginBusy();
+    case ReturnValues::loginBusy:
+        emit signalLoginBusy();
         break;
 
     default:
@@ -251,58 +225,30 @@ void Serv_Connect::regServerResponding(QDataStream *pregInfo)
 
 
 
-void Serv_Connect::authServerResponding(QDataStream *pauthInfo)
+void Serv_Connect::processAuthorizationResponse(QDataStream *in)
 {
     quint8 response;
-    pauthInfo->setVersion (QDataStream::Qt_5_5);
-    *pauthInfo >> response;
-    //    qDebug() << static_cast<ReturnValues>(response);
-    //    qDebug() << "serv_connect.cpp 140";
+
+    in->setVersion (QDataStream::Qt_5_5);
+    *in >> response;
 
     switch (static_cast<ReturnValues>(response))
     {
 
-    case authorized:
-    {
-        QString userName;
-        QString userSurname;
-        QString userLogin;
-        QString userPassword;
-        QString userIPAddress;
-
-        *pauthInfo >> userName
-                >> userSurname    // выноси это все в функцию
-                >> userLogin
-                >> userPassword
-                >> userIPAddress;
-
-        User tempUser(&userName,   // Обсуди с Романом
-                      &userSurname,  // Обсуди с Романом
-                      &userLogin,
-                      &userPassword,
-                      &userIPAddress);
-
-        this->m_user = tempUser;   // Обсуди с Романом
-
-        emit signalAuthAuthorized(
-                    &userName,
-                    &userSurname,
-                    &userLogin,
-                    &userPassword,
-                    &userIPAddress);
-    }
+    case ReturnValues::authorized:
+        setAuthorizedUser(in);
         break;
 
-    case wrong_login:
-        emit signalAuthWrongLogin();
+    case ReturnValues::wrongLogin:
+        emit signalWrongLogin();
         break;
 
-    case wrong_password:
-        emit signalAuthWrongPassword();
+    case ReturnValues::wrongPassword:
+        emit signalWrongPassword();
         break;
 
-    case is_empty:
-        emit signalAuthIsEmty();
+    case ReturnValues::isEmpty:
+        emit signalIsEmty();
         break;
 
     default:
@@ -314,16 +260,44 @@ void Serv_Connect::authServerResponding(QDataStream *pauthInfo)
 
 
 
-void Serv_Connect::searchFriendServerResponding(QDataStream *psearchInfo)
+void Serv_Connect::setAuthorizedUser(QDataStream *in)
+{
+    in->setVersion (QDataStream::Qt_5_5);
+
+    QString userName;
+    QString userSurname;
+    QString userLogin;
+    QString userPassword = "";
+    QString userIPAddress;
+
+    *in >> userName
+            >> userSurname
+            >> userLogin
+            >> userIPAddress;
+
+    User tempUser(userName,
+                  userSurname,
+                  userLogin,
+                  userPassword,
+                  userIPAddress);
+
+    this->m_user = tempUser;
+
+    emit signalAuthorized(userName, userSurname, userLogin);
+}
+
+
+
+
+void Serv_Connect::processFindFriendResponse(QDataStream *in)
 {
     quint8 npotentialFriends;
     QVector<User>  potentialFriends;
-    psearchInfo->setVersion(QDataStream::Qt_5_5);
 
-    *psearchInfo >> npotentialFriends;
+    in->setVersion(QDataStream::Qt_5_5);
 
-    if (npotentialFriends != 0)
-    {
+    *in >> npotentialFriends;
+
         for (int i = 0; i <static_cast<int>(npotentialFriends); i++)
         {
             QString potentialFriendName;
@@ -332,30 +306,20 @@ void Serv_Connect::searchFriendServerResponding(QDataStream *psearchInfo)
             QString potentialFriendIPAddress;
             QString emptyString = "";
 
-            *psearchInfo >> potentialFriendName
+            *in >> potentialFriendName
                     >> potentialFriendSurname
                     >> potentialFriendLogin
                     >> potentialFriendIPAddress;
 
             User tempFrined(
-                        &potentialFriendName,
-                        &potentialFriendSurname,
-                        &potentialFriendLogin,
-                        &emptyString,
-                        &potentialFriendIPAddress);
-
-            //            qDebug() << "Server_connect, searchFriendServerRes"
-            //                     << tempFrined.showLogin();
+                        potentialFriendName,
+                        potentialFriendSurname,
+                        potentialFriendLogin,
+                        emptyString,
+                        potentialFriendIPAddress);
 
             potentialFriends.push_back(tempFrined);
 
         }
-        emit signalSearchFriendResponsFound(potentialFriends);
-        return;
-    }
-
-    else
-    {
-        emit signalSearchFriendResponsNotFound();
-    }
+        emit signalFoundFriend(potentialFriends);
 }

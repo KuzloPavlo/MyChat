@@ -11,17 +11,17 @@ class User
 {
 public:
     User();
-    User( QString *pname,
-          QString *psurname,
-          QString *plogin,
-          QString *ppassword,
-          QString *pipAddress);
+    User( const QString &pname,
+          const QString &psurname,
+          const QString &plogin,
+          const QString &ppassword,
+          const QString &pipAddress);
 
-    QString showName();
-    QString showSurname();
-    QString showLogin();
-    QString showPassword();
-    QString showIPAddress();
+    QString getName();
+    QString getSurname();
+    QString getLogin();
+    QString getPassword();
+    QString getIPAddress();
 
     void setName(QString *pname);          //  Make a copy constructor!!!
     void setSurname(QString *psurname);    //  Make a copy constructor!!!

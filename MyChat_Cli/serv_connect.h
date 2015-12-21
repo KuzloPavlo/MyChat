@@ -16,24 +16,24 @@ class Serv_Connect : public QObject
 public:
     explicit Serv_Connect(QObject *parent = 0);
 
-    void registration(QString *pname,
-                      QString *psurname,
-                      QString *plogin,
-                      QString *ppassword);
+    void registerUser(const QString &name,
+                      const QString &surname,
+                      const QString &login,
+                      const QString &password);
 
-    void authorization(QString *plogin, QString *ppassword);
+    void authorizationUser(const QString &login, const QString &password);
 
 
-    void searchFriend(QString *pdataFriend);
+    void findFriend(const QString &tokenFriend);
 
     void addFriend (QString *pLoginFriend);
 
     void addDataUser(
-            QString *pname,
-            QString *psurname,
-            QString *plogin,
-            QString *ppassword,
-            QString *pipAddress);
+            const QString &pname,
+            const QString &psurname,
+            const QString &plogin,
+            const QString &ppassword,
+            const QString &pipAddress);
 
     User getUser();
 public:
@@ -41,48 +41,42 @@ public:
     QVector<User> m_potentialFriends;          // ПИТАЙ!!!!!
 
 signals:
-    void signalRegRegistered(
-            QString *pname,
-            QString *psurname,
-            QString *plogin,
-            QString *ppassword,
-            QString *pipAddress);
-    void signalRegLoginBusy();
+    void signalRegistered(const QString &login, const QString &password);
 
-    void signalAuthAuthorized(
-            QString *pname,
-            QString *psurname,
-            QString *plogin,
-            QString *ppassword,
-            QString *pipAddress);
-    void signalAuthWrongLogin();
-    void signalAuthWrongPassword();
-    void signalAuthIsEmty();
+    void signalLoginBusy();
 
-    void signalSearchFriendResponsNotFound();
-    void signalSearchFriendResponsFound(QVector<User> potentialFriends);
+    void signalAuthorized(
+            const QString &name,
+            const QString &surname,
+            const QString &login);
+
+    void signalWrongLogin();
+    void signalWrongPassword();
+    void signalIsEmty();
+
+    void signalFoundFriend(QVector<User> potentialFriends);
 
 private:
     QTcpSocket *m_psocket;
     quint16 m_nnextBlockSize;
     User m_user;
     QVector<User>m_friends;
-    // QVector<User> m_potentialFriends;
 
+    void processRegistrationResponse(QDataStream *in);
+    void processAuthorizationResponse(QDataStream *in);
+    void setAuthorizedUser(QDataStream *in);
 
-    void regServerResponding(QDataStream *pregInfo);
-    void authServerResponding(QDataStream *pauthInfo);
-    void searchFriendServerResponding(QDataStream *psearchInfo);
+    void processFindFriendResponse(QDataStream *in);
 
 private slots:
     void slotReadServer();
-    void slotSetUser(QString *pname,
-                     QString *psurname,
-                     QString *plogin,
-                     QString *ppassword,
-                     QString *pipAddress);
+    void slotSetUser(const QString &pname,
+                     const QString &psurname,
+                     const QString &plogin,
+                     const QString &ppassword,
+                     const QString &pipAddress);
 
-    void slotSearchFriendResponsFound(QVector<User> potentialFriends);
+   // void slotSearchFriendResponsFound(QVector<User> potentialFriends);
 
 };
 

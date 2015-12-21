@@ -1,7 +1,7 @@
 #include <QCoreApplication>
 #include "server.h"
 #include "user.h"
-#include "arrayofusers.h"
+#include "usersarray.h"
 #include "friends.h"
 #include "participantschat.h"
 #include "community.h"

@@ -9,19 +9,16 @@ User::User()
 
 
 
-User::User( QString *pname,
-            QString *psurname,
-            QString *plogin,
-            QString *ppassword,
-            QString *pipAddress) //:m_name (*pname),  сделай так
-{
-    this->m_name = *pname;
-    this->m_surname = *psurname;
-    this->m_login = *plogin;
-    this->m_password = *ppassword;
-    this->m_ipAddress = *pipAddress;
-
-}
+User::User( const QString &pname,
+            const QString &psurname,
+            const QString &plogin,
+            const QString &ppassword,
+            const QString &pipAddress)
+    : m_name(pname),
+      m_surname(psurname),
+      m_login(plogin),
+      m_password(ppassword),
+      m_ipAddress(pipAddress) {}
 
 
 
@@ -55,7 +52,7 @@ void User::removingFriend(QString* friendLogin)
 
     QVector<User*>::iterator p = m_friends.begin();
 
-    while ((*p)->showLogin() != *friendLogin)
+    while ((*p)->getLogin() != *friendLogin)
     {
         p++;
     }
@@ -67,27 +64,27 @@ void User::removingFriend(QString* friendLogin)
 
 
 
-QString User::showName()
+QString User::getName()
 {
     return this->m_name;
 }
 
-QString User::showSurname()
+QString User::getSurname()
 {
     return this->m_surname;
 }
 
-QString User::showLogin()
+QString User::getLogin()
 {
     return this->m_login;
 }
 
-QString User::showPassword()
+QString User::getPassword()
 {
     return this->m_password;
 }
 
-QString User::showIPAddress()
+QString User::getIPAddress()
 {
     return this->m_ipAddress;
 }
