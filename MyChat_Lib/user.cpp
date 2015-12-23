@@ -47,18 +47,15 @@ QVector<User> User::getFriends()
 
 
 
-void User::removingFriend(QString* friendLogin)
+void User::removeFriend(const QString &friendLogin)
 {
-
     QVector<User*>::iterator p = m_friends.begin();
 
-    while ((*p)->getLogin() != *friendLogin)
+    while ((*p)->getLogin() != friendLogin)
     {
         p++;
     }
-
     m_friends.erase(p);
-
 }
 
 

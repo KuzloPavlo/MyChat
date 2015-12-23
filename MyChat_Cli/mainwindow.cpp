@@ -34,8 +34,10 @@ MainWindow::MainWindow(QWidget *parent, Serv_Connect *pSERVER) :
     ui->MainSearchBut->setVisible(false);
 
     ui->MainSearchFriendPage->setVisible(false);
-    ui->MainInfoLabel->setVisible(false);
-    ui->MainAddFrinedBut->setVisible(false);
+
+    ui->RemoveFriendBut->setVisible(false);
+    ui->RemoveLabel->setVisible(false);
+    ui->NotRmoveFriendBut->setVisible(false);
 
 
     connect(
@@ -83,11 +85,13 @@ MainWindow::MainWindow(QWidget *parent, Serv_Connect *pSERVER) :
                 this,
                 SLOT (slotFoundFriend(QVector<User>)));
 
-//    connect(
-//                m_pSERVER,
-//                SIGNAL (signalSearchFriendResponsFound(QVector<User>)),
-//                m_pSERVER,
-//                SLOT (slotSearchFriendResponsFound(QVector<User>)));
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalNewFriend(const User&)),
+                this,
+                SLOT(slotNewFriend(const User&)));
+
 }
 
 
@@ -114,7 +118,6 @@ void MainWindow::on_LogRegistrationBut_clicked()
 {
     ui->LoginPage->setVisible(false);
     ui->RegistrationPage->setVisible(true);
-
 }
 
 
@@ -147,7 +150,6 @@ void MainWindow::on_Roll_up_clicked()
 
 void MainWindow::on_RegRegistrationBut_clicked()
 {
-
     if (!ui->RegNameEdit->text().isEmpty() &&             // if all the fields are full
             !ui->RegSurnameEdit->text().isEmpty() &&      //
             !ui->RegLoginEdit->text().isEmpty() &&        //
@@ -176,7 +178,6 @@ void MainWindow::on_RegRegistrationBut_clicked()
 
 void MainWindow::on_LogLoginBut_clicked()
 {
-
     if (!ui->LogLoginEdit->text().isEmpty() && !ui->LogPasswordEdit->text().isEmpty())
     {
         m_pSERVER->authorizationUser(ui->LogLoginEdit->text(),
@@ -240,10 +241,11 @@ void MainWindow::slotWrongPassword()
     ui->LogWrongPasswordLabel->setVisible(true);
 }
 
+
+
+
 void MainWindow::slotIsEmty()
-
 {
-
 
 }
 
@@ -254,8 +256,6 @@ void MainWindow::slotFoundFriend(QVector<User> potentialFriends)
 {
     this->m_potentialFriends = potentialFriends;
 
-    ui->MainListWidget->clear();  // перенеси в слот визову пошуку друзів по кнопці
-
     for (int i = 0; i < potentialFriends.size(); i++)
     {
         ui->MainListWidget->addItem(potentialFriends[i].getLogin());
@@ -263,12 +263,33 @@ void MainWindow::slotFoundFriend(QVector<User> potentialFriends)
 }
 
 
+
+
+
+void MainWindow::slotNewFriend(const User &newFriend)
+{
+    m_friends.push_back(newFriend);
+
+    ui->MainSearchFriendPage->setVisible(false);
+}
+
+
+
+
 void MainWindow::on_MainConnBut_clicked()
 {
     ui->MainChatsPage->setVisible(false);
+    ui->MainSearchFriendPage->setVisible(false);
+    ui->MainUserInfo->setVisible(false);
+  //  ui->MainFriendInfo->setVisible(false);
     ui->MainConnPage->setVisible(true);
 
+    ui->ConntactsListWidget->clear();
 
+    for (int i = 0; i < m_friends.size(); i++)
+    {
+        ui->ConntactsListWidget->addItem(m_friends[i].getLogin());
+    }
 }
 
 
@@ -285,41 +306,31 @@ void MainWindow::on_MainCloseSearchButt_clicked()
 {
     ui->MainSearchEdit->clear();
     ui->MainListWidget->clear();
-    ui->MainInfoLabel->setVisible(false);
-    ui->MainAddFrinedBut->setVisible(false);
     ui->MainSearchFriendPage->setVisible(false);
     ui->MainSearchFriendsPage->setVisible(false);
     ui->MainSearchBut->setVisible(false);
     ui->MainSearchBut->setDefault(false);
     ui->MainMainPage->setVisible(true);
     ui->MainCloseSearchButt->setVisible(false);
-
 }
+
 
 
 
 void MainWindow::on_MainSearchEdit_textChanged(const QString &arg1)
 {
-
     ui->MainCloseSearchButt->setVisible(true);
     ui->MainMainPage->setVisible(false);
     ui->MainSearchFriendsPage->setVisible(true);
     ui->MainSearchBut->setVisible(!arg1.isEmpty());
-    // ui->MainSearchBut->setDefault(true);    // завязать на Ентер
-
 }
 
 
 
 void MainWindow::on_MainSearchBut_clicked()
-{/*
-    ui->MainPage->setVisible(false);
-    ui->LoginPage->setVisible(true);*/
-
+{
     m_pSERVER->findFriend(ui->MainSearchEdit->text());
-
-
-
+    ui->MainListWidget->clear();
 }
 
 
@@ -327,19 +338,32 @@ void MainWindow::on_MainSearchBut_clicked()
 
 void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText)
 {
+    for (int i = 0; i < m_friends.size(); i++)
+    {
+        if (currentText ==  m_friends[i].getLogin())
+        {
+            emit on_ConntactsListWidget_currentTextChanged(currentText);
+            return;
+        }
+    }
+
+    if (currentText == ui->UserLoginLabel->text())
+    {
+        emit on_MainUserBut_clicked();
+        return;
+    }
+
+  //  ui->MainFriendInfo->setVisible(false);
     ui->MainUserInfo->setVisible(false);
     ui->MainSearchFriendPage->setVisible(true);
-    ui->MainInfoLabel->setVisible(true);
-    ui->MainAddFrinedBut->setVisible(true);
 
-    for(int i = 0; i < m_pSERVER->m_potentialFriends.size(); i++)
+    for(int i = 0; i < m_potentialFriends.size(); i++)
     {
-
-        if (currentText == m_pSERVER->m_potentialFriends[i].getLogin())
+        if (currentText == m_potentialFriends[i].getLogin())
         {
-            ui->SearchFriendNameLabel->setText(m_pSERVER->m_potentialFriends[i].getName());
-            ui->SearchFriendSurnameLabel->setText(m_pSERVER->m_potentialFriends[i].getSurname());
-            ui->SearchFriendLoginLabel->setText(m_pSERVER->m_potentialFriends[i].getLogin());
+            ui->SearchFriendNameLabel->setText(m_potentialFriends[i].getName());
+            ui->SearchFriendSurnameLabel->setText(m_potentialFriends[i].getSurname());
+            ui->SearchFriendLoginLabel->setText(m_potentialFriends[i].getLogin());
         }
     }
 }
@@ -349,7 +373,7 @@ void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText
 
 void MainWindow::on_MainAddFrinedBut_clicked()
 {
-    m_pSERVER->addFriend(&ui->SearchFriendLoginLabel->text());
+    m_pSERVER->addFriend(ui->SearchFriendLoginLabel->text());
 }
 
 
@@ -357,11 +381,60 @@ void MainWindow::on_MainAddFrinedBut_clicked()
 void MainWindow::on_MainUserBut_clicked()
 {
     ui->MainSearchFriendPage->setVisible(false);
+    ui->MainFriendInfo->setVisible(false);
     ui->MainUserInfo->setVisible(true);
 }
 
 
+
+
 void MainWindow::on_ConntactsListWidget_currentTextChanged(const QString &currentText)
 {
+    ui->MainUserInfo->setVisible(false);
+    ui->MainSearchFriendPage->setVisible(false);
+    ui->MainFriendInfo->setVisible(true);
+    ui->DeleteConBut->setVisible(true);
 
+    for (int i = 0; i < m_friends.size(); i++)
+    {
+        if (currentText == m_friends[i].getLogin())
+        {
+            ui->FriendNameLabel->setText(m_friends[i].getName());
+            ui->FriendSurnameLabel->setText(m_friends[i].getSurname());
+            ui->FriendLoginLabel->setText(m_friends[i].getLogin());
+            return;
+        }
+    }
+}
+
+
+void MainWindow::on_DeleteConBut_clicked()
+{
+    ui->RemoveFriendBut->setVisible(true);
+    ui->RemoveLabel->setVisible(true);
+    ui->NotRmoveFriendBut->setVisible(true);
+
+    ui->DeleteConBut->setVisible(false);
+}
+
+void MainWindow::on_NotRmoveFriendBut_clicked()
+{
+    ui->RemoveFriendBut->setVisible(false);
+    ui->RemoveLabel->setVisible(false);
+    ui->NotRmoveFriendBut->setVisible(false);
+
+    ui->DeleteConBut->setVisible(true);
+}
+
+void MainWindow::on_RemoveFriendBut_clicked()
+{
+   m_pSERVER->removeFriend(ui->FriendLoginLabel->text());
+
+    ui->RemoveFriendBut->setVisible(false);
+    ui->RemoveLabel->setVisible(false);
+    ui->NotRmoveFriendBut->setVisible(false);
+
+    ui->DeleteConBut->setVisible(true);
+
+    ui->MainFriendInfo->setVisible(false);
 }

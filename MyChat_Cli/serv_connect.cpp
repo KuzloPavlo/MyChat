@@ -1,7 +1,4 @@
 #include "serv_connect.h"
-#include <QString>
-#include <QDataStream>
-
 
 
 Serv_Connect::Serv_Connect(QObject *parent) : QObject(parent), m_nnextBlockSize(0)
@@ -21,9 +18,30 @@ Serv_Connect::Serv_Connect(QObject *parent) : QObject(parent), m_nnextBlockSize(
 
     connect(m_psocket, SIGNAL(readyRead()), this, SLOT(slotReadServer()));
     m_nnextBlockSize = 0;
+
+    QDataStream temp (&m_block,QIODevice::WriteOnly);  //
+    m_out =& temp;                                      //
+    m_out->setVersion(QDataStream::Qt_5_5);             //
+    *m_out << quint16(0);                              //
 }
 
+void Serv_Connect::sendToServer(QDataStream *out, QByteArray *block)
+{
 
+    //    m_out->setVersion(QDataStream::Qt_5_5);
+    //        m_out->device()->seek(0);
+    //        *m_out << quint16 (m_block.size() - sizeof(quint16));
+    //        m_psocket->write(m_block);
+    //        m_block.clear();
+    //        *m_out <<quint16(0);
+
+
+   // out->setVersion(QDataStream::Qt_5_5);
+
+    out->device()->seek (0);
+    *out << quint16 (block->size() - sizeof(quint16));
+    m_psocket->write(*block);
+}
 
 
 void Serv_Connect::slotReadServer()
@@ -59,6 +77,10 @@ void Serv_Connect::slotReadServer()
         this->processFindFriendResponse(&in);
         break;
 
+    case MessageTypes::addFriend:
+        this->processAddFriendResponse(&in);
+        break;
+
     default:
         break;
     }
@@ -81,10 +103,6 @@ void Serv_Connect::slotSetUser(const QString &pname,      // Возможно е
 
 
 
-
-
-
-
 void Serv_Connect::addDataUser(
         const QString &pname,
         const QString &psurname,
@@ -101,7 +119,6 @@ void Serv_Connect::addDataUser(
 User Serv_Connect::getUser()
 {
     User temp = m_user;
-
     return temp;
 }
 
@@ -121,11 +138,12 @@ void Serv_Connect::registerUser(const QString &name, const QString &surname, con
         << login
         << password;
 
-    out.device()->seek (0);
-    out << quint16 (block.size() - sizeof(quint16));
-    m_psocket->write(block);
-}
+    sendToServer(&out, &block );
 
+    //    out.device()->seek (0);
+    //    out << quint16 (block.size() - sizeof(quint16));
+    //    m_psocket->write(block);
+}
 
 
 
@@ -151,9 +169,6 @@ void Serv_Connect::authorizationUser (const QString &login, const QString &passw
 
 void Serv_Connect::findFriend(const QString &tokenFriend)//searchFriend(QString *pdataFriend)  // надо конст ссілку
 {
-
-    // qDebug() << "Serv_connect, searchFriend" << *pdataFriend;
-
     QByteArray block;
 
     QDataStream out (&block, QIODevice::WriteOnly);
@@ -166,30 +181,48 @@ void Serv_Connect::findFriend(const QString &tokenFriend)//searchFriend(QString 
     out.device()->seek(0);
     out << quint16 (block.size() - sizeof(quint16));
     m_psocket->write(block);
-
 }
 
 
 
 
-void Serv_Connect::addFriend (QString *pLoginFriend)
+void Serv_Connect::addFriend (const QString &loginFriend)
 {
-    QByteArray addFriendBlock;
+    QByteArray block;
 
-    QDataStream out (&addFriendBlock, QIODevice::WriteOnly);
+    QDataStream out (&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_5);
 
     out << quint16(0)
         << quint8 (MessageTypes::addFriend)
         << m_user.getLogin()
-        << *pLoginFriend;
+        << loginFriend;
 
     out.device()->seek(0);
-    out << quint16 (addFriendBlock.size() - sizeof(quint16));
-    m_psocket->write(addFriendBlock);
+    out << quint16 (block.size() - sizeof(quint16));
+    m_psocket->write(block);
 
 }
 
+
+
+
+void Serv_Connect::removeFriend(const QString &loginFriend)
+{
+QByteArray block;
+
+    QDataStream out (&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_5);
+
+    out << quint16(0)
+        << quint8 (MessageTypes::removeFriend)
+        << m_user.getLogin()
+        << loginFriend;
+
+    out.device()->seek(0);
+    out << quint16 (block.size() - sizeof(quint16));
+    m_psocket->write(block);
+}
 
 
 
@@ -298,28 +331,72 @@ void Serv_Connect::processFindFriendResponse(QDataStream *in)
 
     *in >> npotentialFriends;
 
-        for (int i = 0; i <static_cast<int>(npotentialFriends); i++)
-        {
-            QString potentialFriendName;
-            QString potentialFriendSurname;
-            QString potentialFriendLogin;
-            QString potentialFriendIPAddress;
-            QString emptyString = "";
+    for (int i = 0; i <static_cast<int>(npotentialFriends); i++)
+    {
+        QString potentialFriendName;
+        QString potentialFriendSurname;
+        QString potentialFriendLogin;
+        QString emptyString = "";
 
-            *in >> potentialFriendName
-                    >> potentialFriendSurname
-                    >> potentialFriendLogin
-                    >> potentialFriendIPAddress;
+        *in >> potentialFriendName
+                >> potentialFriendSurname
+                >> potentialFriendLogin;
 
-            User tempFrined(
-                        potentialFriendName,
-                        potentialFriendSurname,
-                        potentialFriendLogin,
-                        emptyString,
-                        potentialFriendIPAddress);
+        User tempFrined(
+                    potentialFriendName,
+                    potentialFriendSurname,
+                    potentialFriendLogin,
+                    emptyString,
+                    emptyString);
 
-            potentialFriends.push_back(tempFrined);
+        potentialFriends.push_back(tempFrined);
+    }
+    emit signalFoundFriend(potentialFriends);
+}
 
-        }
-        emit signalFoundFriend(potentialFriends);
+
+
+void Serv_Connect::processAddFriendResponse(QDataStream *in){
+
+    quint8 response;
+
+    in->setVersion (QDataStream::Qt_5_5);
+    *in >> response;
+
+    switch (static_cast<ReturnValues>(response))
+    {
+
+    case ReturnValues::addedFriend:
+        setNewFriend(in);
+        break;
+
+    default:
+        break;
+    }
+}
+
+
+
+void Serv_Connect::setNewFriend(QDataStream *in)
+{
+    in->setVersion (QDataStream::Qt_5_5);
+
+    QString friendName;
+    QString friendSurname;
+    QString friendLogin;
+    QString friendPassword = "";
+    QString friendIPAddress;
+
+    *in >> friendName
+            >> friendSurname
+            >> friendLogin
+            >> friendIPAddress;
+
+    User tempFriend (friendName,
+                     friendSurname,
+                     friendLogin,
+                     friendPassword,
+                     friendIPAddress);
+
+    emit this->signalNewFriend(tempFriend);
 }

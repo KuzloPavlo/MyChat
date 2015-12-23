@@ -31,7 +31,7 @@ public:
 
     void addFriend(User *pfriend);
     QVector<User> getFriends();
-    void removingFriend(QString* friendLogin);
+    void removeFriend(const QString &friendLogin);
 
 
 

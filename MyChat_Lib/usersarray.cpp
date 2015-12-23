@@ -10,17 +10,17 @@ ReturnValues UsersArray::addUser(
         const QString &ipAddress)
 {
 
-        for (int i = 0; i < m_users.size(); i++)
-        {
-            if (login == m_users[i].getLogin())
+    for (int i = 0; i < m_users.size(); i++)
+    {
+        if (login == m_users[i].getLogin())
 
-                return ReturnValues::loginBusy;
-        }
+            return ReturnValues::loginBusy;
+    }
 
-        User newUser(name,surname,login,password,ipAddress);
-        m_users.push_back(newUser);
+    User newUser(name,surname,login,password,ipAddress);
+    m_users.push_back(newUser);
 
-        return registered;
+    return registered;
 }
 
 
@@ -86,7 +86,7 @@ QVector<User> UsersArray::findFriend (const QString &tokenFriend)  //
                 m_users[i].getSurname().indexOf(tokenFriend) != -1 ||
                 m_users[i].getLogin().indexOf(tokenFriend) != -1 )
         {
-           // User tempUser = ;            // вот єто
+            // User tempUser = ;            // вот єто
             potentialFriends.push_back(m_users[i]);//tempUser);  // поробуй сразу вставить
         }
     }
@@ -97,16 +97,11 @@ QVector<User> UsersArray::findFriend (const QString &tokenFriend)  //
 
 
 
-ReturnValues UsersArray::addFriend(QDataStream *pNewFriendInfo)
+ReturnValues UsersArray::addFriend(const QString &userLogin,
+                                   const QString &friendLogin)
 {
-    QString userLogin;
-    QString friendLogin;
     User *puser = NULL;
     User *pfriend = NULL;
-
-    pNewFriendInfo->setVersion(QDataStream::Qt_5_5);
-    *pNewFriendInfo >> userLogin
-            >> friendLogin;
 
     for (int i = 0; i < m_users.size(); i++)
     {
@@ -134,6 +129,7 @@ ReturnValues UsersArray::addFriend(QDataStream *pNewFriendInfo)
 
 
 
+
 QVector<User> UsersArray::getUserFriends(QDataStream *pUserInfo)
 {
     QString userLogin;
@@ -157,25 +153,31 @@ QVector<User> UsersArray::getUserFriends(QDataStream *pUserInfo)
 
 
 
-ReturnValues UsersArray::removingFriend(QDataStream *pRemoveFriendInfo)
+ReturnValues UsersArray::removeFriend(const QString &userLogin, const QString &friendLogin)
 {
-    QString userLogin;
-    QString friendLogin;
-
-    pRemoveFriendInfo->setVersion(QDataStream::Qt_5_5);
-    *pRemoveFriendInfo >> userLogin
-            >> friendLogin;
+    User *puser = NULL;
+    User *pfriend = NULL;
 
     for (int i = 0; i < m_users.size(); i++)
     {
         if (userLogin == m_users[i].getLogin())
         {
-            m_users[i].removingFriend(&friendLogin);
-            break;
+            puser =& m_users[i];
+        }
+
+        if (friendLogin == m_users[i].getLogin())
+        {
+            pfriend =& m_users[i];
+        }
+
+        if (puser && pfriend)
+        {
+            puser->removeFriend(friendLogin);
+            pfriend->removeFriend(userLogin);
+            return ReturnValues::removedFriend;
         }
     }
-
-    return ReturnValues::removedFriend;
+    return ReturnValues::returnNull;
 }
 
 

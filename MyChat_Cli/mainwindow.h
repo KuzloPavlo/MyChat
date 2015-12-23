@@ -64,6 +64,8 @@ private slots:
 
     void slotFoundFriend(QVector<User> potentialFriends);
 
+    void slotNewFriend(const User &newFriend);
+
 
 
     void on_MainConnBut_clicked();
@@ -85,6 +87,13 @@ private slots:
 
     void on_ConntactsListWidget_currentTextChanged(const QString &currentText);
 
+
+    void on_DeleteConBut_clicked();
+
+    void on_NotRmoveFriendBut_clicked();
+
+    void on_RemoveFriendBut_clicked();
+
 signals:
 
     void signalAddDataUser(QString *pname,
@@ -97,7 +106,9 @@ private:
 
     Serv_Connect *m_pSERVER;
 
-     QVector<User> m_potentialFriends;
+    QVector<User> m_potentialFriends;
+
+    QVector<User>m_friends;
 
     Ui::MainWindow *ui;
 };

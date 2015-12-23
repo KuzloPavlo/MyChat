@@ -30,9 +30,12 @@ public:
     int showUsersLogin(QDataStream *pAuthoInfo);
 
 
-    ReturnValues addFriend(QDataStream *pNewFriendInfo);
+    ReturnValues addFriend(const QString &userLogin, const QString &friendLogin);
+
+    ReturnValues removeFriend(const QString &userLogin, const QString &friendLogin);
+
     QVector<User> getUserFriends(QDataStream *pUserInfo);
-    ReturnValues removingFriend(QDataStream *pRemoveFriendInfo);
+
 signals:
     //registration signals
     // void signalRegistered (QString login, QString password);

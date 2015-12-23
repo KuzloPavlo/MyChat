@@ -27,9 +27,8 @@ void Server::slotNewConnection()
 
     connect(pSocket, SIGNAL(readyRead()), this, SLOT(slotReadClient()));
 
-    m_nnextBlockSize = 0;  // ??????????????
+    m_nnextBlockSize = 0;
 }
-
 
 
 
@@ -60,36 +59,36 @@ void Server::slotReadClient()
     switch (static_cast<MessageTypes>(requestType))
     {
 
-    case MessageTypes::registration:         // regProcessingResponses(m_users.addUser(&in), pclientSocket);
+    case MessageTypes::registration:
         registerUser(&in, &out);
         break;
 
-    case MessageTypes::authorization:        //  authProcessingResponses(m_users.authorizeUser(&in), pclientSocket);
+    case MessageTypes::authorization:
         authorizationUser(&in, &out);
         break;
 
-    case MessageTypes::searchFriend:                      //searchFriend(m_users.seatrchFriend(&in), pclientSocket);
+    case MessageTypes::searchFriend:
         findFriend(&in, &out);
         break;
 
-        //    case MessageTypes::addFriend:
-        //        addFriendProcessingResponses(m_users.addFriend(&in), pclientSocket);
-        //        break;
+    case MessageTypes::addFriend:
+        addFriend(&in, &out);
+        break;
+
+    case MessageTypes::removeFriend:
+        removeFriend(&in, &out);
+        break;
 
         //    case MessageTypes::getFriends:
         //        getUserFriends(m_users.getUserFriends(&in), pclientSocket);
 
         //        break;
 
-        //    case MessageTypes::removeFriend:
-        //        removingFriend(m_users.removingFriend(&in), pclientSocket);
-        //        break;
 
 
 
     default:
         break;
-
 
     }
 
@@ -99,12 +98,11 @@ void Server::slotReadClient()
         out << quint16 (block.size() - sizeof(quint16));
         pclientSocket->write(block);
     }
+
     requestType = 0;
     m_nnextBlockSize = 0;
     block.clear();
 }
-
-
 
 
 
@@ -128,8 +126,7 @@ void Server::registerUser(QDataStream *in, QDataStream *out)
                 password,
                 ipAddress);
 
-    *out // << quint16(0)
-         << quint8(MessageTypes::registration)
+    *out << quint8(MessageTypes::registration)
          << quint8(respond);
 
     if (respond == ReturnValues::registered)
@@ -148,6 +145,7 @@ void Server::registerUser(QDataStream *in, QDataStream *out)
 }
 
 
+
 void Server::authorizationUser(QDataStream *in, QDataStream *out)
 {
     QString login;
@@ -160,8 +158,7 @@ void Server::authorizationUser(QDataStream *in, QDataStream *out)
 
     ReturnValues respond = m_users.authorizeUser(login, password);
 
-    *out //<< quint16(0)
-         << quint8(MessageTypes::authorization)
+    *out << quint8(MessageTypes::authorization)
          << quint8(respond);
 
     if (respond == ReturnValues::authorized)
@@ -170,7 +167,7 @@ void Server::authorizationUser(QDataStream *in, QDataStream *out)
 
         *out << user.getName()
              << user.getSurname()
-             << user.getLogin()   // << user.getPassword()  //
+             << user.getLogin()
              << user.getIPAddress();
 
         // Также необхолимо добавить отправку списка контактов  !!!ОТПРАВКУ КОНТАКТОВ И ЧАТОВ ВІПОЛНЯТЬ ОТДЕЛЬНО
@@ -196,68 +193,73 @@ void Server::findFriend(QDataStream *in, QDataStream *out)
 
     QVector<User> potentialFriends = m_users.findFriend(tokenFriend);
 
-    *out //<< quint16 (0)
-        << quint8 (MessageTypes::searchFriend)
-        << quint8 (potentialFriends.size());
+    *out << quint8 (MessageTypes::searchFriend)
+         << quint8 (potentialFriends.size());
 
     for (int i = 0; i < potentialFriends.size(); i++)
     {
         *out << QString (potentialFriends[i].getName())
-            << QString (potentialFriends[i].getSurname())
-            << QString (potentialFriends[i].getLogin())
-            << QString (potentialFriends[i].getIPAddress());
+             << QString (potentialFriends[i].getSurname())
+             << QString (potentialFriends[i].getLogin());
     }
 }
 
 
 
-//void Server::searchFriend(QVector<User> potentialFriends,
-//                          QTcpSocket *psocketForAnswers)
-//{
-//    QByteArray potentialFriendsBlock;
-
-//    QDataStream out (&potentialFriendsBlock, QIODevice::WriteOnly);
-//    out.setVersion(QDataStream::Qt_5_5);
-
-//    out << quint16 (0)
-//        << quint8 (search_friend)
-//        << quint8 (potentialFriends.size());
-
-//    for (int i = 0; i < potentialFriends.size(); i++)
-//    {
-
-//        // qDebug() << "Server.cpp searchFriend" << potentialFriends[i].getLogin();
-//        out << QString (potentialFriends[i].getName())
-//            << QString (potentialFriends[i].getSurname())
-//            << QString (potentialFriends[i].getLogin())
-//            << QString (potentialFriends[i].getIPAddress());
-//    }
-
-//    out.device()->seek(0);
-//    out << quint16 (potentialFriendsBlock.size() - sizeof(quint16));
-//    psocketForAnswers->write(potentialFriendsBlock);
-
-//}
-
-
-
-
-void Server::addFriendProcessingResponses(ReturnValues respond,
-                                          QTcpSocket *psocketForAnswers)
+void Server::addFriend(QDataStream *in, QDataStream *out)
 {
-    QByteArray addFriendResponseBlock;
+    QString userLogin;
+    QString friendLogin;
 
-    QDataStream out (&addFriendResponseBlock, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_5);
+    in->setVersion(QDataStream::Qt_5_5);
+    out->setVersion(QDataStream::Qt_5_5);
 
-    out << quint16(0)
-        << quint8 (MessageTypes::addFriend)
-        << quint8 (respond);
+    *in >> userLogin >> friendLogin;
 
-    out.device()->seek(0);
-    out << quint16(addFriendResponseBlock.size() - sizeof(quint16));
-    psocketForAnswers->write(addFriendResponseBlock);
+    ReturnValues respond = m_users.addFriend(userLogin,friendLogin);
 
+    *out << quint8 (MessageTypes::addFriend)
+         << quint8 (respond);
+
+    if (respond == ReturnValues::addedFriend)
+    {
+        User friendUser = m_users.getUser(friendLogin);
+
+        *out << friendUser.getName()
+             << friendUser.getSurname()
+             << friendUser.getLogin()
+             << friendUser.getIPAddress();
+
+        qDebug() << userLogin << " & " << friendLogin;
+        qDebug() << " now friends." << endl << endl;
+    }
+}
+
+
+
+
+
+void Server::removeFriend(QDataStream *in, QDataStream *out)
+{
+    QString userLogin;
+    QString friendLogin;
+
+    in->setVersion(QDataStream::Qt_5_5);
+    out->setVersion(QDataStream::Qt_5_5);
+
+    *in >> userLogin >> friendLogin;
+
+    ReturnValues respond = m_users.removeFriend(userLogin,friendLogin);
+
+    *out << quint8 (MessageTypes::removeFriend)
+         << quint8 (respond);
+
+    if (respond == ReturnValues::removedFriend)
+    {
+        qDebug() << userLogin << " & " << friendLogin;
+        qDebug() << " now NOT friends" << endl << endl;
+
+    }
 }
 
 
@@ -286,26 +288,6 @@ void Server::getUserFriends(QVector<User> friends,
     out.device()->seek(0);
     out << quint16 (getFriendsBlock.size() - sizeof(quint16));
     psocketForAnswers->write(getFriendsBlock);
-
 }
 
 
-
-
-void Server::removingFriend(ReturnValues respond,
-                            QTcpSocket *psocketForAnswers)
-{
-    QByteArray removeFriendBlock;
-
-    QDataStream out (&removeFriendBlock, QIODevice::WriteOnly);
-    out.setVersion(QDataStream::Qt_5_5);
-
-    out << quint16(0)
-        << quint8(MessageTypes::removeFriend)
-        << quint8 (respond);
-
-    out.device()->seek(0);
-    out << quint16 (removeFriendBlock.size() - sizeof(quint16));
-    psocketForAnswers->write(removeFriendBlock);
-
-}

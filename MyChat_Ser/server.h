@@ -34,20 +34,19 @@ private:
 
     void findFriend(QDataStream *in, QDataStream *out);
 
+    void removeFriend(QDataStream *in, QDataStream *out);
 
-//    void searchFriend(QVector<User> potentialFriends,
-//                      QTcpSocket *psocketForAnswers);
+    //    void searchFriend(QVector<User> potentialFriends,
+    //                      QTcpSocket *psocketForAnswers);
 
-//void addFriend(Qstring* userLogin, QString* friendLogin);  // продолжай
+    //void addFriend(Qstring* userLogin, QString* friendLogin);  // продолжай
 
-    void addFriendProcessingResponses(ReturnValues respond,
-                                      QTcpSocket *psocketForAnswers);
+    void addFriend(QDataStream *in, QDataStream *out);
 
     void getUserFriends(QVector<User> friends,
                         QTcpSocket *psocketForAnswers);
 
-    void removingFriend(ReturnValues respond,
-                        QTcpSocket *psocketForAnswers);
+
 
 };
 
