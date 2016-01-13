@@ -3,5 +3,7 @@
         <file>../MyChat_Logo.png</file>
         <file>../Logo.png</file>
         <file>../Remove.png</file>
+        <file>../send-message.png</file>
+        <file>../search.png</file>
     </qresource>
 </RCC>

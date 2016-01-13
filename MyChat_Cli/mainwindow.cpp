@@ -7,14 +7,14 @@ MainWindow::MainWindow(QWidget *parent, Serv_Connect *pSERVER) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), m_pSERVER (pSERVER)
 {
-    QPalette pall;
+   // QPalette pall;
     // pall.setColor (this->backgroundRole (), QColor(100, 100, 100, 255));
-    pall.setBrush (this->backgroundRole (), QBrush(QPixmap ("C:/MyChat/MyChat/pall.jpg")));
-    this->setPalette (pall);
+   // pall.setBrush (this->backgroundRole (), QBrush(QPixmap ("C:/MyChat/MyChat/pall.jpg")));
+    //this->setPalette (pall);
 
     ui->setupUi(this);
     //  m_pSERVER = pSERVER;
-    this->setStyleSheet ("color: rgb(255, 120, 0)");
+    //this->setStyleSheet ("color: rgb(255, 120, 0)");
     // this->setWindowFlags ( Qt::FramelessWindowHint);
 
 
@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent, Serv_Connect *pSERVER) :
     ui->MainCloseSearchButt->setVisible(false);
     ui->MainSearchBut->setVisible(false);
 
-    ui->MainSearchFriendPage->setVisible(false);
+    ui->MainPotentialFriendPage->setVisible(false);
 
     ui->RemoveFriendBut->setVisible(false);
     ui->RemoveLabel->setVisible(false);
@@ -270,7 +270,7 @@ void MainWindow::slotNewFriend(const User &newFriend)
 {
     m_friends.push_back(newFriend);
 
-    ui->MainSearchFriendPage->setVisible(false);
+    ui->MainPotentialFriendPage->setVisible(false);
 }
 
 
@@ -279,10 +279,9 @@ void MainWindow::slotNewFriend(const User &newFriend)
 void MainWindow::on_MainConnBut_clicked()
 {
     ui->MainChatsPage->setVisible(false);
-    ui->MainSearchFriendPage->setVisible(false);
+    //  ui->MainPotentialFriendPage->setVisible(false);
     ui->MainUserInfo->setVisible(false);
-  //  ui->MainFriendInfo->setVisible(false);
-    ui->MainConnPage->setVisible(true);
+    ui->MainFriendInfo->setVisible(false);
 
     ui->ConntactsListWidget->clear();
 
@@ -290,6 +289,9 @@ void MainWindow::on_MainConnBut_clicked()
     {
         ui->ConntactsListWidget->addItem(m_friends[i].getLogin());
     }
+
+    ui->MainConnPage->setVisible(true);
+
 }
 
 
@@ -306,7 +308,7 @@ void MainWindow::on_MainCloseSearchButt_clicked()
 {
     ui->MainSearchEdit->clear();
     ui->MainListWidget->clear();
-    ui->MainSearchFriendPage->setVisible(false);
+    ui->MainPotentialFriendPage->setVisible(false);
     ui->MainSearchFriendsPage->setVisible(false);
     ui->MainSearchBut->setVisible(false);
     ui->MainSearchBut->setDefault(false);
@@ -353,9 +355,9 @@ void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText
         return;
     }
 
-  //  ui->MainFriendInfo->setVisible(false);
+    ui->MainFriendInfo->setVisible(false);
     ui->MainUserInfo->setVisible(false);
-    ui->MainSearchFriendPage->setVisible(true);
+    ui->MainPotentialFriendPage->setVisible(true);
 
     for(int i = 0; i < m_potentialFriends.size(); i++)
     {
@@ -380,7 +382,7 @@ void MainWindow::on_MainAddFrinedBut_clicked()
 
 void MainWindow::on_MainUserBut_clicked()
 {
-    ui->MainSearchFriendPage->setVisible(false);
+    ui->MainPotentialFriendPage->setVisible(false);
     ui->MainFriendInfo->setVisible(false);
     ui->MainUserInfo->setVisible(true);
 }
@@ -391,9 +393,9 @@ void MainWindow::on_MainUserBut_clicked()
 void MainWindow::on_ConntactsListWidget_currentTextChanged(const QString &currentText)
 {
     ui->MainUserInfo->setVisible(false);
-    ui->MainSearchFriendPage->setVisible(false);
+ //   ui->MainPotentialFriendPage->setVisible(false);
     ui->MainFriendInfo->setVisible(true);
-    ui->DeleteConBut->setVisible(true);
+  //      ///////
 
     for (int i = 0; i < m_friends.size(); i++)
     {
@@ -405,6 +407,7 @@ void MainWindow::on_ConntactsListWidget_currentTextChanged(const QString &curren
             return;
         }
     }
+    ui->DeleteConBut->setVisible(true);
 }
 
 
@@ -428,7 +431,7 @@ void MainWindow::on_NotRmoveFriendBut_clicked()
 
 void MainWindow::on_RemoveFriendBut_clicked()
 {
-   m_pSERVER->removeFriend(ui->FriendLoginLabel->text());
+    m_pSERVER->removeFriend(ui->FriendLoginLabel->text());
 
     ui->RemoveFriendBut->setVisible(false);
     ui->RemoveLabel->setVisible(false);

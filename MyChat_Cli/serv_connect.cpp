@@ -1,6 +1,5 @@
 #include "serv_connect.h"
 
-
 Serv_Connect::Serv_Connect(QObject *parent) : QObject(parent), m_nnextBlockSize(0)
 {
     m_psocket = new QTcpSocket(this);
@@ -36,7 +35,7 @@ void Serv_Connect::sendToServer(QDataStream *out, QByteArray *block)
     //        *m_out <<quint16(0);
 
 
-   // out->setVersion(QDataStream::Qt_5_5);
+    // out->setVersion(QDataStream::Qt_5_5);
 
     out->device()->seek (0);
     *out << quint16 (block->size() - sizeof(quint16));
@@ -167,7 +166,7 @@ void Serv_Connect::authorizationUser (const QString &login, const QString &passw
 
 
 
-void Serv_Connect::findFriend(const QString &tokenFriend)//searchFriend(QString *pdataFriend)  // надо конст ссілку
+void Serv_Connect::findFriend(const QString &tokenFriend)
 {
     QByteArray block;
 
@@ -209,7 +208,7 @@ void Serv_Connect::addFriend (const QString &loginFriend)
 
 void Serv_Connect::removeFriend(const QString &loginFriend)
 {
-QByteArray block;
+    QByteArray block;
 
     QDataStream out (&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_5);

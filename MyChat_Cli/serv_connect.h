@@ -46,6 +46,7 @@ public:
     QByteArray m_block; //
     QDataStream *m_out; //
 
+
 signals:
     void signalRegistered(const QString &login, const QString &password);
 
