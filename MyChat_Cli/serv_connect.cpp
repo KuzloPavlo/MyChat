@@ -80,6 +80,10 @@ void Serv_Connect::slotReadServer()
         this->processAddFriendResponse(&in);
         break;
 
+    case MessageTypes::message:
+        this->receiveMessage(&in);
+        break;
+
     default:
         break;
     }
@@ -223,6 +227,29 @@ void Serv_Connect::removeFriend(const QString &loginFriend)
     m_psocket->write(block);
 }
 
+
+void Serv_Connect::sendMessage(
+        const QString &sender,
+        const QString &recipient,
+        const QString &messageText,
+        const QDateTime &dateTime)
+{
+    QByteArray block;
+
+    QDataStream out (&block,QIODevice::WriteOnly);
+    out.setVersion (QDataStream::Qt_5_5);
+
+    out << quint16 (0)
+        << quint8 (MessageTypes::message)
+        << sender
+        << recipient
+        << messageText
+        << dateTime;
+
+    out.device()->seek(0);
+    out << quint16 (block.size() - sizeof(quint16));
+    m_psocket->write(block);
+}
 
 
 void Serv_Connect::processRegistrationResponse(QDataStream *in)
@@ -398,4 +425,25 @@ void Serv_Connect::setNewFriend(QDataStream *in)
                      friendIPAddress);
 
     emit this->signalNewFriend(tempFriend);
+}
+
+
+
+void Serv_Connect::receiveMessage(QDataStream *in)
+{
+    in->setVersion(QDataStream::Qt_5_5);
+
+    Message incomingMessage;
+
+    *in >> incomingMessage.mSender
+            >> incomingMessage.mRecipient
+            >> incomingMessage.mMessageText
+            >> incomingMessage.mDataTime;
+
+    qDebug() << incomingMessage.mSender;
+    qDebug() << incomingMessage.mRecipient;
+    qDebug() << incomingMessage.mMessageText;
+    qDebug() << incomingMessage.mDataTime;
+
+    emit signalIncomingMessage(incomingMessage);
 }
