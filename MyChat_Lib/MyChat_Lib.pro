@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       -= gui
+QT += network
 
 TARGET = MyChat_Lib
 TEMPLATE = lib
@@ -14,7 +15,8 @@ SOURCES += user.cpp \
     friends.cpp \
     participantschat.cpp \
     community.cpp \
-    usersarray.cpp
+    usersarray.cpp \
+    correspondence.cpp
 
 HEADERS += user.h \
     friends.h \
@@ -22,7 +24,10 @@ HEADERS += user.h \
     community.h \
     messagetypes.h \
     returnvalues.h \
-    usersarray.h
+    usersarray.h \
+    message.h \
+    correspondence.h \
+    interlocutor.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

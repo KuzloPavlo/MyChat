@@ -2,21 +2,51 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QSystemTrayIcon>
+#include <QTextBrowser>
+#include <QSpacerItem>
+#include <QString>
 
 MainWindow::MainWindow(QWidget *parent, Serv_Connect *pSERVER) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), m_pSERVER (pSERVER)
 {
-   // QPalette pall;
-    // pall.setColor (this->backgroundRole (), QColor(100, 100, 100, 255));
-   // pall.setBrush (this->backgroundRole (), QBrush(QPixmap ("C:/MyChat/MyChat/pall.jpg")));
-    //this->setPalette (pall);
-
     ui->setupUi(this);
-    //  m_pSERVER = pSERVER;
-    //this->setStyleSheet ("color: rgb(255, 120, 0)");
-    // this->setWindowFlags ( Qt::FramelessWindowHint);
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Stretch);
+    ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
+    //--------------------------------------------------------------+
+    // section for experiments                                      |
+    //--------------------------------------------------------------+
+
+    Message mess;
+
+    mess.mDataTime = QDateTime::currentDateTime();
+    mess.mMessageText = "hhdfgjajffghahfg"
+                        "ahgjhahfghajfdg;hafdgh"
+                        "ahfgghjahdfjgshfdjgh hfgjhs dfghsdfggsfhf gsdfhfg sf"
+                        "shdgfk shgfjkhsjfhg;shfg jsffgh s";
+    mess.mSender = "PAVLO";
+
+    //    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &mess));
+    //    emit slotAddNewMessage(ui->tableWidget,new IncomingMessage (ui->tableWidget,&mess));
+    //    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &mess));
+    //    emit slotAddNewMessage(ui->tableWidget,new IncomingMessage (ui->tableWidget,&mess));
+    //    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &mess));
+    //    emit slotAddNewMessage(ui->tableWidget,new IncomingMessage (ui->tableWidget,&mess));
+    //    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &mess));
+    //    emit slotAddNewMessage(ui->tableWidget,new IncomingMessage (ui->tableWidget,&mess));
+    //    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &mess));
+
+    Correspondence cor;
+
+    cor.addNewMessage(mess);
+
+    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &cor.getLastMessage()));
+
+
+    //--------------------------------------------------------------+
+    // section for experiments                                      |
+    //--------------------------------------------------------------+
 
 
     ui->RegLoginBusyEdit->setVisible(false);
@@ -92,6 +122,13 @@ MainWindow::MainWindow(QWidget *parent, Serv_Connect *pSERVER) :
                 this,
                 SLOT(slotNewFriend(const User&)));
 
+    connect(
+                m_pSERVER,
+                SIGNAL(signalIncomingMessage(const Message&)),
+                this,
+                SLOT(slotIncomingMessage(const Message&))
+                );
+
 }
 
 
@@ -107,8 +144,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_WelOkBut_clicked()
 {
-    ui->WelcomePage->setVisible (false);
-    ui->LoginPage->setVisible (true);
+    emit ui->stackedWidget->setCurrentIndex(0);
 }
 
 
@@ -116,8 +152,7 @@ void MainWindow::on_WelOkBut_clicked()
 
 void MainWindow::on_LogRegistrationBut_clicked()
 {
-    ui->LoginPage->setVisible(false);
-    ui->RegistrationPage->setVisible(true);
+    emit ui->stackedWidget->setCurrentIndex(1);
 }
 
 
@@ -125,8 +160,7 @@ void MainWindow::on_LogRegistrationBut_clicked()
 
 void MainWindow::on_RegBackBut_clicked()
 {
-    ui->RegistrationPage->setVisible(false);
-    ui->LoginPage->setVisible(true);
+    emit ui->stackedWidget->setCurrentIndex(0);
 }
 
 
@@ -197,8 +231,8 @@ void MainWindow::on_LogLoginBut_clicked()
 void MainWindow::slotRegistered(const QString &login, const QString &password)
 {
     ui->RegLoginBusyEdit->setVisible(false);    // if showed
-    ui->RegistrationPage->setVisible (false);
-    ui->WelcomePage->setVisible (true);
+
+    ui->stackedWidget->setCurrentIndex(2);
 
     ui->WelLoginEdit->setText(login);         // copy Data user
     ui->WelPasswordEdit->setText(password);   // copy Data user
@@ -221,12 +255,18 @@ void MainWindow::slotAuthorized(const QString &name,
                                 const QString &surname,
                                 const QString &login)
 {
-    ui->LoginPage->setVisible(false);
-    ui->MainPage->setVisible(true);
+    ui->stackedWidget->setCurrentIndex(3);
+
+    ui->MainStackedWidgetLeft->setCurrentIndex(0);
+    ui->MainStackedWidgetConntact->setCurrentIndex(0);
 
     ui->UserNameLabel->setText(name);
     ui->UserSurnameLabel->setText(surname);
     ui->UserLoginLabel->setText(login);
+
+    ui->MainStackedWidgetInfo->setCurrentIndex(0);
+
+
 }
 
 
@@ -251,6 +291,20 @@ void MainWindow::slotIsEmty()
 
 
 
+void MainWindow::slotResizeTableWidgetRows(QTableWidget *tableWidget)
+{
+
+}
+
+
+
+void MainWindow::slotAddNewMessage(QTableWidget *tableWidget, QWidget *message)
+{
+    emit tableWidget->insertRow(tableWidget->rowCount());
+    tableWidget->setCellWidget(tableWidget->rowCount()-1, 0, message);
+}
+
+
 
 void MainWindow::slotFoundFriend(QVector<User> potentialFriends)
 {
@@ -270,19 +324,26 @@ void MainWindow::slotNewFriend(const User &newFriend)
 {
     m_friends.push_back(newFriend);
 
-    ui->MainPotentialFriendPage->setVisible(false);
+    User temp = newFriend;
+
+    emit on_ConntactsListWidget_currentTextChanged(temp.getLogin());
 }
 
+
+
+void MainWindow::slotIncomingMessage(const Message &incomingMessage)
+{
+    if (ui->FriendLoginLabel->text() == incomingMessage.mSender)
+    {
+        Message temp = incomingMessage;
+        emit slotAddNewMessage(ui->tableWidget, new IncomingMessage(ui->tableWidget,&temp));
+    }
+}
 
 
 
 void MainWindow::on_MainConnBut_clicked()
 {
-    ui->MainChatsPage->setVisible(false);
-    //  ui->MainPotentialFriendPage->setVisible(false);
-    ui->MainUserInfo->setVisible(false);
-    ui->MainFriendInfo->setVisible(false);
-
     ui->ConntactsListWidget->clear();
 
     for (int i = 0; i < m_friends.size(); i++)
@@ -290,16 +351,14 @@ void MainWindow::on_MainConnBut_clicked()
         ui->ConntactsListWidget->addItem(m_friends[i].getLogin());
     }
 
-    ui->MainConnPage->setVisible(true);
-
+    ui->MainStackedWidgetConntact->setCurrentIndex(0);
 }
 
 
 
 void MainWindow::on_MainChatsBut_clicked()
 {
-    ui->MainConnPage->setVisible(false);
-    ui->MainChatsPage->setVisible(true);
+    ui->MainStackedWidgetConntact->setCurrentIndex(1);
 }
 
 
@@ -308,11 +367,8 @@ void MainWindow::on_MainCloseSearchButt_clicked()
 {
     ui->MainSearchEdit->clear();
     ui->MainListWidget->clear();
-    ui->MainPotentialFriendPage->setVisible(false);
-    ui->MainSearchFriendsPage->setVisible(false);
     ui->MainSearchBut->setVisible(false);
-    ui->MainSearchBut->setDefault(false);
-    ui->MainMainPage->setVisible(true);
+    ui->MainStackedWidgetLeft->setCurrentIndex(0);
     ui->MainCloseSearchButt->setVisible(false);
 }
 
@@ -322,8 +378,7 @@ void MainWindow::on_MainCloseSearchButt_clicked()
 void MainWindow::on_MainSearchEdit_textChanged(const QString &arg1)
 {
     ui->MainCloseSearchButt->setVisible(true);
-    ui->MainMainPage->setVisible(false);
-    ui->MainSearchFriendsPage->setVisible(true);
+    ui->MainStackedWidgetLeft->setCurrentIndex(1);
     ui->MainSearchBut->setVisible(!arg1.isEmpty());
 }
 
@@ -331,8 +386,8 @@ void MainWindow::on_MainSearchEdit_textChanged(const QString &arg1)
 
 void MainWindow::on_MainSearchBut_clicked()
 {
-    m_pSERVER->findFriend(ui->MainSearchEdit->text());
     ui->MainListWidget->clear();
+    m_pSERVER->findFriend(ui->MainSearchEdit->text());
 }
 
 
@@ -342,7 +397,7 @@ void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText
 {
     for (int i = 0; i < m_friends.size(); i++)
     {
-        if (currentText ==  m_friends[i].getLogin())
+        if (currentText == m_friends[i].getLogin())
         {
             emit on_ConntactsListWidget_currentTextChanged(currentText);
             return;
@@ -355,10 +410,6 @@ void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText
         return;
     }
 
-    ui->MainFriendInfo->setVisible(false);
-    ui->MainUserInfo->setVisible(false);
-    ui->MainPotentialFriendPage->setVisible(true);
-
     for(int i = 0; i < m_potentialFriends.size(); i++)
     {
         if (currentText == m_potentialFriends[i].getLogin())
@@ -368,6 +419,7 @@ void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText
             ui->SearchFriendLoginLabel->setText(m_potentialFriends[i].getLogin());
         }
     }
+    ui->MainStackedWidgetInfo->setCurrentIndex(2);
 }
 
 
@@ -382,9 +434,7 @@ void MainWindow::on_MainAddFrinedBut_clicked()
 
 void MainWindow::on_MainUserBut_clicked()
 {
-    ui->MainPotentialFriendPage->setVisible(false);
-    ui->MainFriendInfo->setVisible(false);
-    ui->MainUserInfo->setVisible(true);
+    ui->MainStackedWidgetInfo->setCurrentIndex(0);
 }
 
 
@@ -392,11 +442,6 @@ void MainWindow::on_MainUserBut_clicked()
 
 void MainWindow::on_ConntactsListWidget_currentTextChanged(const QString &currentText)
 {
-    ui->MainUserInfo->setVisible(false);
- //   ui->MainPotentialFriendPage->setVisible(false);
-    ui->MainFriendInfo->setVisible(true);
-  //      ///////
-
     for (int i = 0; i < m_friends.size(); i++)
     {
         if (currentText == m_friends[i].getLogin())
@@ -407,7 +452,10 @@ void MainWindow::on_ConntactsListWidget_currentTextChanged(const QString &curren
             return;
         }
     }
-    ui->DeleteConBut->setVisible(true);
+    ui->DeleteConBut->setVisible(true);  // WHOT THIS??
+    ui->MainStackedWidgetInfo->setCurrentIndex(1);
+
+    // Тут потрібно дописати підгрузку та відображення попередньої переписки
 }
 
 
@@ -416,7 +464,6 @@ void MainWindow::on_DeleteConBut_clicked()
     ui->RemoveFriendBut->setVisible(true);
     ui->RemoveLabel->setVisible(true);
     ui->NotRmoveFriendBut->setVisible(true);
-
     ui->DeleteConBut->setVisible(false);
 }
 
@@ -425,7 +472,6 @@ void MainWindow::on_NotRmoveFriendBut_clicked()
     ui->RemoveFriendBut->setVisible(false);
     ui->RemoveLabel->setVisible(false);
     ui->NotRmoveFriendBut->setVisible(false);
-
     ui->DeleteConBut->setVisible(true);
 }
 
@@ -436,8 +482,31 @@ void MainWindow::on_RemoveFriendBut_clicked()
     ui->RemoveFriendBut->setVisible(false);
     ui->RemoveLabel->setVisible(false);
     ui->NotRmoveFriendBut->setVisible(false);
-
     ui->DeleteConBut->setVisible(true);
+}
 
-    ui->MainFriendInfo->setVisible(false);
+void MainWindow::on_SendMessageBut_clicked()
+{
+
+    if (!ui->messageEdit->toPlainText().isEmpty())
+    {
+        Message newMessage;
+        newMessage.mSender = ui->UserLoginLabel->text();
+        newMessage.mRecipient = ui->FriendLoginLabel->text();
+        newMessage.mMessageText =   ui->messageEdit->toPlainText();
+        newMessage.mDataTime = QDateTime::currentDateTime();
+
+        emit slotAddNewMessage(
+                    ui->tableWidget,
+                    new OutgoingMessage(ui->tableWidget, &newMessage));
+
+        m_pSERVER->sendMessage(
+                    newMessage.mSender,
+                    newMessage.mRecipient,
+                    newMessage.mMessageText,
+                    newMessage.mDataTime
+                    );
+
+        ui->messageEdit->clear();
+    }
 }

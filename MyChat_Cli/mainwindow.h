@@ -1,6 +1,4 @@
 #pragma once
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
 
 #include <QMainWindow>
 #include "user.h"
@@ -10,7 +8,12 @@
 #include "community.h"
 #include <serv_connect.h>
 #include <user.h>
-
+#include "message.h"
+#include <incomingmessage.h>
+#include <outgoingmessage.h>
+#include <QDateTime>
+#include <QTableWidget>
+#include "correspondence.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,11 +24,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+
     MainWindow(QWidget *parent = 0, Serv_Connect *pSERVER = 0);
     ~MainWindow();
-
-
-
 
 private slots:
 
@@ -58,15 +59,15 @@ private slots:
 
     void slotIsEmty();
 
+    void slotResizeTableWidgetRows(QTableWidget *tableWidget);
 
-
-
+    void slotAddNewMessage(QTableWidget *tableWidget,QWidget *message);
 
     void slotFoundFriend(QVector<User> potentialFriends);
 
     void slotNewFriend(const User &newFriend);
 
-
+    void slotIncomingMessage(const Message &incomingMessage);
 
     void on_MainConnBut_clicked();
 
@@ -84,15 +85,16 @@ private slots:
 
     void on_MainUserBut_clicked();
 
-
     void on_ConntactsListWidget_currentTextChanged(const QString &currentText);
-
 
     void on_DeleteConBut_clicked();
 
     void on_NotRmoveFriendBut_clicked();
 
     void on_RemoveFriendBut_clicked();
+
+
+    void on_SendMessageBut_clicked();
 
 signals:
 
@@ -109,8 +111,9 @@ private:
     QVector<User> m_potentialFriends;
 
     QVector<User>m_friends;
+    QVector<Correspondence> m_Correspondence;
+
+
 
     Ui::MainWindow *ui;
 };
-
-#endif // MAINWINDOW_H

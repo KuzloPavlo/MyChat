@@ -1,7 +1,5 @@
 #include <QDataStream>
-
 #include "server.h"
-
 
 Server::Server(QObject *parent) : QObject(parent)
 {
@@ -26,6 +24,8 @@ void Server::slotNewConnection()
     QTcpSocket *pSocket = m_pserver->nextPendingConnection();
 
     connect(pSocket, SIGNAL(readyRead()), this, SLOT(slotReadClient()));
+
+    qDebug() << "NEW";
 
     m_nnextBlockSize = 0;
 }
@@ -64,7 +64,7 @@ void Server::slotReadClient()
         break;
 
     case MessageTypes::authorization:
-        authorizationUser(&in, &out);
+        authorizationUser(&in, &out, pclientSocket);
         break;
 
     case MessageTypes::searchFriend:
@@ -84,8 +84,9 @@ void Server::slotReadClient()
 
         //        break;
 
-
-
+    case MessageTypes::message:
+        receiveMessage(&in, &out);
+        break;
 
     default:
         break;
@@ -146,7 +147,7 @@ void Server::registerUser(QDataStream *in, QDataStream *out)
 
 
 
-void Server::authorizationUser(QDataStream *in, QDataStream *out)
+void Server::authorizationUser(QDataStream *in, QDataStream *out, QTcpSocket *pClientSocket)
 {
     QString login;
     QString password;
@@ -156,7 +157,7 @@ void Server::authorizationUser(QDataStream *in, QDataStream *out)
 
     *in >> login >> password;
 
-    ReturnValues respond = m_users.authorizeUser(login, password);
+    ReturnValues respond = m_users.authorizeUser(login, password, pClientSocket);
 
     *out << quint8(MessageTypes::authorization)
          << quint8(respond);
@@ -291,3 +292,49 @@ void Server::getUserFriends(QVector<User> friends,
 }
 
 
+
+void Server::receiveMessage(QDataStream *in, QDataStream *out)
+{
+    Message newmessage;
+
+    in->setVersion (QDataStream::Qt_5_5);
+    out->setVersion(QDataStream::Qt_5_5);
+
+    *in >> newmessage.mSender
+            >> newmessage.mRecipient
+            >> newmessage.mMessageText
+            >> newmessage.mDataTime;
+
+    m_users.receiveMessage(newmessage);
+
+    QTcpSocket *pRecipientSocket = m_users.getUserTcpSocket(newmessage.mRecipient);
+
+    // ТУТ ПОТРІБНО ВІДПРАВЛЯТИ ПОВІДОМЛЕННЯ ОДЕРЖУВАЧУ
+
+    QByteArray block;
+    QDataStream toRecipient (&block, QIODevice::WriteOnly);
+    toRecipient.setVersion(QDataStream::Qt_5_5);
+    toRecipient << quint16(0);
+
+    toRecipient << quint8(MessageTypes::message)
+                << newmessage.mSender
+                << newmessage.mRecipient
+                << newmessage.mMessageText
+                << newmessage.mDataTime;
+
+    toRecipient.device()->seek(0);
+    toRecipient << quint16 (block.size() - sizeof(quint16));
+    pRecipientSocket->write(block);
+
+
+    *out << quint8(MessageTypes::message)
+         << newmessage.mSender
+         << newmessage.mRecipient
+         << newmessage.mMessageText
+         << newmessage.mDataTime;
+
+    qDebug() << "OTP" << newmessage.mSender;
+    qDebug() << "POL" << newmessage.mRecipient;
+    qDebug() << "TXT" << newmessage.mMessageText;
+    qDebug() << "DATE" << newmessage.mDataTime;
+}

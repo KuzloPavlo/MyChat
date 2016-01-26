@@ -1,16 +1,13 @@
 #pragma once
-#ifndef SERVER_H
-#define SERVER_H
-
 #include <QObject>
 #include <QDebug>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QString>
-
 #include "usersarray.h"
 #include "returnvalues.h"
 #include "messagetypes.h"
+#include "message.h"
 
 class Server : public QObject
 {
@@ -26,28 +23,20 @@ private:
     QTcpServer *m_pserver;
     quint16 m_nnextBlockSize;
 
-
-
     void registerUser(QDataStream *in, QDataStream *out);
 
-    void authorizationUser(QDataStream *in, QDataStream *out);
+    void authorizationUser(QDataStream *in, QDataStream *out, QTcpSocket *pClientSocket);
 
     void findFriend(QDataStream *in, QDataStream *out);
 
     void removeFriend(QDataStream *in, QDataStream *out);
-
-    //    void searchFriend(QVector<User> potentialFriends,
-    //                      QTcpSocket *psocketForAnswers);
-
-    //void addFriend(Qstring* userLogin, QString* friendLogin);  // продолжай
 
     void addFriend(QDataStream *in, QDataStream *out);
 
     void getUserFriends(QVector<User> friends,
                         QTcpSocket *psocketForAnswers);
 
+    void receiveMessage(QDataStream *in, QDataStream *out);
 
-
+    void sendMessage();
 };
-
-#endif // SERVER_H

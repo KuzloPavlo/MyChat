@@ -15,7 +15,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    serv_connect.cpp
+    serv_connect.cpp \
+    incomingmessage.cpp \
+    outgoingmessage.cpp
 
 HEADERS  += mainwindow.h \
     ../MyChat_Lib/community.h \
@@ -25,9 +27,15 @@ HEADERS  += mainwindow.h \
     ../MyChat_Lib/usersarray.h \
     serv_connect.h \
     ../MyChat_Lib/messagetypes.h \
-    ../MyChat_Lib/returnvalues.h
+     ../MyChat_Lib/message.h \
+    ../MyChat_Lib/returnvalues.h \
+    incomingmessage.h \
+    outgoingmessage.h \
+    ../MyChat_Lib/correspondence.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    incomingmessage.ui \
+    outgoingmessage.ui
 
 
 INCLUDEPATH += "C:/MyChat/MyChat/MyChat_Lib"
