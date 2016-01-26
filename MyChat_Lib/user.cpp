@@ -22,9 +22,9 @@ User::User( const QString &pname,
 
 
 
-void User::addFriend(const Interlocutor &pfriend)
+void User::addFriend(User *pfriend)
 {
-    m_interlocutors.push_back(pfriend);
+    m_friends.push_back(pfriend);
 }
 
 
@@ -87,12 +87,6 @@ QString User::getIPAddress()
 }
 
 
-QTcpSocket* User::getTcpSocket()
-{
-    return m_pUserSocket;
-}
-
-
 void User::setName(QString *pname)
 {
     this->m_name =* pname;
@@ -120,9 +114,4 @@ void User::setPassword(QString *ppassword)
 void User::setIPAddress(QString *pipAddress)
 {
     this->m_ipAddress = *pipAddress;
-}
-
-void User::setTcpSocket(QTcpSocket *pClientSocket)
-{
-    this->m_pUserSocket = pClientSocket;
 }

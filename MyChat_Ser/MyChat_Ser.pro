@@ -23,5 +23,4 @@ HEADERS += \
     ../MyChat_Lib/usersarray.h \
     server.h \
     ../MyChat_Lib/messagetypes.h \
-    ../MyChat_Lib/returnvalues.h \
-    ../MyChat_Lib/correspondence.h
+    ../MyChat_Lib/returnvalues.h

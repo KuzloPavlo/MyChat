@@ -4,9 +4,12 @@ enum MessageTypes
 {
 registration,
 authorization,
+//search_friend,
 searchFriend,
+//add_friend,
 addFriend,
+//remove_friend,
 removeFriend,
-getFriends,
-message,
+//get_friends,
+getFriends
 };

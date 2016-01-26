@@ -25,7 +25,7 @@ ReturnValues UsersArray::addUser(
 
 
 
-ReturnValues UsersArray::authorizeUser(const QString &login, const QString &password, QTcpSocket*pClientSocket)
+ReturnValues UsersArray::authorizeUser(const QString &login, const QString &password)
 {
     if (m_users.size())
     {
@@ -34,7 +34,6 @@ ReturnValues UsersArray::authorizeUser(const QString &login, const QString &pass
             if (login == m_users[i].getLogin() &&
                     password == m_users[i].getPassword())
             {
-                m_users[i].setTcpSocket(pClientSocket);
                 return ReturnValues::authorized;
             }
 
@@ -73,20 +72,6 @@ User UsersArray::getUser(const QString &login)
     return user;
 }
 
-
-QTcpSocket* UsersArray::getUserTcpSocket(const QString &userLogin)
-{
-    QTcpSocket *userTcpSocket;
-    for(int i = 0; i < m_users.size(); i++)
-    {
-        if (userLogin == m_users[i].getLogin())
-        {
-            userTcpSocket = m_users[i].getTcpSocket();
-            break;
-        }
-    }
-    return userTcpSocket;
-}
 
 
 
@@ -132,20 +117,8 @@ ReturnValues UsersArray::addFriend(const QString &userLogin,
 
         if (puser && pfriend)
         {
-            //puser->addFriend(pfriend);
-            //pfriend->addFriend(puser);
-
-            Correspondence correspondence;
-            m_Correspondence.push_back(correspondence);
-
-            Interlocutor newfriend;
-            newfriend.m_correspondence =& m_Correspondence.back();
-
-            newfriend.m_user = pfriend;
-            puser->addFriend(newfriend);
-
-            newfriend.m_user = puser;
-            pfriend->addFriend(newfriend);
+            puser->addFriend(pfriend);
+            pfriend->addFriend(puser);
 
             return ReturnValues::addedFriend;
         }
@@ -208,18 +181,6 @@ ReturnValues UsersArray::removeFriend(const QString &userLogin, const QString &f
 }
 
 
-void UsersArray::receiveMessage(const Message &newmessage)
-{
-
-
-}
-
-
-QString UsersArray::getUserIPAddress(const QString &userLogin)
-{
-
-    return "asdj";
-}
 
 
 

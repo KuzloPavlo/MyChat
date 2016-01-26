@@ -5,13 +5,11 @@
 #include <QDebug>
 #include <QVector>
 #include <QDataStream>
-#include <QTcpSocket>
+
 #include "user.h"
 #include "community.h"
 #include "messagetypes.h"
 #include "returnvalues.h"
-#include "correspondence.h"
-#include "message.h"
 
 class UsersArray:public Community
 {
@@ -24,7 +22,7 @@ public:
                          const QString &password,
                          const QString &ipAddress);
 
-    ReturnValues authorizeUser(const QString &login, const QString &password, QTcpSocket* pClientSocket);
+    ReturnValues authorizeUser(const QString &login, const QString &password);
 
     QVector<User> findFriend (const QString &tokenFriend);
 
@@ -37,12 +35,6 @@ public:
     ReturnValues removeFriend(const QString &userLogin, const QString &friendLogin);
 
     QVector<User> getUserFriends(QDataStream *pUserInfo);
-
-    QString getUserIPAddress(const QString &userLogin);
-
-    QTcpSocket* getUserTcpSocket(const QString &userLogin);
-
-    void receiveMessage(const Message &newmessage);
 
 signals:
     //registration signals
@@ -57,7 +49,6 @@ signals:
 private:
     // 12:30
     QVector<User> m_users;
-    QVector<Correspondence> m_Correspondence;
 
 };
 
