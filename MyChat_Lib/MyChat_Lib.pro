@@ -12,16 +12,10 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 SOURCES += user.cpp \
-    friends.cpp \
-    participantschat.cpp \
-    community.cpp \
     usersarray.cpp \
     correspondence.cpp
 
 HEADERS += user.h \
-    friends.h \
-    participantschat.h \
-    community.h \
     messagetypes.h \
     returnvalues.h \
     usersarray.h \

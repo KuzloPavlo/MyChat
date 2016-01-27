@@ -24,28 +24,24 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
     mess.mMessageText = "hhdfgjajffghahfg"
                         "ahgjhahfghajfdg;hafdgh"
                         "ahfgghjahdfjgshfdjgh hfgjhs dfghsdfggsfhf gsdfhfg sf"
-                        "shdgfk shgfjkhsjfhg;shfg jsffgh s";
+                        "shdgfk shgfjkhsjfhg;sh"
+                        "rtyeoyey5oypeoyperoty"
+                        "etpyeprtyieroytioetyoie er yyt et yty"
+                        "typoieryt ieriy eroity erty "
+                        "etr yeproiy terpiy erpoyt eryieri ypoer y eroyoper yreity "
+                        "ptryi eriyt erytier yti eriypieoryio eryie ry e ryeoyt eriy eryi tery[i eryeir yeyery iyier iyt"
+                        "tpryi eryti eryeriytp[oeriytopery ipoeryeporyieryi ep ye ryopertyie y"
+                        "fg jsffgh s";
     mess.mSender = "PAVLO";
 
-    //    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &mess));
-    //    emit slotAddNewMessage(ui->tableWidget,new IncomingMessage (ui->tableWidget,&mess));
-    //    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &mess));
-    //    emit slotAddNewMessage(ui->tableWidget,new IncomingMessage (ui->tableWidget,&mess));
-    //    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &mess));
-    //    emit slotAddNewMessage(ui->tableWidget,new IncomingMessage (ui->tableWidget,&mess));
-    //    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &mess));
-    //    emit slotAddNewMessage(ui->tableWidget,new IncomingMessage (ui->tableWidget,&mess));
-    //    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &mess));
 
-    Correspondence cor;
+    emit slotAddNewMessage(ui->tableWidget, new IncomingMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
+    emit slotAddNewMessage(ui->tableWidget, new FormMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
+    emit slotAddNewMessage(ui->tableWidget, new OutgoingMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
+    emit slotAddNewMessage(ui->tableWidget, new IncomingMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
+    emit slotAddNewMessage(ui->tableWidget, new FormMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
+    emit slotAddNewMessage(ui->tableWidget, new OutgoingMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
 
-    cor.addNewMessage(mess);
-
-    //emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &cor.getLastMessage()));
-
-    //emit slotAddNewMessage(ui->tableWidget, new BaseMessage(cor.getLastMessage(), ui->tableWidget));
-
-    //emit slotAddNewMessage(ui->tableWidget, new IncomingMessage(cor.getLastMessage(), ui->tableWidget));
     //--------------------------------------------------------------+
     // section for experiments                                      |
     //--------------------------------------------------------------+
@@ -498,9 +494,9 @@ void MainWindow::on_SendMessageBut_clicked()
         newMessage.mMessageText =   ui->messageEdit->toPlainText();
         newMessage.mDataTime = QDateTime::currentDateTime();
 
-//        emit slotAddNewMessage(
-//                    ui->tableWidget,
-//                    //new OutgoingMessage(ui->tableWidget, &newMessage));
+        //        emit slotAddNewMessage(
+        //                    ui->tableWidget,
+        //                    //new OutgoingMessage(ui->tableWidget, &newMessage));
 
         m_pSERVER->sendMessage(
                     newMessage.mSender,

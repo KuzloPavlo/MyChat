@@ -1,19 +1,16 @@
 #pragma once
-#ifndef USERS_H
-#define USERS_H
-
 #include <QDebug>
 #include <QVector>
 #include <QDataStream>
 #include <QTcpSocket>
 #include "user.h"
-#include "community.h"
+
 #include "messagetypes.h"
 #include "returnvalues.h"
 #include "correspondence.h"
 #include "message.h"
 
-class UsersArray:public Community
+class UsersArray
 {
 
 public:
@@ -60,5 +57,3 @@ private:
     QVector<Correspondence> m_Correspondence;
 
 };
-
-#endif // USERS_H

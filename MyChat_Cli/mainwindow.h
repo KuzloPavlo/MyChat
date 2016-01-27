@@ -3,18 +3,15 @@
 #include <QMainWindow>
 #include "user.h"
 #include "usersarray.h"
-#include "participantschat.h"
-#include "friends.h"
-#include "community.h"
 #include <Client.h>
 #include <user.h>
 #include "message.h"
-
-
-
 #include <QDateTime>
 #include <QTableWidget>
 #include "correspondence.h"
+#include "formmessage.h"
+#include "incomingmessage.h"
+#include "outgoingmessage.h"
 
 namespace Ui {
 class MainWindow;

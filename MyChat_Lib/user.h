@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef USER_H
-#define USER_H
-
 #include <QDebug>
 #include <QString>
 #include "returnvalues.h"
@@ -53,5 +50,3 @@ private:
 
     QVector<Interlocutor> m_interlocutors;      // USE
 };
-
-#endif // USER_H

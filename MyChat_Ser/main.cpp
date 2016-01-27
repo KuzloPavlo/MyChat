@@ -2,9 +2,6 @@
 #include "server.h"
 #include "user.h"
 #include "usersarray.h"
-#include "friends.h"
-#include "participantschat.h"
-#include "community.h"
 #include <QString>
 #include <QDebug>
 
