@@ -1,6 +1,6 @@
-#include "serv_connect.h"
+#include "Client.h"
 
-Serv_Connect::Serv_Connect(QObject *parent) : QObject(parent), m_nnextBlockSize(0)
+Client::Client(QObject *parent) : QObject(parent), m_nnextBlockSize(0)
 {
     m_psocket = new QTcpSocket(this);
     m_psocket->connectToHost ("127.0.0.1", 3030);
@@ -24,7 +24,7 @@ Serv_Connect::Serv_Connect(QObject *parent) : QObject(parent), m_nnextBlockSize(
     *m_out << quint16(0);                              //
 }
 
-void Serv_Connect::sendToServer(QDataStream *out, QByteArray *block)
+void Client::sendToServer(QDataStream *out, QByteArray *block)
 {
 
     //    m_out->setVersion(QDataStream::Qt_5_5);
@@ -43,7 +43,7 @@ void Serv_Connect::sendToServer(QDataStream *out, QByteArray *block)
 }
 
 
-void Serv_Connect::slotReadServer()
+void Client::slotReadServer()
 {
     quint8 requestType;
 
@@ -94,7 +94,7 @@ void Serv_Connect::slotReadServer()
 
 
 
-void Serv_Connect::slotSetUser(const QString &pname,      // Возможно етот слот и НЕНУЖЕН
+void Client::slotSetUser(const QString &pname,      // Возможно етот слот и НЕНУЖЕН
                                const QString &psurname,
                                const QString &plogin,
                                const QString &ppassword,
@@ -106,7 +106,7 @@ void Serv_Connect::slotSetUser(const QString &pname,      // Возможно е
 
 
 
-void Serv_Connect::addDataUser(
+void Client::addDataUser(
         const QString &pname,
         const QString &psurname,
         const QString &plogin,
@@ -119,7 +119,7 @@ void Serv_Connect::addDataUser(
 
 
 
-User Serv_Connect::getUser()
+User Client::getUser()
 {
     User temp = m_user;
     return temp;
@@ -127,7 +127,7 @@ User Serv_Connect::getUser()
 
 
 
-void Serv_Connect::registerUser(const QString &name, const QString &surname, const QString &login, const QString &password)
+void Client::registerUser(const QString &name, const QString &surname, const QString &login, const QString &password)
 {
     QByteArray block;
 
@@ -150,7 +150,7 @@ void Serv_Connect::registerUser(const QString &name, const QString &surname, con
 
 
 
-void Serv_Connect::authorizationUser (const QString &login, const QString &password)
+void Client::authorizationUser (const QString &login, const QString &password)
 {
     QByteArray block;
 
@@ -170,7 +170,7 @@ void Serv_Connect::authorizationUser (const QString &login, const QString &passw
 
 
 
-void Serv_Connect::findFriend(const QString &tokenFriend)
+void Client::findFriend(const QString &tokenFriend)
 {
     QByteArray block;
 
@@ -189,7 +189,7 @@ void Serv_Connect::findFriend(const QString &tokenFriend)
 
 
 
-void Serv_Connect::addFriend (const QString &loginFriend)
+void Client::addFriend (const QString &loginFriend)
 {
     QByteArray block;
 
@@ -210,7 +210,7 @@ void Serv_Connect::addFriend (const QString &loginFriend)
 
 
 
-void Serv_Connect::removeFriend(const QString &loginFriend)
+void Client::removeFriend(const QString &loginFriend)
 {
     QByteArray block;
 
@@ -228,7 +228,7 @@ void Serv_Connect::removeFriend(const QString &loginFriend)
 }
 
 
-void Serv_Connect::sendMessage(
+void Client::sendMessage(
         const QString &sender,
         const QString &recipient,
         const QString &messageText,
@@ -252,7 +252,7 @@ void Serv_Connect::sendMessage(
 }
 
 
-void Serv_Connect::processRegistrationResponse(QDataStream *in)
+void Client::processRegistrationResponse(QDataStream *in)
 {
     quint8 response;
     in->setVersion (QDataStream::Qt_5_5);
@@ -284,7 +284,7 @@ void Serv_Connect::processRegistrationResponse(QDataStream *in)
 
 
 
-void Serv_Connect::processAuthorizationResponse(QDataStream *in)
+void Client::processAuthorizationResponse(QDataStream *in)
 {
     quint8 response;
 
@@ -319,7 +319,7 @@ void Serv_Connect::processAuthorizationResponse(QDataStream *in)
 
 
 
-void Serv_Connect::setAuthorizedUser(QDataStream *in)
+void Client::setAuthorizedUser(QDataStream *in)
 {
     in->setVersion (QDataStream::Qt_5_5);
 
@@ -348,7 +348,7 @@ void Serv_Connect::setAuthorizedUser(QDataStream *in)
 
 
 
-void Serv_Connect::processFindFriendResponse(QDataStream *in)
+void Client::processFindFriendResponse(QDataStream *in)
 {
     quint8 npotentialFriends;
     QVector<User>  potentialFriends;
@@ -382,7 +382,7 @@ void Serv_Connect::processFindFriendResponse(QDataStream *in)
 
 
 
-void Serv_Connect::processAddFriendResponse(QDataStream *in){
+void Client::processAddFriendResponse(QDataStream *in){
 
     quint8 response;
 
@@ -403,7 +403,7 @@ void Serv_Connect::processAddFriendResponse(QDataStream *in){
 
 
 
-void Serv_Connect::setNewFriend(QDataStream *in)
+void Client::setNewFriend(QDataStream *in)
 {
     in->setVersion (QDataStream::Qt_5_5);
 
@@ -429,7 +429,7 @@ void Serv_Connect::setNewFriend(QDataStream *in)
 
 
 
-void Serv_Connect::receiveMessage(QDataStream *in)
+void Client::receiveMessage(QDataStream *in)
 {
     in->setVersion(QDataStream::Qt_5_5);
 

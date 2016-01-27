@@ -6,7 +6,7 @@
 #include <QSpacerItem>
 #include <QString>
 
-MainWindow::MainWindow(QWidget *parent, Serv_Connect *pSERVER) :
+MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), m_pSERVER (pSERVER)
 {
@@ -41,9 +41,11 @@ MainWindow::MainWindow(QWidget *parent, Serv_Connect *pSERVER) :
 
     cor.addNewMessage(mess);
 
-    emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &cor.getLastMessage()));
+    //emit slotAddNewMessage(ui->tableWidget,new OutgoingMessage(ui->tableWidget, &cor.getLastMessage()));
 
+    //emit slotAddNewMessage(ui->tableWidget, new BaseMessage(cor.getLastMessage(), ui->tableWidget));
 
+    //emit slotAddNewMessage(ui->tableWidget, new IncomingMessage(cor.getLastMessage(), ui->tableWidget));
     //--------------------------------------------------------------+
     // section for experiments                                      |
     //--------------------------------------------------------------+
@@ -336,7 +338,7 @@ void MainWindow::slotIncomingMessage(const Message &incomingMessage)
     if (ui->FriendLoginLabel->text() == incomingMessage.mSender)
     {
         Message temp = incomingMessage;
-        emit slotAddNewMessage(ui->tableWidget, new IncomingMessage(ui->tableWidget,&temp));
+        //emit slotAddNewMessage(ui->tableWidget, new IncomingMessage(ui->tableWidget,&temp));
     }
 }
 
@@ -496,9 +498,9 @@ void MainWindow::on_SendMessageBut_clicked()
         newMessage.mMessageText =   ui->messageEdit->toPlainText();
         newMessage.mDataTime = QDateTime::currentDateTime();
 
-        emit slotAddNewMessage(
-                    ui->tableWidget,
-                    new OutgoingMessage(ui->tableWidget, &newMessage));
+//        emit slotAddNewMessage(
+//                    ui->tableWidget,
+//                    //new OutgoingMessage(ui->tableWidget, &newMessage));
 
         m_pSERVER->sendMessage(
                     newMessage.mSender,

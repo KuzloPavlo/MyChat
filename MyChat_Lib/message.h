@@ -5,8 +5,8 @@
 
 struct Message
 {
-QString mSender;
-QString mRecipient;
-QString mMessageText;
-QDateTime mDataTime;
+    QString mSender;
+    QString mRecipient;
+    QString mMessageText;
+    QDateTime mDataTime;
 };

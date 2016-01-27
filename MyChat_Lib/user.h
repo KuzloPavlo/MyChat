@@ -7,7 +7,7 @@
 #include <QString>
 #include "returnvalues.h"
 #include "correspondence.h"
-#include "interlocutor.h";
+#include <interlocutor.h>
 #include <QTcpSocket>
 
 class User

@@ -10,11 +10,11 @@
 #include "returnvalues.h"
 #include "message.h"
 
-class Serv_Connect : public QObject
+class Client : public QObject
 {
     Q_OBJECT
 public:
-    explicit Serv_Connect(QObject *parent = 0);
+    explicit Client(QObject *parent = 0);
 
     void registerUser(const QString &name,
                       const QString &surname,
