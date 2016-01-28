@@ -42,9 +42,7 @@ public:
             const QString &sender,
             const QString &recipient,
             const QString &messageText,
-            const QDateTime &dateTime);
-
-
+            const QDateTime &dataTime);
 
 public:
 
@@ -68,7 +66,10 @@ signals:
     void signalIsEmty();
     void signalFoundFriend(QVector<User> potentialFriends);
     void signalNewFriend(const User &newFriend);
-    void signalIncomingMessage(const Message &incomingMessage);
+    void signalIncomingMessage(
+            const QString &sender,
+            const QString &message,
+            const QString &time);
 
 private:
     QTcpSocket *m_psocket;
@@ -90,6 +91,7 @@ private:
     void processFindFriendResponse(QDataStream *in);
     void processAddFriendResponse(QDataStream *in);
     void setNewFriend(QDataStream *in);
+    void getFriendsAndCorrespondence();
 
     void receiveMessage(QDataStream *in);
 

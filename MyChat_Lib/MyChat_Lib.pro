@@ -20,8 +20,7 @@ HEADERS += user.h \
     returnvalues.h \
     usersarray.h \
     message.h \
-    correspondence.h \
-    interlocutor.h
+    correspondence.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

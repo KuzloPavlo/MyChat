@@ -26,16 +26,16 @@ public:
     QVector<User> findFriend (const QString &tokenFriend);
 
     User getUser(const QString &login);                  // !!!! Обсуди с Романом
-    int showUsersLogin(QDataStream *pAuthoInfo);
 
+    int showUsersLogin(QDataStream *pAuthoInfo);
 
     ReturnValues addFriend(const QString &userLogin, const QString &friendLogin);
 
     ReturnValues removeFriend(const QString &userLogin, const QString &friendLogin);
 
-    QVector<User> getUserFriends(QDataStream *pUserInfo);
+    QVector<User> getUserFriends(const QString &userLogin);
 
-    QString getUserIPAddress(const QString &userLogin);
+    QVector<Correspondence> getUserCorrespondence(const QString &userLogin);
 
     QTcpSocket* getUserTcpSocket(const QString &userLogin);
 
@@ -52,8 +52,6 @@ signals:
     void signalPasswordWrong();
 
 private:
-    // 12:30
     QVector<User> m_users;
     QVector<Correspondence> m_Correspondence;
-
 };

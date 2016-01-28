@@ -3,9 +3,10 @@
 #include <QDebug>
 #include <QString>
 #include "returnvalues.h"
-#include "correspondence.h"
-#include <interlocutor.h>
+#include <correspondence.h>
 #include <QTcpSocket>
+
+class Correspondence;   // forward declaration
 
 class User
 {
@@ -31,8 +32,9 @@ public:
     void setIPAddress(QString *pipAddress);
     void setTcpSocket(QTcpSocket *pClientSocket);
 
-    void addFriend(const Interlocutor &pfriend);
+    void addFriend(User *pfriend, Correspondence *correspondence);
     QVector<User> getFriends();
+    QVector<Correspondence> getCorrespondence();
     void removeFriend(const QString &friendLogin);
 
 
@@ -45,8 +47,8 @@ private:
     QString m_ipAddress;
     QTcpSocket* m_pUserSocket;
 
-    QVector<User*> m_friends;                   // DEL
-    QVector<Correspondence*> m_correspondence;  // DEL
+    QVector<User*> m_friends;
+    QVector<Correspondence*> m_correspondence;
 
-    QVector<Interlocutor> m_interlocutors;      // USE
+
 };

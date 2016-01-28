@@ -41,4 +41,9 @@ void FormMessage::slotResize(QTextEdit *textBrowser)
         this->setMaximumHeight(size.height());
         this->setMinimumHeight(size.height());
     }
+    else
+    {
+        setMaximumHeight(this->minimumHeight());
+        setMinimumHeight(this->minimumHeight());
+    }
 }

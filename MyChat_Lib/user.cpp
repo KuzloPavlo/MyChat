@@ -22,28 +22,38 @@ User::User( const QString &pname,
 
 
 
-void User::addFriend(const Interlocutor &pfriend)
+void User::addFriend(User *pfriend, Correspondence *correspondence)
 {
-    m_interlocutors.push_back(pfriend);
+    m_friends.push_back(pfriend);
+    m_correspondence.push_back(correspondence);
 }
 
 
 
 QVector<User> User::getFriends()
 {
-
     QVector<User> friends;
 
     for (int i = 0; i < m_friends.size(); i++)
     {
         User temp = *m_friends[i];
-
         friends.push_back(temp);
     }
-
     return friends;
 }
 
+
+QVector<Correspondence> User::getCorrespondence()
+{
+    QVector<Correspondence> correspondence;
+
+    for(int i = 0; i < m_correspondence.size(); i++)
+    {
+        Correspondence temp = *m_correspondence[i];
+        correspondence.push_back(temp);
+    }
+    return correspondence;
+}
 
 
 

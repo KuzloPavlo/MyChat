@@ -33,8 +33,7 @@ private:
 
     void addFriend(QDataStream *in, QDataStream *out);
 
-    void getUserFriends(QVector<User> friends,
-                        QTcpSocket *psocketForAnswers);
+    void getFriendsAndCorrespondence(QDataStream *in, QDataStream *out);
 
     void receiveMessage(QDataStream *in, QDataStream *out);
 

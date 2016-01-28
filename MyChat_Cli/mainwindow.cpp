@@ -18,30 +18,6 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
     // section for experiments                                      |
     //--------------------------------------------------------------+
 
-    Message mess;
-
-    mess.mDataTime = QDateTime::currentDateTime();
-    mess.mMessageText = "hhdfgjajffghahfg"
-                        "ahgjhahfghajfdg;hafdgh"
-                        "ahfgghjahdfjgshfdjgh hfgjhs dfghsdfggsfhf gsdfhfg sf"
-                        "shdgfk shgfjkhsjfhg;sh"
-                        "rtyeoyey5oypeoyperoty"
-                        "etpyeprtyieroytioetyoie er yyt et yty"
-                        "typoieryt ieriy eroity erty "
-                        "etr yeproiy terpiy erpoyt eryieri ypoer y eroyoper yreity "
-                        "ptryi eriyt erytier yti eriypieoryio eryie ry e ryeoyt eriy eryi tery[i eryeir yeyery iyier iyt"
-                        "tpryi eryti eryeriytp[oeriytopery ipoeryeporyieryi ep ye ryopertyie y"
-                        "fg jsffgh s";
-    mess.mSender = "PAVLO";
-
-
-    emit slotAddNewMessage(ui->tableWidget, new IncomingMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
-    emit slotAddNewMessage(ui->tableWidget, new FormMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
-    emit slotAddNewMessage(ui->tableWidget, new OutgoingMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
-    emit slotAddNewMessage(ui->tableWidget, new IncomingMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
-    emit slotAddNewMessage(ui->tableWidget, new FormMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
-    emit slotAddNewMessage(ui->tableWidget, new OutgoingMessage(mess.mSender, mess.mMessageText, mess.mDataTime.time().toString(),ui->tableWidget));
-
     //--------------------------------------------------------------+
     // section for experiments                                      |
     //--------------------------------------------------------------+
@@ -122,9 +98,13 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
 
     connect(
                 m_pSERVER,
-                SIGNAL(signalIncomingMessage(const Message&)),
+                SIGNAL(signalIncomingMessage(const QString &,
+                                             const QString &,
+                                             const QString &)),
                 this,
-                SLOT(slotIncomingMessage(const Message&))
+                SLOT(slotIncomingMessage(const QString &,
+                                         const QString &,
+                                         const QString &))
                 );
 
 }
@@ -296,7 +276,7 @@ void MainWindow::slotResizeTableWidgetRows(QTableWidget *tableWidget)
 
 
 
-void MainWindow::slotAddNewMessage(QTableWidget *tableWidget, QWidget *message)
+void MainWindow::addNewMessage(QTableWidget *tableWidget, QWidget *message)
 {
     emit tableWidget->insertRow(tableWidget->rowCount());
     tableWidget->setCellWidget(tableWidget->rowCount()-1, 0, message);
@@ -316,8 +296,6 @@ void MainWindow::slotFoundFriend(QVector<User> potentialFriends)
 
 
 
-
-
 void MainWindow::slotNewFriend(const User &newFriend)
 {
     m_friends.push_back(newFriend);
@@ -329,12 +307,13 @@ void MainWindow::slotNewFriend(const User &newFriend)
 
 
 
-void MainWindow::slotIncomingMessage(const Message &incomingMessage)
+void MainWindow::slotIncomingMessage(const QString &sender,
+                                     const QString &message,
+                                     const QString &time)
 {
-    if (ui->FriendLoginLabel->text() == incomingMessage.mSender)
+    if (ui->FriendLoginLabel->text() == sender)
     {
-        Message temp = incomingMessage;
-        //emit slotAddNewMessage(ui->tableWidget, new IncomingMessage(ui->tableWidget,&temp));
+       addNewMessage(ui->tableWidget, new IncomingMessage(sender,message,time,ui->tableWidget));
     }
 }
 
@@ -426,6 +405,8 @@ void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText
 void MainWindow::on_MainAddFrinedBut_clicked()
 {
     m_pSERVER->addFriend(ui->SearchFriendLoginLabel->text());
+    // скрыть кнопку добавления друга
+
 }
 
 
@@ -483,27 +464,26 @@ void MainWindow::on_RemoveFriendBut_clicked()
     ui->DeleteConBut->setVisible(true);
 }
 
+
 void MainWindow::on_SendMessageBut_clicked()
 {
-
     if (!ui->messageEdit->toPlainText().isEmpty())
     {
-        Message newMessage;
-        newMessage.mSender = ui->UserLoginLabel->text();
-        newMessage.mRecipient = ui->FriendLoginLabel->text();
-        newMessage.mMessageText =   ui->messageEdit->toPlainText();
-        newMessage.mDataTime = QDateTime::currentDateTime();
-
-        //        emit slotAddNewMessage(
-        //                    ui->tableWidget,
-        //                    //new OutgoingMessage(ui->tableWidget, &newMessage));
+        QDateTime dataTimeMessage = QDateTime::currentDateTime();
 
         m_pSERVER->sendMessage(
-                    newMessage.mSender,
-                    newMessage.mRecipient,
-                    newMessage.mMessageText,
-                    newMessage.mDataTime
-                    );
+                    ui->UserLoginLabel->text(),
+                    ui->FriendLoginLabel->text(),
+                    ui->messageEdit->toPlainText(),
+                    dataTimeMessage);
+
+        addNewMessage(
+                    ui->tableWidget,
+                    new OutgoingMessage(
+                        ui->UserLoginLabel->text(),
+                        ui->messageEdit->toPlainText(),
+                        dataTimeMessage.time().toString(),
+                        ui->tableWidget));
 
         ui->messageEdit->clear();
     }

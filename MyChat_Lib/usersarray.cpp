@@ -101,11 +101,11 @@ QVector<User> UsersArray::findFriend (const QString &tokenFriend)  //
                 m_users[i].getSurname().indexOf(tokenFriend) != -1 ||
                 m_users[i].getLogin().indexOf(tokenFriend) != -1 )
         {
-            // User tempUser = ;            // вот єто
-            potentialFriends.push_back(m_users[i]);//tempUser);  // поробуй сразу вставить
+            potentialFriends.push_back(m_users[i]);
+            qDebug() << " User array";
+            qDebug() << m_users[i].getLogin();
         }
     }
-
     return potentialFriends;
 }
 
@@ -132,22 +132,18 @@ ReturnValues UsersArray::addFriend(const QString &userLogin,
 
         if (puser && pfriend)
         {
-            //puser->addFriend(pfriend);
-            //pfriend->addFriend(puser);
-
-            Correspondence correspondence;
+            Correspondence correspondence(puser, pfriend); //create correspondence
             m_Correspondence.push_back(correspondence);
 
-            Interlocutor newfriend;
-            newfriend.m_correspondence =& m_Correspondence.back();
-
-            newfriend.m_user = pfriend;
-            puser->addFriend(newfriend);
-
-            newfriend.m_user = puser;
-            pfriend->addFriend(newfriend);
-
-            return ReturnValues::addedFriend;
+            for (int i = 0; i < m_Correspondence.size(); i++)
+            {
+                if(m_Correspondence[i].findParticipants(userLogin, friendLogin))
+                {
+                    puser->addFriend(pfriend, &m_Correspondence[i]);
+                    pfriend->addFriend(puser, &m_Correspondence[i]);
+                    return ReturnValues::addedFriend;
+                }
+            }
         }
     }
     return ReturnValues::returnNull;
@@ -157,13 +153,9 @@ ReturnValues UsersArray::addFriend(const QString &userLogin,
 
 
 
-QVector<User> UsersArray::getUserFriends(QDataStream *pUserInfo)
+QVector<User> UsersArray::getUserFriends(const QString &userLogin)
 {
-    QString userLogin;
     QVector<User> friends;
-
-    pUserInfo->setVersion(QDataStream::Qt_5_5);
-    *pUserInfo >> userLogin;
 
     for (int i = 0; i < m_users.size(); i++)
     {
@@ -172,12 +164,25 @@ QVector<User> UsersArray::getUserFriends(QDataStream *pUserInfo)
             friends = m_users[i].getFriends();
             break;
         }
-
     }
-    return   friends;
+    return friends;
 }
 
 
+QVector<Correspondence> UsersArray::getUserCorrespondence(const QString &userLogin)
+{
+    QVector<Correspondence> correspondence;
+
+    for (int i = 0; i < m_users.size(); i++)
+    {
+        if (userLogin == m_users[i].getLogin())
+        {
+            correspondence = m_users[i].getCorrespondence();
+            break;
+        }
+    }
+    return correspondence;
+}
 
 
 ReturnValues UsersArray::removeFriend(const QString &userLogin, const QString &friendLogin)
@@ -208,17 +213,19 @@ ReturnValues UsersArray::removeFriend(const QString &userLogin, const QString &f
 }
 
 
+
 void UsersArray::receiveMessage(const Message &newmessage)
 {
+    for(int i = 0; i < m_Correspondence.size(); i++)
+    {
+        if(m_Correspondence[i].findParticipants(newmessage.mSender, newmessage.mRecipient))
+        {
+            m_Correspondence[i].addNewMessage(newmessage);
+            qDebug()<< newmessage.mMessageText;
 
-
-}
-
-
-QString UsersArray::getUserIPAddress(const QString &userLogin)
-{
-
-    return "asdj";
+            break;
+        }
+    }
 }
 
 

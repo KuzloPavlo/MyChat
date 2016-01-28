@@ -7,5 +7,5 @@ class User;               // forward declaration
 struct Interlocutor
 {
     User* m_user;
-    Correspondence *m_correspondence;
+   // Correspondence *m_correspondence;
 };

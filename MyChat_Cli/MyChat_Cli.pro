@@ -21,9 +21,6 @@ SOURCES += main.cpp\
     outgoingmessage.cpp
 
 HEADERS  += mainwindow.h \
-    ../MyChat_Lib/community.h \
-    ../MyChat_Lib/friends.h \
-    ../MyChat_Lib/participantschat.h \
     ../MyChat_Lib/user.h \
     ../MyChat_Lib/usersarray.h \
     ../MyChat_Lib/messagetypes.h \

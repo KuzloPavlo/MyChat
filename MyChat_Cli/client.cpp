@@ -95,10 +95,10 @@ void Client::slotReadServer()
 
 
 void Client::slotSetUser(const QString &pname,      // Возможно етот слот и НЕНУЖЕН
-                               const QString &psurname,
-                               const QString &plogin,
-                               const QString &ppassword,
-                               const QString &pipAddress)
+                         const QString &psurname,
+                         const QString &plogin,
+                         const QString &ppassword,
+                         const QString &pipAddress)
 {
     User user(pname,psurname,plogin,ppassword,pipAddress);
     this->m_user = user;
@@ -232,8 +232,18 @@ void Client::sendMessage(
         const QString &sender,
         const QString &recipient,
         const QString &messageText,
-        const QDateTime &dateTime)
+        const QDateTime &dataTime)
 {
+    // ТУТ ПОТРІБНО ДОБАВИТИ ЗБЕРЕЖЕННЯ ПОВІДОМЛЕННЯ НА КЛІЄНТІ
+    Message outgoingMessage;
+    outgoingMessage.mSender = sender;
+    outgoingMessage.mRecipient = recipient;
+    outgoingMessage.mMessageText = messageText;
+    outgoingMessage.mDataTime = dataTime;
+
+    //-----------------------------------
+
+
     QByteArray block;
 
     QDataStream out (&block,QIODevice::WriteOnly);
@@ -244,7 +254,7 @@ void Client::sendMessage(
         << sender
         << recipient
         << messageText
-        << dateTime;
+        << dataTime;
 
     out.device()->seek(0);
     out << quint16 (block.size() - sizeof(quint16));
@@ -343,6 +353,7 @@ void Client::setAuthorizedUser(QDataStream *in)
     this->m_user = tempUser;
 
     emit signalAuthorized(userName, userSurname, userLogin);
+    getFriendsAndCorrespondence();
 }
 
 
@@ -357,7 +368,9 @@ void Client::processFindFriendResponse(QDataStream *in)
 
     *in >> npotentialFriends;
 
-    for (int i = 0; i <static_cast<int>(npotentialFriends); i++)
+    qDebug() << "nashel";
+
+    for (int i = 0; i < static_cast<int>(npotentialFriends); i++)
     {
         QString potentialFriendName;
         QString potentialFriendSurname;
@@ -367,6 +380,10 @@ void Client::processFindFriendResponse(QDataStream *in)
         *in >> potentialFriendName
                 >> potentialFriendSurname
                 >> potentialFriendLogin;
+
+                qDebug() << potentialFriendName;
+                qDebug() << potentialFriendSurname;
+                qDebug() << potentialFriendLogin;
 
         User tempFrined(
                     potentialFriendName,
@@ -428,6 +445,22 @@ void Client::setNewFriend(QDataStream *in)
 }
 
 
+void Client::getFriendsAndCorrespondence()
+{
+    QByteArray block;
+
+    QDataStream out (&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_5);
+
+    out << quint16(0)
+        << quint8(MessageTypes::getFriends)
+        << m_user.getLogin();
+
+    out.device()->seek(0);
+    out << quint16 (block.size() - sizeof(quint16));
+    m_psocket->write(block);
+}
+
 
 void Client::receiveMessage(QDataStream *in)
 {
@@ -445,5 +478,8 @@ void Client::receiveMessage(QDataStream *in)
     qDebug() << incomingMessage.mMessageText;
     qDebug() << incomingMessage.mDataTime;
 
-    emit signalIncomingMessage(incomingMessage);
+    emit signalIncomingMessage(
+                incomingMessage.mSender,
+                incomingMessage.mMessageText,
+                incomingMessage.mDataTime.time().toString());
 }
