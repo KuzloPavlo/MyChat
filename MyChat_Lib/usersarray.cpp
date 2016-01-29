@@ -90,7 +90,7 @@ QTcpSocket* UsersArray::getUserTcpSocket(const QString &userLogin)
 
 
 
-QVector<User> UsersArray::findFriend (const QString &tokenFriend)  //
+QVector<User> UsersArray::findFriend (const QString &tokenFriend)
 {
 
     QVector<User> potentialFriends;

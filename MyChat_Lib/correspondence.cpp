@@ -28,7 +28,11 @@ QVector<Message> Correspondence::getCorrespondence()
     return m_Messages;
 }
 
-
+void Correspondence::setParticipants(User *participant1,User *participant2)
+{
+    m_participants.push_back(participant1);
+    m_participants.push_back(participant2);
+}
 
 bool Correspondence::findParticipants(const QString &sender, const QString &recipient)
 {

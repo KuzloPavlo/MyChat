@@ -75,10 +75,9 @@ private:
     QTcpSocket *m_psocket;
     quint16 m_nnextBlockSize;
     User m_user;
-    QVector<User>m_friends;
+    QVector<User> m_potentialFriends;
+    QVector<User> m_friends;
     QVector<Correspondence> m_Correspondence;
-
-    //  QVector<User>m_friends;
 
 
 
@@ -92,6 +91,8 @@ private:
     void processAddFriendResponse(QDataStream *in);
     void setNewFriend(QDataStream *in);
     void getFriendsAndCorrespondence();
+    void setFriendsAndCorrespondence(QDataStream *in);
+
 
     void receiveMessage(QDataStream *in);
 

@@ -238,13 +238,11 @@ void MainWindow::slotAuthorized(const QString &name,
     ui->MainStackedWidgetLeft->setCurrentIndex(0);
     ui->MainStackedWidgetConntact->setCurrentIndex(0);
 
+    ui->MainStackedWidgetInfo->setCurrentIndex(0);
+
     ui->UserNameLabel->setText(name);
     ui->UserSurnameLabel->setText(surname);
     ui->UserLoginLabel->setText(login);
-
-    ui->MainStackedWidgetInfo->setCurrentIndex(0);
-
-
 }
 
 
@@ -313,7 +311,7 @@ void MainWindow::slotIncomingMessage(const QString &sender,
 {
     if (ui->FriendLoginLabel->text() == sender)
     {
-       addNewMessage(ui->tableWidget, new IncomingMessage(sender,message,time,ui->tableWidget));
+        addNewMessage(ui->tableWidget, new IncomingMessage(sender,message,time,ui->tableWidget));
     }
 }
 

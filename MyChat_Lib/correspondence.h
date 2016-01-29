@@ -14,6 +14,7 @@ public:
     void addNewMessage(const Message &message);
     Message& getLastMessage();
     QVector<Message> getCorrespondence();
+    void setParticipants(User *participant1,User *participant2);
     bool findParticipants(const QString &sender, const QString &recipient);
 private:
     QVector<Message> m_Messages;

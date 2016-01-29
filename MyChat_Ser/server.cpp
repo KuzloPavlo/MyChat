@@ -199,14 +199,14 @@ void Server::findFriend(QDataStream *in, QDataStream *out)
     *out << quint8 (MessageTypes::searchFriend)
          << quint8 (potentialFriends.size());
 
-    for (int i = 0; i < potentialFriends.size(); i++)
+    for (int t = 0; t < potentialFriends.size(); t++)
     {
-        *out << QString (potentialFriends[i].getName())  // убери Qstring;
-             << QString (potentialFriends[i].getSurname())
-             << QString (potentialFriends[i].getLogin());
+        *out << potentialFriends[t].getName()
+             << potentialFriends[t].getSurname()
+             << potentialFriends[t].getLogin();
 
         qDebug() << "Server";
-        qDebug() << potentialFriends[i].getLogin();
+        qDebug() << potentialFriends[t].getLogin();
     }
 }
 
@@ -285,7 +285,7 @@ void Server::getFriendsAndCorrespondence(QDataStream *in, QDataStream *out)
     QVector<Correspondence> correspondence = m_users.getUserCorrespondence(login);
 
     *out << quint8 (MessageTypes::getFriends)
-         <<quint8 (friends.size());
+         << quint8 (friends.size());
 
     for(int i =0; i < friends.size(); i++)
     {
