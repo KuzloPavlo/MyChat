@@ -17,9 +17,6 @@ LIBS += "C:/MyChat/MyChat/build-MyChat_Lib-Desktop_Qt_5_5_1_MSVC2013_64bit-Relea
 
 HEADERS += \
     ../MyChat_Lib/user.h \
-    ../MyChat_Lib/community.h \
-    ../MyChat_Lib/friends.h \
-    ../MyChat_Lib/participantschat.h \
     ../MyChat_Lib/usersarray.h \
     server.h \
     ../MyChat_Lib/messagetypes.h \

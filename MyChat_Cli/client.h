@@ -64,12 +64,32 @@ signals:
     void signalWrongLogin();
     void signalWrongPassword();
     void signalIsEmty();
-    void signalFoundFriend(QVector<User> potentialFriends);
+    void signalFoundFriend(const QString &login);
     void signalNewFriend(const User &newFriend);
     void signalIncomingMessage(
             const QString &sender,
             const QString &message,
             const QString &time);
+
+    void signalEarlierReceivedMessage(
+            const QString &sender,
+            const QString &message,
+            const QString &time);
+
+    void signalEarlierSendMessage(
+            const QString &sender,
+            const QString &message,
+            const QString &time);
+
+    void signalAddFriendToList(const QString &login);
+
+    void signalShowFriend(const QString &name,
+                          const QString &surname,
+                          const QString &login);
+
+    void signalShowPotentialFriend(const QString &name,
+                                   const QString &surname,
+                                   const QString &login);
 
 private:
     QTcpSocket *m_psocket;
@@ -92,7 +112,7 @@ private:
     void setNewFriend(QDataStream *in);
     void getFriendsAndCorrespondence();
     void setFriendsAndCorrespondence(QDataStream *in);
-
+    //void showCorrespondence(const QString &sender, const QString &recipient);
 
     void receiveMessage(QDataStream *in);
 
@@ -103,6 +123,12 @@ private slots:
                      const QString &plogin,
                      const QString &ppassword,
                      const QString &pipAddress);
+
+    void slotShowListFriends();
+
+    void slotShowFriend(const QString &login);
+
+    void slotShowPotentialFriend(const QString &login);
 
     // void slotSearchFriendResponsFound(QVector<User> potentialFriends);
 

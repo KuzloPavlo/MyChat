@@ -59,13 +59,23 @@ private slots:
 
     void slotResizeTableWidgetRows(QTableWidget *tableWidget);
 
-    void slotFoundFriend(QVector<User> potentialFriends);
+    void slotFoundFriend(QString login);
 
-    void slotNewFriend(const User &newFriend);
+    //  void slotNewFriend(const User &newFriend);
 
     void slotIncomingMessage(const QString &sender,
                              const QString &message,
                              const QString &time);
+
+    void slotEarlierReceivedMessage(
+            const QString &sender,
+            const QString &message,
+            const QString &time);
+
+    void slotEarlierSendMessage(
+            const QString &sender,
+            const QString &message,
+            const QString &time);
 
     void on_MainConnBut_clicked();
 
@@ -94,6 +104,17 @@ private slots:
 
     void on_SendMessageBut_clicked();
 
+    void slotShowFriend(QString name,
+                        QString surname,
+                        QString login
+                        );
+
+    void slotShowPotentialFriend(QString name,
+                                 QString surname,
+                                 QString login);
+
+    void slotAddFriendToList(QString login);
+
 signals:
 
     void signalAddDataUser(QString *pname,
@@ -101,6 +122,12 @@ signals:
                            QString *plogin,
                            QString *ppassword,
                            QString *pipAddress);
+
+    void signalShowListFriends();
+
+    void signalShowFriend(const QString &login);
+
+    void signalShowPotentialFriend(const QString &login);
 
 private:
 
@@ -111,7 +138,7 @@ private:
     QVector<User>m_friends;
     QVector<Correspondence> m_Correspondence;
 
-     void addNewMessage(QTableWidget *tableWidget,QWidget *message);
+    void addNewMessage(QTableWidget *tableWidget,QWidget *message);
 
 
     Ui::MainWindow *ui;

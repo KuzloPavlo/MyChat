@@ -85,16 +85,16 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
 
     connect(
                 m_pSERVER,
-                SIGNAL (signalFoundFriend(QVector<User>)),
+                SIGNAL (signalFoundFriend(QString)),
                 this,
-                SLOT (slotFoundFriend(QVector<User>)));
+                SLOT (slotFoundFriend(QString)));
 
 
-    connect(
-                m_pSERVER,
-                SIGNAL(signalNewFriend(const User&)),
-                this,
-                SLOT(slotNewFriend(const User&)));
+    //    connect(
+    //                m_pSERVER,
+    //                SIGNAL(signalNewFriend(const User&)),
+    //                this,
+    //                SLOT(slotNewFriend(const User&)));
 
     connect(
                 m_pSERVER,
@@ -105,6 +105,64 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
                 SLOT(slotIncomingMessage(const QString &,
                                          const QString &,
                                          const QString &))
+                );
+
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalEarlierReceivedMessage(const QString &,const QString &,const QString &)),
+                this,
+                SLOT(slotEarlierReceivedMessage(const QString &,const QString &,const QString &))
+                );
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalEarlierSendMessage(const QString &,const QString &,const QString &)),
+                this,
+                SLOT(slotEarlierSendMessage(const QString &,const QString &,const QString &))
+                );
+
+    connect(
+                this,
+                SIGNAL(signalShowListFriends()),
+                m_pSERVER,
+                SLOT(slotShowListFriends())
+                );
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalAddFriendToList(QString)),
+                this,
+                SLOT(slotAddFriendToList(QString))
+                );
+
+    connect(
+                this,
+                SIGNAL(signalShowFriend(QString)),
+                m_pSERVER,
+                SLOT(slotShowFriend(QString))
+                );
+
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalShowFriend(QString, QString, QString)),
+                this,
+                SLOT(slotShowFriend(QString, QString, QString))
+                );
+
+    connect(
+                this,
+                SIGNAL(signalShowPotentialFriend(QString)),
+                m_pSERVER,
+                SLOT(slotShowPotentialFriend(QString))
+                );
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalShowPotentialFriend(QString,QString,QString)),
+                this,
+                SLOT(slotShowPotentialFriend(QString,QString,QString))
                 );
 
 }
@@ -282,26 +340,26 @@ void MainWindow::addNewMessage(QTableWidget *tableWidget, QWidget *message)
 
 
 
-void MainWindow::slotFoundFriend(QVector<User> potentialFriends)
+void MainWindow::slotFoundFriend(QString login)
 {
-    this->m_potentialFriends = potentialFriends;
+    //this->m_potentialFriends = potentialFriends;
 
-    for (int i = 0; i < potentialFriends.size(); i++)
-    {
-        ui->MainListWidget->addItem(potentialFriends[i].getLogin());
-    }
+    //    for (int i = 0; i < potentialFriends.size(); i++)
+    //    {
+    ui->MainListWidget->addItem(login);
+    //}
 }
 
 
 
-void MainWindow::slotNewFriend(const User &newFriend)
-{
-    m_friends.push_back(newFriend);
+//void MainWindow::slotNewFriend(const User &newFriend)
+//{
+//    m_friends.push_back(newFriend);
 
-    User temp = newFriend;
+//    User temp = newFriend;
 
-    emit on_ConntactsListWidget_currentTextChanged(temp.getLogin());
-}
+//    emit on_ConntactsListWidget_currentTextChanged(temp.getLogin());
+//}
 
 
 
@@ -316,17 +374,39 @@ void MainWindow::slotIncomingMessage(const QString &sender,
 }
 
 
+void MainWindow::slotEarlierReceivedMessage(const QString &sender, const QString &message, const QString &time)
+{
+    if (ui->FriendLoginLabel->text() == sender)
+    {
+        addNewMessage(ui->tableWidget, new IncomingMessage(sender,message,time,ui->tableWidget));
+    }
+    qDebug()<< "perepisKA";
+}
+
+
+void MainWindow::slotEarlierSendMessage(const QString &recipient, const QString &message, const QString &time)
+{
+    if (ui->FriendLoginLabel->text() == recipient)
+    {
+        addNewMessage(ui->tableWidget, new OutgoingMessage (recipient,message,time,ui->tableWidget));
+    }
+    qDebug()<< "perepisKA";
+}
+
 
 void MainWindow::on_MainConnBut_clicked()
 {
     ui->ConntactsListWidget->clear();
 
-    for (int i = 0; i < m_friends.size(); i++)
-    {
-        ui->ConntactsListWidget->addItem(m_friends[i].getLogin());
-    }
+    emit signalShowListFriends();
+
+    //    for (int i = 0; i < m_friends.size(); i++)
+    //    {
+    //        ui->ConntactsListWidget->addItem(m_friends[i].getLogin());
+    //    }
 
     ui->MainStackedWidgetConntact->setCurrentIndex(0);
+    ui->MainStackedWidgetInfo->setCurrentIndex(3);
 }
 
 
@@ -370,14 +450,17 @@ void MainWindow::on_MainSearchBut_clicked()
 
 void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText)
 {
-    for (int i = 0; i < m_friends.size(); i++)
-    {
-        if (currentText == m_friends[i].getLogin())
-        {
-            emit on_ConntactsListWidget_currentTextChanged(currentText);
-            return;
-        }
-    }
+
+
+
+    //    for (int i = 0; i < m_friends.size(); i++)
+    //    {
+    //        if (currentText == m_friends[i].getLogin())
+    //        {
+    //            emit on_ConntactsListWidget_currentTextChanged(currentText);
+    //            return;
+    //        }
+    //    }
 
     if (currentText == ui->UserLoginLabel->text())
     {
@@ -385,16 +468,18 @@ void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText
         return;
     }
 
-    for(int i = 0; i < m_potentialFriends.size(); i++)
-    {
-        if (currentText == m_potentialFriends[i].getLogin())
-        {
-            ui->SearchFriendNameLabel->setText(m_potentialFriends[i].getName());
-            ui->SearchFriendSurnameLabel->setText(m_potentialFriends[i].getSurname());
-            ui->SearchFriendLoginLabel->setText(m_potentialFriends[i].getLogin());
-        }
-    }
-    ui->MainStackedWidgetInfo->setCurrentIndex(2);
+    emit signalShowPotentialFriend(currentText);
+
+    //    for(int i = 0; i < m_potentialFriends.size(); i++)
+    //    {
+    //        if (currentText == m_potentialFriends[i].getLogin())
+    //        {
+    //            ui->SearchFriendNameLabel->setText(m_potentialFriends[i].getName());
+    //            ui->SearchFriendSurnameLabel->setText(m_potentialFriends[i].getSurname());
+    //            ui->SearchFriendLoginLabel->setText(m_potentialFriends[i].getLogin());
+    //        }
+    //    }
+    //    ui->MainStackedWidgetInfo->setCurrentIndex(2);
 }
 
 
@@ -403,8 +488,11 @@ void MainWindow::on_MainListWidget_currentTextChanged(const QString &currentText
 void MainWindow::on_MainAddFrinedBut_clicked()
 {
     m_pSERVER->addFriend(ui->SearchFriendLoginLabel->text());
-    // скрыть кнопку добавления друга
 
+    emit slotShowFriend(
+                ui->SearchFriendNameLabel->text(),
+                ui->SearchFriendSurnameLabel->text(),
+                ui->SearchFriendLoginLabel->text());
 }
 
 
@@ -412,6 +500,7 @@ void MainWindow::on_MainAddFrinedBut_clicked()
 void MainWindow::on_MainUserBut_clicked()
 {
     ui->MainStackedWidgetInfo->setCurrentIndex(0);
+    ui->tableWidget->setRowCount(0);
 }
 
 
@@ -419,18 +508,20 @@ void MainWindow::on_MainUserBut_clicked()
 
 void MainWindow::on_ConntactsListWidget_currentTextChanged(const QString &currentText)
 {
-    for (int i = 0; i < m_friends.size(); i++)
-    {
-        if (currentText == m_friends[i].getLogin())
-        {
-            ui->FriendNameLabel->setText(m_friends[i].getName());
-            ui->FriendSurnameLabel->setText(m_friends[i].getSurname());
-            ui->FriendLoginLabel->setText(m_friends[i].getLogin());
-            return;
-        }
-    }
-    ui->DeleteConBut->setVisible(true);  // WHOT THIS??
-    ui->MainStackedWidgetInfo->setCurrentIndex(1);
+    //    for (int i = 0; i < m_friends.size(); i++)
+    //    {
+    //        if (currentText == m_friends[i].getLogin())
+    //        {
+    //            ui->FriendNameLabel->setText(m_friends[i].getName());
+    //            ui->FriendSurnameLabel->setText(m_friends[i].getSurname());
+    //            ui->FriendLoginLabel->setText(m_friends[i].getLogin());
+    //            return;
+    //        }
+    //    }
+    //    ui->DeleteConBut->setVisible(true);  // WHOT THIS??
+    //    ui->MainStackedWidgetInfo->setCurrentIndex(1);
+
+    emit signalShowFriend(currentText);
 
     // Тут потрібно дописати підгрузку та відображення попередньої переписки
 }
@@ -485,4 +576,27 @@ void MainWindow::on_SendMessageBut_clicked()
 
         ui->messageEdit->clear();
     }
+}
+
+
+void MainWindow::slotAddFriendToList(QString login)
+{
+    ui->ConntactsListWidget->addItem(login);
+}
+
+void MainWindow::slotShowFriend(QString name, QString surname, QString login)
+{
+    ui->FriendNameLabel->setText(name);
+    ui->FriendSurnameLabel->setText(surname);
+    ui->FriendLoginLabel->setText(login);
+    ui->MainStackedWidgetInfo->setCurrentIndex(1);
+}
+
+
+void MainWindow::slotShowPotentialFriend(QString name, QString surname, QString login)
+{
+    ui->SearchFriendNameLabel->setText(name);
+    ui->SearchFriendSurnameLabel->setText(surname);
+    ui->SearchFriendLoginLabel->setText(login);
+    ui->MainStackedWidgetInfo->setCurrentIndex(2);
 }

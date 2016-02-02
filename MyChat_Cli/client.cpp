@@ -239,15 +239,21 @@ void Client::sendMessage(
         const QString &messageText,
         const QDateTime &dataTime)
 {
-    // ТУТ ПОТРІБНО ДОБАВИТИ ЗБЕРЕЖЕННЯ ПОВІДОМЛЕННЯ НА КЛІЄНТІ
+
     Message outgoingMessage;
     outgoingMessage.mSender = sender;
     outgoingMessage.mRecipient = recipient;
     outgoingMessage.mMessageText = messageText;
     outgoingMessage.mDataTime = dataTime;
 
-    //-----------------------------------
-
+    for(int i = 0; i < m_Correspondence.size(); i++)
+    {
+        if(m_Correspondence[i].findParticipants(sender,recipient))
+        {
+            m_Correspondence[i].addNewMessage(outgoingMessage);
+            break;
+        }
+    }
 
     QByteArray block;
 
@@ -399,7 +405,14 @@ void Client::processFindFriendResponse(QDataStream *in)
 
         potentialFriends.push_back(tempFrined);
     }
-    emit signalFoundFriend(potentialFriends);
+    // emit signalFoundFriend(potentialFriends);
+
+    m_potentialFriends = potentialFriends;
+
+    for(int i = 0; i < m_potentialFriends.size(); i++)
+    {
+        emit signalFoundFriend(m_potentialFriends[i].getLogin());
+    }
 }
 
 
@@ -446,7 +459,23 @@ void Client::setNewFriend(QDataStream *in)
                      friendPassword,
                      friendIPAddress);
 
-    emit this->signalNewFriend(tempFriend);
+    //  emit this->signalNewFriend(tempFriend);
+    m_friends.push_back(tempFriend);
+
+    User *newFriend;
+    for (int i = 0; i < m_friends.size(); i++)
+    {
+        if(friendLogin == m_friends[i].getLogin())
+        {
+            newFriend =& m_friends[i];
+            break;
+        }
+    }
+
+    Correspondence newCorrespondence(newFriend,&m_user); //create local correspondence
+
+    m_Correspondence.push_back(newCorrespondence);
+
 }
 
 
@@ -470,7 +499,7 @@ void Client::getFriendsAndCorrespondence()
 void Client::setFriendsAndCorrespondence(QDataStream *in)
 {
     int nfriends;
-    int ncorrespondence;
+    // int ncorrespondence;
 
     in->setVersion(QDataStream::Qt_5_5);
 
@@ -497,42 +526,42 @@ void Client::setFriendsAndCorrespondence(QDataStream *in)
         m_friends.push_back(tempFriend);
     }
 
-    *in >> ncorrespondence;
+    // *in >> ncorrespondence;
 
-    for(int j = 0; j < ncorrespondence; j++)
-    {
-        Correspondence messages;
-        int nmessages;
+    //    for(int j = 0; j < ncorrespondence; j++)
+    //    {
+    //        Correspondence messages;
+    //        int nmessages;
 
-        *in >> nmessages;
+    //        *in >> nmessages;
 
-        for(int k = 0; k < nmessages; k++)
-        {
-            Message tempMessage;
+    //        for(int k = 0; k < nmessages; k++)
+    //        {
+    //            Message tempMessage;
 
-            *in >> tempMessage.mSender
-                    >> tempMessage.mRecipient
-                    >> tempMessage.mMessageText
-                    >> tempMessage.mDataTime;
+    //            *in >> tempMessage.mSender
+    //                    >> tempMessage.mRecipient
+    //                    >> tempMessage.mMessageText
+    //                    >> tempMessage.mDataTime;
 
-            messages.addNewMessage(tempMessage);
-        }
-        m_Correspondence.push_back(messages);
-    }
+    //            messages.addNewMessage(tempMessage);
+    //        }
+    //        m_Correspondence.push_back(messages);
+    //    }
 
-//    for(int h = 0; h < m_Correspondence.size(); h++)
-//    {
-//        Message temp = m_Correspondence[h].getLastMessage();
-//        for(int n = 0; n < m_friends.size(); n++)
-//        {
-//            qDebug() << m_friends[n].getLogin();
+    //    for(int h = 0; h < m_Correspondence.size(); h++)
+    //    {
+    //        Message temp = m_Correspondence[h].getLastMessage();
+    //        for(int n = 0; n < m_friends.size(); n++)
+    //        {
+    //            qDebug() << m_friends[n].getLogin();
 
-//            if(temp.mRecipient == m_friends[n].getLogin() || temp.mSender == m_friends[n].getLogin())
-//            {
-//                m_Correspondence[h].setParticipants(&m_user, &m_friends[n]);
-//            }
-//        }
-//    }
+    //            if(temp.mRecipient == m_friends[n].getLogin() || temp.mSender == m_friends[n].getLogin())
+    //            {
+    //                m_Correspondence[h].setParticipants(&m_user, &m_friends[n]);
+    //            }
+    //        }
+    //    }
 
 
 }
@@ -557,4 +586,115 @@ void Client::receiveMessage(QDataStream *in)
                 incomingMessage.mSender,
                 incomingMessage.mMessageText,
                 incomingMessage.mDataTime.time().toString());
+
+    for(int i = 0; i < m_Correspondence.size(); i++)
+    {
+        if(m_Correspondence[i].findParticipants( incomingMessage.mSender,incomingMessage.mRecipient))
+        {
+            m_Correspondence[i].addNewMessage(incomingMessage);
+            break;
+        }
+    }
+}
+
+
+void Client::slotShowListFriends()
+{
+    for(int i = 0; i < m_friends.size(); i++)
+    {
+        emit signalAddFriendToList(m_friends[i].getLogin());
+    }
+}
+
+
+void Client::slotShowFriend(const QString &login)
+{
+    for (int i = 0; i < m_friends.size(); i++)
+    {
+        if (login == m_friends[i].getLogin())
+        {
+            emit signalShowFriend(
+                        m_friends[i].getName(),
+                        m_friends[i].getSurname(),
+                        m_friends[i].getLogin());
+            break;
+        }
+    }
+
+
+
+    QVector<Message> correspondence;
+
+    for(int j = 0; j < m_Correspondence.size(); j++)
+    {
+        if(m_Correspondence[j].findParticipants(login, m_user.getLogin()))
+        {
+            correspondence = m_Correspondence[j].getCorrespondence();
+            for(int k = 0; k < correspondence.size(); k++)
+                break;
+        }
+    }
+
+    for(int n = 0; n < correspondence.size(); n++)
+    {
+        if(correspondence[n].mSender == login)
+        {
+            emit signalEarlierReceivedMessage(
+                        correspondence[n].mSender,
+                        correspondence[n].mMessageText,
+                        correspondence[n].mDataTime.time().toString());
+        }
+
+        else
+        {
+            emit signalEarlierSendMessage(
+                        correspondence[n].mRecipient,
+                        correspondence[n].mMessageText,
+                        correspondence[n].mDataTime.time().toString());
+        }
+    }
+}
+
+
+//void Client::showCorrespondence(const QString &sender, const QString &recipient)
+//{
+//    QVector<Message> correspondence;
+
+//    for(int j = 0; j < m_Correspondence.size(); j++)
+//    {
+//        if(m_Correspondence[j].findParticipants(sender, recipient))
+//        {
+//            qDebug() << "Nashel perepisku";
+//            correspondence = m_Correspondence[j].getCorrespondence();
+//            break;
+//        }
+//    }
+
+//}
+
+void Client::slotShowPotentialFriend(const QString &login)
+{
+    for(int i = 0; i < m_friends.size(); i++)
+    {
+        if (login == m_friends[i].getLogin())
+        {
+            emit signalShowFriend(
+                        m_friends[i].getName(),
+                        m_friends[i].getSurname(),
+                        m_friends[i].getLogin());
+            return;
+        }
+    }
+
+    for(int j = 0; j < m_potentialFriends.size(); j++)
+    {
+        if (login == m_potentialFriends[j].getLogin())
+        {
+            emit signalShowPotentialFriend(
+                        m_potentialFriends[j].getName(),
+                        m_potentialFriends[j].getSurname(),
+                        m_potentialFriends[j].getLogin());
+            return;
+        }
+    }
 }

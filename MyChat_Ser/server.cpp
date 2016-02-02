@@ -69,7 +69,6 @@ void Server::slotReadClient()
 
     case MessageTypes::searchFriend:
         findFriend(&in, &out);
-        qDebug() << "Server vishel";
         break;
 
     case MessageTypes::addFriend:
@@ -282,7 +281,7 @@ void Server::getFriendsAndCorrespondence(QDataStream *in, QDataStream *out)
     *in >> login;
 
     QVector<User> friends =  m_users.getUserFriends(login);
-    QVector<Correspondence> correspondence = m_users.getUserCorrespondence(login);
+  //  QVector<Correspondence> correspondence = m_users.getUserCorrespondence(login);
 
     *out << quint8 (MessageTypes::getFriends)
          << quint8 (friends.size());
@@ -294,22 +293,22 @@ void Server::getFriendsAndCorrespondence(QDataStream *in, QDataStream *out)
              << friends[i].getLogin();
     }
 
-    *out << quint8(correspondence.size());
+//    *out << quint8(correspondence.size());
 
-    for(int j = 0; j < correspondence.size(); j++)
-    {
-        QVector<Message> temp = correspondence[j].getCorrespondence();
+//    for(int j = 0; j < correspondence.size(); j++)
+//    {
+//        QVector<Message> temp = correspondence[j].getCorrespondence();
 
-        *out << quint8(temp.size());
+//        *out << quint8(temp.size());
 
-        for(int k = 0; k < temp.size(); k++)
-        {
-            *out << temp[k].mSender
-                 << temp[k].mRecipient
-                 << temp[k].mMessageText
-                 << temp[k].mDataTime;
-        }
-    }
+//        for(int k = 0; k < temp.size(); k++)
+//        {
+//            *out << temp[k].mSender
+//                 << temp[k].mRecipient
+//                 << temp[k].mMessageText
+//                 << temp[k].mDataTime;
+//        }
+//    }
 }
 
 
