@@ -1,5 +1,5 @@
 #include "user.h"
-
+#include "correspondence.h"
 
 User::User()
 {
@@ -18,7 +18,11 @@ User::User( const QString &pname,
       m_surname(psurname),
       m_login(plogin),
       m_password(ppassword),
-      m_ipAddress(pipAddress) {}
+      m_ipAddress(pipAddress),
+      m_pUserSocket(NULL)
+{
+
+}
 
 
 
@@ -49,8 +53,7 @@ QVector<Correspondence> User::getCorrespondence()
 
     for(int i = 0; i < m_correspondence.size(); i++)
     {
-        Correspondence temp = *m_correspondence[i];
-        correspondence.push_back(temp);
+        correspondence.push_back(*m_correspondence[i]);
     }
     return correspondence;
 }

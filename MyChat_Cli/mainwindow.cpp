@@ -90,11 +90,11 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
                 SLOT (slotFoundFriend(QString)));
 
 
-    //    connect(
-    //                m_pSERVER,
-    //                SIGNAL(signalNewFriend(const User&)),
-    //                this,
-    //                SLOT(slotNewFriend(const User&)));
+    connect(
+                m_pSERVER,
+                SIGNAL(signalNewFriend()),
+                this,
+                SLOT(slotNewFriend()));
 
     connect(
                 m_pSERVER,
@@ -352,14 +352,10 @@ void MainWindow::slotFoundFriend(QString login)
 
 
 
-//void MainWindow::slotNewFriend(const User &newFriend)
-//{
-//    m_friends.push_back(newFriend);
-
-//    User temp = newFriend;
-
-//    emit on_ConntactsListWidget_currentTextChanged(temp.getLogin());
-//}
+void MainWindow::slotNewFriend()
+{
+    ui->MainStackedWidgetInfo->setCurrentIndex(4);
+}
 
 
 
@@ -521,7 +517,11 @@ void MainWindow::on_ConntactsListWidget_currentTextChanged(const QString &curren
     //    ui->DeleteConBut->setVisible(true);  // WHOT THIS??
     //    ui->MainStackedWidgetInfo->setCurrentIndex(1);
 
+    ui->tableWidget->setRowCount(0);
     emit signalShowFriend(currentText);
+
+
+
 
     // Тут потрібно дописати підгрузку та відображення попередньої переписки
 }
@@ -556,7 +556,7 @@ void MainWindow::on_RemoveFriendBut_clicked()
 
 void MainWindow::on_SendMessageBut_clicked()
 {
-    if (!ui->messageEdit->toPlainText().isEmpty())
+    if (!ui->messageEdit->toPlainText().isEmpty() && !ui->FriendLoginLabel->text().isEmpty())
     {
         QDateTime dataTimeMessage = QDateTime::currentDateTime();
 

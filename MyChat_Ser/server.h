@@ -18,6 +18,7 @@ signals:
 public slots:
     void slotNewConnection ();
     void slotReadClient();
+    void slotDisconnectClient();
 private:
     UsersArray m_users;
     QTcpServer *m_pserver;
@@ -33,7 +34,9 @@ private:
 
     void addFriend(QDataStream *in, QDataStream *out);
 
-    void getFriendsAndCorrespondence(QDataStream *in, QDataStream *out);
+    void getFriends(QDataStream *in, QDataStream *out);
+
+    void getCorrespondence(QDataStream *in, QDataStream *out);
 
     void receiveMessage(QDataStream *in, QDataStream *out);
 

@@ -61,7 +61,7 @@ private slots:
 
     void slotFoundFriend(QString login);
 
-    //  void slotNewFriend(const User &newFriend);
+    void slotNewFriend();
 
     void slotIncomingMessage(const QString &sender,
                              const QString &message,

@@ -24,12 +24,18 @@ void Server::slotNewConnection()
     QTcpSocket *pSocket = m_pserver->nextPendingConnection();
 
     connect(pSocket, SIGNAL(readyRead()), this, SLOT(slotReadClient()));
-
-    qDebug() << "NEW";
+    connect(pSocket, SIGNAL(disconnected()), this, SLOT(slotDisconnectClient()));
 
     m_nnextBlockSize = 0;
 }
 
+
+void Server::slotDisconnectClient()
+{
+    QTcpSocket *pclientSocket = (QTcpSocket*) sender();
+
+    m_users.disconnectUser(pclientSocket);
+}
 
 
 void Server::slotReadClient()
@@ -80,7 +86,11 @@ void Server::slotReadClient()
         break;
 
     case MessageTypes::getFriends:
-        getFriendsAndCorrespondence(&in, &out);
+        getFriends(&in, &out);
+        break;
+
+    case MessageTypes::getCorrespondence:
+        getCorrespondence(&in, &out);
         break;
 
     case MessageTypes::message:
@@ -170,9 +180,6 @@ void Server::authorizationUser(QDataStream *in, QDataStream *out, QTcpSocket *pC
              << user.getLogin()
              << user.getIPAddress();
 
-        // Также необхолимо добавить отправку списка контактов  !!!ОТПРАВКУ КОНТАКТОВ И ЧАТОВ ВІПОЛНЯТЬ ОТДЕЛЬНО
-        // и отправку чатов
-
         qDebug() << "Authorized User:";
         qDebug() << "Login:    " << user.getLogin();
     }
@@ -190,7 +197,7 @@ void Server::findFriend(QDataStream *in, QDataStream *out)
     *in >> tokenFriend;
 
     //----------------------
-   // qDebug() << tokenFriend;
+    // qDebug() << tokenFriend;
     //---------------------
 
     QVector<User> potentialFriends = m_users.findFriend(tokenFriend);
@@ -235,6 +242,33 @@ void Server::addFriend(QDataStream *in, QDataStream *out)
              << friendUser.getLogin()
              << friendUser.getIPAddress();
 
+        QTcpSocket *pfriendSocket = NULL;
+        pfriendSocket = m_users.getUserTcpSocket(friendLogin);
+
+        if(pfriendSocket)
+        {
+            QByteArray block;
+            QDataStream tofriend (&block, QIODevice::WriteOnly);
+
+            tofriend.setVersion(QDataStream::Qt_5_5);
+            tofriend << quint16(0)
+                     << quint8 (MessageTypes::addFriend)
+                     << quint8 (respond);
+
+            User user = m_users.getUser(userLogin);
+
+            tofriend << user.getName()
+                     << user.getSurname()
+                     << user.getLogin()
+                     << user.getIPAddress();
+
+            if (block.size())
+            {
+                tofriend.device()->seek(0);
+                tofriend << quint16 (block.size() - sizeof(quint16));
+                pfriendSocket->write(block);
+            }
+        }
         qDebug() << userLogin << " & " << friendLogin;
         qDebug() << " now friends." << endl << endl;
     }
@@ -271,7 +305,7 @@ void Server::removeFriend(QDataStream *in, QDataStream *out)
 
 
 
-void Server::getFriendsAndCorrespondence(QDataStream *in, QDataStream *out)
+void Server::getFriends(QDataStream *in, QDataStream *out)
 {
     QString login;
 
@@ -281,7 +315,6 @@ void Server::getFriendsAndCorrespondence(QDataStream *in, QDataStream *out)
     *in >> login;
 
     QVector<User> friends =  m_users.getUserFriends(login);
-  //  QVector<Correspondence> correspondence = m_users.getUserCorrespondence(login);
 
     *out << quint8 (MessageTypes::getFriends)
          << quint8 (friends.size());
@@ -293,22 +326,50 @@ void Server::getFriendsAndCorrespondence(QDataStream *in, QDataStream *out)
              << friends[i].getLogin();
     }
 
-//    *out << quint8(correspondence.size());
+}
 
-//    for(int j = 0; j < correspondence.size(); j++)
-//    {
-//        QVector<Message> temp = correspondence[j].getCorrespondence();
 
-//        *out << quint8(temp.size());
+void Server::getCorrespondence(QDataStream *in, QDataStream *out)
+{qDebug()<< "1getCorrespondence1";
+    QString login;
 
-//        for(int k = 0; k < temp.size(); k++)
-//        {
-//            *out << temp[k].mSender
-//                 << temp[k].mRecipient
-//                 << temp[k].mMessageText
-//                 << temp[k].mDataTime;
-//        }
-//    }
+    in->setVersion(QDataStream::Qt_5_5);
+    out->setVersion(QDataStream::Qt_5_5);
+qDebug()<< "1getCorrespondence1";
+    *in >> login;
+qDebug()<< "1getCorrespondence11";
+    QVector<Correspondence> correspondence = m_users.getUserCorrespondence(login);
+qDebug()<< "1getCorrespondence1";
+    *out << quint8 (MessageTypes::getCorrespondence)
+         << quint8(correspondence.size());
+qDebug()<< "1getCorrespondence1";
+    for(int j = 0; j < correspondence.size(); j++)
+    {
+    qDebug()<< "1getCorrespondence5";
+        *out << quint8 (correspondence[j].getIDNumber());
+        qDebug()<< "1getCorrespondence6";
+        QVector<QString> participants = correspondence[j].getParticipants();
+        qDebug()<< "1getCorrespondence7";
+        *out << quint8 (participants.size());
+qDebug()<< "1getCorrespondence8";
+        for(int i = 0; i < participants.size(); i++)
+        {
+        qDebug()<< "1getCorrespondence9";
+            *out << participants[i];
+            qDebug()<< "1getCorrespondence10";
+        }
+qDebug()<< "1getCorrespondence1";
+        QVector<Message> messages = correspondence[j].getCorrespondence();
+        *out << quint8(messages.size());
+
+        for(int k = 0; k < messages.size(); k++)
+        {
+            *out << messages[k].mSender
+                 << messages[k].mRecipient
+                 << messages[k].mMessageText
+                 << messages[k].mDataTime;
+        }
+    }qDebug()<< "1getCorrespondence2";
 }
 
 
@@ -327,31 +388,32 @@ void Server::receiveMessage(QDataStream *in, QDataStream *out)
 
     m_users.receiveMessage(newmessage);
 
-    QTcpSocket *pRecipientSocket = m_users.getUserTcpSocket(newmessage.mRecipient);
-
-    // ТУТ ПОТРІБНО ВІДПРАВЛЯТИ ПОВІДОМЛЕННЯ ОДЕРЖУВАЧУ
-
-    QByteArray block;
-    QDataStream toRecipient (&block, QIODevice::WriteOnly);
-    toRecipient.setVersion(QDataStream::Qt_5_5);
-    toRecipient << quint16(0);
-
-    toRecipient << quint8(MessageTypes::message)
-                << newmessage.mSender
-                << newmessage.mRecipient
-                << newmessage.mMessageText
-                << newmessage.mDataTime;
-
-    toRecipient.device()->seek(0);
-    toRecipient << quint16 (block.size() - sizeof(quint16));
-    pRecipientSocket->write(block);
+    QTcpSocket *pRecipientSocket = NULL;
+    pRecipientSocket = m_users.getUserTcpSocket(newmessage.mRecipient);
 
 
-    *out << quint8(MessageTypes::message)
-         << newmessage.mSender
-         << newmessage.mRecipient
-         << newmessage.mMessageText
-         << newmessage.mDataTime;
+    if(pRecipientSocket)
+    {
 
+        QByteArray block;
+        QDataStream toRecipient (&block, QIODevice::WriteOnly);
+        toRecipient.setVersion(QDataStream::Qt_5_5);
+        toRecipient << quint16(0);
 
+        toRecipient << quint8(MessageTypes::message)
+                    << newmessage.mSender
+                    << newmessage.mRecipient
+                    << newmessage.mMessageText
+                    << newmessage.mDataTime;
+
+        toRecipient.device()->seek(0);
+        toRecipient << quint16 (block.size() - sizeof(quint16));
+        pRecipientSocket->write(block);
+    }
+
+    //    *out << quint8(MessageTypes::message) // ЗАЧЕМ????????????????????
+    //         << newmessage.mSender
+    //         << newmessage.mRecipient
+    //         << newmessage.mMessageText
+    //         << newmessage.mDataTime;
 }

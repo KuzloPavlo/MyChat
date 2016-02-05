@@ -39,6 +39,10 @@ public:
 
     QTcpSocket* getUserTcpSocket(const QString &userLogin);
 
+    void setNullUserTcpSocket(const QString &userLogin);
+
+    void disconnectUser(QTcpSocket *userTcpSocket);
+
     void receiveMessage(const Message &newmessage);
 
 signals:

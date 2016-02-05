@@ -89,6 +89,34 @@ QTcpSocket* UsersArray::getUserTcpSocket(const QString &userLogin)
 }
 
 
+void UsersArray::setNullUserTcpSocket(const QString &userLogin)
+{
+    for(int i = 0; i < m_users.size(); i++)
+    {
+        if(userLogin == m_users[i].getLogin())
+        {
+            // QTcpSocket *emptySocket = NULL; // сравни
+            m_users[i].setTcpSocket(NULL);
+            break;
+        }
+    }
+}
+
+
+void UsersArray::disconnectUser(QTcpSocket *userTcpSocket)
+{
+
+    for(int i = 0; i < m_users.size(); i++)
+    {
+        if(userTcpSocket == m_users[i].getTcpSocket())
+        {
+            m_users[i].setTcpSocket(NULL);
+            qDebug()<< "DISCONNECTED " << m_users[i].getLogin();
+            break;
+        }
+    }
+}
+
 
 QVector<User> UsersArray::findFriend (const QString &tokenFriend)
 {
@@ -102,8 +130,6 @@ QVector<User> UsersArray::findFriend (const QString &tokenFriend)
                 m_users[i].getLogin().indexOf(tokenFriend) != -1 )
         {
             potentialFriends.push_back(m_users[i]);
-            qDebug() << " User array";
-            qDebug() << m_users[i].getLogin();
         }
     }
     return potentialFriends;
@@ -171,17 +197,21 @@ QVector<User> UsersArray::getUserFriends(const QString &userLogin)
 
 QVector<Correspondence> UsersArray::getUserCorrespondence(const QString &userLogin)
 {
+    qDebug()<< "1UsersArray::getUserCorrespondence1";
     QVector<Correspondence> correspondence;
 
     for (int i = 0; i < m_users.size(); i++)
     {
         if (userLogin == m_users[i].getLogin())
         {
+        qDebug()<< "1UsersArray::getUserCorrespondence1";
             correspondence = m_users[i].getCorrespondence();
             break;
         }
     }
+    qDebug()<< "1UsersArray::getUserCorrespondence2";
     return correspondence;
+
 }
 
 
@@ -221,8 +251,6 @@ void UsersArray::receiveMessage(const Message &newmessage)
         if(m_Correspondence[i].findParticipants(newmessage.mSender, newmessage.mRecipient))
         {
             m_Correspondence[i].addNewMessage(newmessage);
-            qDebug()<< newmessage.mMessageText;
-
             break;
         }
     }

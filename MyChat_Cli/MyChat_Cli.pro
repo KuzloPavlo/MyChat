@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     client.cpp \
     formmessage.cpp \
     incomingmessage.cpp \
-    outgoingmessage.cpp
+    outgoingmessage.cpp \
+    servermessage.cpp
 
 HEADERS  += mainwindow.h \
     ../MyChat_Lib/user.h \
@@ -30,7 +31,8 @@ HEADERS  += mainwindow.h \
     client.h \
     formmessage.h \
     incomingmessage.h \
-    outgoingmessage.h
+    outgoingmessage.h \
+    servermessage.h
 
 FORMS    += mainwindow.ui \
     formmessage.ui

@@ -3,10 +3,10 @@
 #include <QDebug>
 #include <QString>
 #include "returnvalues.h"
-#include <correspondence.h>
+#include "correspondence.h"
 #include <QTcpSocket>
 
-class Correspondence;   // forward declaration
+//class Correspondence;   // forward declaration
 
 class User
 {

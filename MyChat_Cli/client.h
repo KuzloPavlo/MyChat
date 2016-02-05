@@ -65,7 +65,7 @@ signals:
     void signalWrongPassword();
     void signalIsEmty();
     void signalFoundFriend(const QString &login);
-    void signalNewFriend(const User &newFriend);
+    void signalNewFriend();
     void signalIncomingMessage(
             const QString &sender,
             const QString &message,
@@ -110,8 +110,10 @@ private:
     void processFindFriendResponse(QDataStream *in);
     void processAddFriendResponse(QDataStream *in);
     void setNewFriend(QDataStream *in);
-    void getFriendsAndCorrespondence();
-    void setFriendsAndCorrespondence(QDataStream *in);
+    void getFriends();
+    void getCorrespondence();
+    void setFriends(QDataStream *in);
+    void setCorrespondence(QDataStream *in);
     //void showCorrespondence(const QString &sender, const QString &recipient);
 
     void receiveMessage(QDataStream *in);

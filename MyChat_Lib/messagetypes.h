@@ -8,5 +8,6 @@ enum MessageTypes
     addFriend,
     removeFriend,
     getFriends,
+    getCorrespondence,
     message
 };
