@@ -1,10 +1,7 @@
 QT += core
 QT += network
-//---
-QT += gui
- QT += widgets
- TEMPLATE = app
-//--
+QT -= gui
+
 TARGET = MyChat_Ser
 CONFIG += console
 CONFIG -= app_bundle

@@ -33,6 +33,7 @@ public:
     void setTcpSocket(QTcpSocket *pClientSocket);
 
     void addFriend(User *pfriend, Correspondence *correspondence);
+    void addGroupCorrespondence(Correspondence *groupChat);
     QVector<User> getFriends();
     QVector<Correspondence> getCorrespondence();
     void removeFriend(const QString &friendLogin);

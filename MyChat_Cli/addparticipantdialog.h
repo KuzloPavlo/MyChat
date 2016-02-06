@@ -16,12 +16,13 @@ public:
     ~AddParticipantDialog();
     void setFlagCreatingNewChat();
     void setFlagAddingParticipants();
-   // bool isNewChat();
+
 
 signals:
 
     void signalFindParticipants(const QString &tokenParticipant);
-
+    void signalAddNewParticipant(const int & IDNumber, QVector<QString> newParticipants);
+    void signalCreateNewCaht(QVector<QString> participants);
 private slots:
     void on_findFriendEdit_textChanged(const QString &arg1);
     void slotFindParticipant(const QString &login);
@@ -38,8 +39,8 @@ private:
     QVector<QString> m_currentParticipants;
     QVector<QString> m_newParticipants;
     bool m_flagCreatedNew;
-    void AddNewParticipant();
-    void CreateNewCaht();
+    int m_IDNumber;
+
 
     void f(const QString &str); // for debug
 };

@@ -66,6 +66,7 @@ signals:
     void signalIsEmty();
     void signalFoundFriend(const QString &login);
     void signalNewFriend();
+    void signalNewGroupChat();
     void signalIncomingMessage(
             const QString &sender,
             const QString &message,
@@ -113,7 +114,9 @@ private:
 
     void processFindFriendResponse(QDataStream *in);
     void processAddFriendResponse(QDataStream *in);
+    void processCreateGroupChatResponse(QDataStream *in);
     void setNewFriend(QDataStream *in);
+    void setNewGroupChat(QDataStream *in);
     void getFriends();
     void getCorrespondence();
     void setFriends(QDataStream *in);
@@ -138,6 +141,8 @@ private slots:
     void slotShowFriend(const QString &login);
 
     void slotShowPotentialFriend(const QString &login);
+
+    void slotCrateNewGroupChat(QVector<QString> participants);
 
     // void slotSearchFriendResponsFound(QVector<User> potentialFriends);
 

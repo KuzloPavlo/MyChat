@@ -49,9 +49,9 @@ QVector<User> User::getFriends()
 
 QVector<Correspondence> User::getCorrespondence()
 {
- qDebug()<< "User::getCorrespondence()11";
+    qDebug()<< "User::getCorrespondence()11";
     QVector<Correspondence> correspondence;
-qDebug()<< "User::getCorrespondence()12";
+    qDebug()<< "User::getCorrespondence()12";
     for(int i = 0; i < m_correspondence.size(); i++)
     {qDebug()<< "User::getCorrespondence()33";
         correspondence.push_back(*(m_correspondence[i]));
@@ -141,4 +141,10 @@ void User::setIPAddress(QString *pipAddress)
 void User::setTcpSocket(QTcpSocket *pClientSocket)
 {
     this->m_pUserSocket = pClientSocket;
+}
+
+
+void User::addGroupCorrespondence(Correspondence *groupChat)
+{qDebug() << "User::addGroupCorrespondenc1";
+    m_correspondence.push_back(groupChat);
 }

@@ -14,9 +14,10 @@ class Server : public QObject
     Q_OBJECT
 public:
     explicit Server(QObject *parent = 0);
+    void f(const QString &str);
 signals:
 
-    void f(const QString &str);
+
 public slots:
     void slotNewConnection ();
     void slotReadClient();
@@ -26,6 +27,7 @@ private:
     UsersArray m_users;
     QTcpServer *m_pserver;
     quint16 m_nnextBlockSize;
+    int m_ngroupChats;
 
     void registerUser(QDataStream *in, QDataStream *out);
 
@@ -44,4 +46,6 @@ private:
     void receiveMessage(QDataStream *in, QDataStream *out);
 
     void sendMessage();
+
+    void createNewGroupChat(QDataStream *in, QDataStream *out);
 };

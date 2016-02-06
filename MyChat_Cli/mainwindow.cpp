@@ -189,6 +189,14 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
                 SLOT(slotFindParticipant(const QString &))
                 );
 
+    connect(
+                addParticipantDialog,
+                SIGNAL(signalCreateNewCaht(QVector<QString>)),
+                m_pSERVER,
+                SLOT(slotCrateNewGroupChat(QVector<QString>))
+
+                );
+
 
     connect(
                 m_pSERVER,
@@ -402,9 +410,17 @@ void MainWindow::slotFoundFriend(QString login)
 void MainWindow::slotNewFriend()
 {
     ui->MainStackedWidgetInfo->setCurrentIndex(4);
+    ui->newGroupChatLabel->setVisible(false);
+    ui->newFriendLabel->setVisible(true);
 }
 
 
+void MainWindow::slotNewGroupChat()
+{
+    ui->MainStackedWidgetInfo->setCurrentIndex(4);
+    ui->newGroupChatLabel->setVisible(true);
+    ui->newFriendLabel->setVisible(false);
+}
 
 void MainWindow::slotIncomingMessage(const QString &sender,
                                      const QString &message,
@@ -439,7 +455,7 @@ void MainWindow::slotEarlierSendMessage(const QString &recipient, const QString 
 
 void MainWindow::on_MainConnBut_clicked()
 {
-emit f("MainWindow::on_MainConnBut_clicked()1");
+    emit f("MainWindow::on_MainConnBut_clicked()1");
     ui->ConntactsListWidget->clear();
 
     emit signalShowListFriends();

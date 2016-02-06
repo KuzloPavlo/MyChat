@@ -47,7 +47,7 @@ void Client::sendToServer(QDataStream *out, QByteArray *block)
 void Client::slotReadServer()
 {
     quint8 requestType;
-emit f("Client::slotReadServer()1");
+    emit f("Client::slotReadServer()1");
     QDataStream in (m_psocket);
     in.setVersion(QDataStream::Qt_5_5);
 
@@ -65,7 +65,7 @@ emit f("Client::slotReadServer()1");
 
     switch (static_cast<MessageTypes>(requestType))
     {
-emit f("Client::slotReadServer()2");
+    emit f("Client::slotReadServer()2");
     case MessageTypes::registration:
         this->processRegistrationResponse(&in);
         break;
@@ -93,6 +93,11 @@ emit f("Client::slotReadServer()2");
     case MessageTypes::message:
         this->receiveMessage(&in);
         break;
+
+    case MessageTypes::createChat:
+        this->processCreateGroupChatResponse(&in);
+        break;
+
 
     default:
         break;
@@ -782,4 +787,136 @@ void Client::slotShowPotentialFriend(const QString &login)
             return;
         }
     }
+}
+
+
+void Client::slotCrateNewGroupChat(QVector<QString> participants)
+{
+    emit f("Client::slotCrateNewGroupChat1");
+    QByteArray block;
+    QDataStream out (&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_5);
+    out << quint16(0)
+        << quint8(MessageTypes::createChat)
+        << m_user.getLogin()
+        << quint8(participants.size());
+
+    for(int i = 0; i < participants.size(); i++)
+    {
+        out << participants[i];
+    }
+
+    out.device()->seek(0);
+    out << quint16 (block.size() - sizeof(quint16));
+    m_psocket->write(block);
+    emit f("Client::slotCrateNewGroupChat2");
+}
+
+
+void Client::processCreateGroupChatResponse(QDataStream *in)
+{
+    quint8 response;
+
+    in->setVersion (QDataStream::Qt_5_5);
+    *in >> response;
+
+    switch(static_cast<ReturnValues>(response))
+    {
+    case ReturnValues::createdChat:
+        setNewGroupChat(in);
+        break;
+
+    default:
+        break;
+    }
+}
+
+
+void Client::setNewGroupChat(QDataStream *in)
+{
+
+    quint8 IDNumber;
+    quint8 nparticipant;
+    QString adminLogin;
+    QVector<QString> participantsLogins;
+    User *admin;
+    QVector<User*> participants;
+    QVector<QString> notFriends;
+
+
+    in->setVersion (QDataStream::Qt_5_5);
+
+    *in >> IDNumber
+            >> adminLogin
+            >> nparticipant;
+
+    for (int i = 0; i < static_cast<int>(nparticipant); i++)
+    {
+        QString participant;
+        *in >> participant;
+        participantsLogins.push_back(participant);
+    }
+
+    for(int j = 0; j < participantsLogins.size(); j++)
+    {
+        for(int h = 0; h < m_friends.size(); h++)
+        {
+            if(participantsLogins[j] == m_friends[h].getLogin())
+            {
+                participants.push_back(&m_friends[h]);
+                break;
+            }
+        }
+    }
+
+
+    if(participantsLogins.size() != participants.size())
+    {
+        for(int k = 0; k < participantsLogins.size(); k++)
+        {
+            bool flag = false;
+
+            for(int n = 0; n < participants.size(); n++)
+            {
+                if(participants[n]->getLogin() == participantsLogins[k])
+                {
+                    flag = true;
+                    break;
+                }
+            }
+
+            if(!flag)
+            {
+                notFriends.push_back(participantsLogins[k]);
+            }
+        }
+    }
+
+
+    if(adminLogin == m_user.getLogin())
+    {
+        admin =& m_user;
+    }
+    else
+    {
+        for(int o = 0; o < m_friends.size(); o++)
+        {
+            if(adminLogin == m_friends[o].getLogin())
+            {
+                admin =& m_friends[o];
+                break;
+            }
+        }
+    }
+
+    Correspondence groupCorrespondence(admin,participants,IDNumber);
+
+    for(int y = 0; y < notFriends.size(); y++)
+    {
+        groupCorrespondence.addParticipant(notFriends[y]);
+    }
+
+    m_Correspondence.push_back(groupCorrespondence);
+
+    emit signalNewGroupChat();
 }

@@ -4,7 +4,7 @@
 
 Correspondence::Correspondence()
 {
-qDebug()<< "1Correspondence()1";
+    qDebug()<< "1Correspondence()1";
 }
 
 Correspondence::Correspondence(User *sender, User *recipient)
@@ -14,6 +14,15 @@ Correspondence::Correspondence(User *sender, User *recipient)
     m_IDNumber = 0; // it is tet-a-tet chat
 }
 
+
+Correspondence::Correspondence(User *admin, QVector<User *> participants, const int &IDNumber):
+    m_admin(admin),m_participants(participants)
+{
+    qDebug() << "Correspondence::User *admin, QVector<User *> participants, const int &IDNumber";
+    m_IDNumber = IDNumber;
+    qDebug() << m_IDNumber;
+    m_participants.push_back(admin);
+}
 
 void Correspondence::addNewMessage(const Message &message)
 {
@@ -42,6 +51,11 @@ void Correspondence::addParticipant(User *participant)
     m_participants.push_back(participant);
 }
 
+void Correspondence::addParticipant(const QString &notFriend)
+{
+    m_notFriends.push_back(notFriend);
+}
+
 bool Correspondence::findParticipants(const QString &sender, const QString &recipient)
 {
     if (sender == m_participants[0]->getLogin() || sender == m_participants[1]->getLogin())
@@ -54,10 +68,21 @@ bool Correspondence::findParticipants(const QString &sender, const QString &reci
     return false;
 }
 
+bool Correspondence::findIDNumber(const int &IDNumber)
+{
+    if(m_IDNumber != IDNumber)
+    {
+        return false;
+    }qDebug() << "Correspondence::findIDNumbe";
+    qDebug() << m_IDNumber;
+    return true;
+}
 
 int Correspondence::getIDNumber()
 {
+qDebug()<< "Correspondence::getIDNumber()1";
     return m_IDNumber;
+
 }
 
 void Correspondence::setIDNumber(int IDNumber)
@@ -67,7 +92,7 @@ void Correspondence::setIDNumber(int IDNumber)
 
 QVector<QString> Correspondence::getParticipants()
 {
-qDebug()<< "Correspondence::getParticipants()1";
+    qDebug()<< "Correspondence::getParticipants()1";
     QVector<QString> Participants;
     qDebug()<< "Correspondence::getParticipants()2";
     for(int i = 0; i < m_participants.size(); i++)
@@ -83,4 +108,10 @@ qDebug()<< "Correspondence::getParticipants()1";
 Message Correspondence::getLastMessage()
 {
     return m_Messages[m_Messages.size()-1];
+}
+
+
+User* Correspondence::getAdmin()
+{
+    return m_admin;
 }

@@ -176,7 +176,52 @@ ReturnValues UsersArray::addFriend(const QString &userLogin,
 }
 
 
+ReturnValues UsersArray::addGroupChat(const QString &admiLogin, QVector<QString> participantslogins, const int &IDNumber,Correspondence *groupCaht)
+{
+    qDebug() << "UsersArray::addGroupChat1";
+    User *admin;
+    QVector<User*> participants;
+    for(int i = 0; i < m_users.size(); i++)
+    {qDebug() << "UsersArray::addGroupChat11";
+        if(admiLogin == m_users[i].getLogin())
+        {qDebug() << "UsersArray::addGroupChat2";
+            admin =& m_users[i];
+            continue;
+        }
 
+        for(int j = 0; j < participantslogins.size(); j++)
+        {qDebug() << "UsersArray::addGroupChat3";
+            if(participantslogins[j] ==  m_users[i].getLogin())
+            {qDebug() << "UsersArray::addGroupChat4";
+                participants.push_back(&m_users[i]);
+                break;
+            }
+        }
+    }
+    qDebug() << "UsersArray::addGroupChat5";
+    Correspondence correspondence(admin, participants,IDNumber);
+    m_Correspondence.push_back(correspondence);
+    qDebug() << "UsersArray::addGroupChat51";
+    for(int t = 0; t < m_Correspondence.size(); t++)
+    {qDebug() << "UsersArray::addGroupChat52";
+        if(m_Correspondence[t].findIDNumber(IDNumber))
+        {
+            groupCaht =& m_Correspondence[t];
+            qDebug() << groupCaht->getIDNumber();
+            qDebug() << "UsersArray::addGroupChat6";
+            admin->addGroupCorrespondence(&m_Correspondence[t]);
+qDebug() << "UsersArray::addGroupChat7";
+            for(int h = 0; h < participants.size(); h++)
+            {qDebug() << "UsersArray::addGroupChat8";
+                participants[h]->addGroupCorrespondence(&m_Correspondence[t]);
+                qDebug() << "UsersArray::addGroupChat9";
+            }
+            break;
+        }
+    }
+    qDebug() << "UsersArray::addGroupChat10";
+    return createdChat;
+}
 
 
 QVector<User> UsersArray::getUserFriends(const QString &userLogin)
@@ -204,9 +249,9 @@ QVector<Correspondence> UsersArray::getUserCorrespondence(const QString &userLog
     {
         if (userLogin == m_users[i].getLogin())
         {
-        qDebug()<< "1UsersArray::getUserCorrespondence2";
+            qDebug()<< "1UsersArray::getUserCorrespondence2";
             correspondence = m_users[i].getCorrespondence();
-             qDebug()<< "1UsersArray::getUserCorrespondence3";
+            qDebug()<< "1UsersArray::getUserCorrespondence3";
             break;
         }
     }

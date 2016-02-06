@@ -13,6 +13,7 @@ enum ReturnValues
     wrongPassword,
     addedFriend,
     removedFriend,
+    createdChat,
     isEmpty,
     done
 };

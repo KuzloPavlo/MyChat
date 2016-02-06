@@ -5,7 +5,7 @@ AddParticipantDialog::AddParticipantDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddParticipantDialog)
 {
-    this->setWindowFlags(Qt::Window | Qt::WindowTitleHint);
+   // this->setWindowFlags(Qt::Window | Qt::WindowTitleHint);
     ui->setupUi(this);
     ui->addParticipantBut->setVisible(false);
     ui->Attention->setVisible(false);
@@ -49,13 +49,14 @@ void AddParticipantDialog::on_listFriends_currentTextChanged(const QString &curr
 void AddParticipantDialog::on_addParticipantBut_clicked()
 {
     for(int i = 0; i < m_currentParticipants.size(); i++)
-    {
+    { f("on_addParticipantBut_clicked()1");
         if(m_currentParticipants[i] == m_currentItem)
-        {
+        { f("on_addParticipantBut_clicked()2");
             return;
         }
     }
     m_newParticipants.push_back(m_currentItem);
+     f("on_addParticipantBut_clicked()3");
 }
 
 void AddParticipantDialog::setFlagCreatingNewChat()
@@ -68,37 +69,23 @@ void AddParticipantDialog::setFlagAddingParticipants()
     m_flagCreatedNew = false;
 }
 
-//void AddParticipantDialog::isNewChat()
-//{
-//    return m_flagCreatedNew;
-//}
-
 void AddParticipantDialog::on_closeBut_clicked()
-{
+{ f("on_closeBut_clicked()1");
     if(m_flagCreatedNew)
-    {
+    {f("on_closeBut_clicked()2");
         if(m_newParticipants.size() == 0)
-        {
+        {f("on_closeBut_clicked()3");
             ui->Attention->setVisible(true);
             return;
-        }
+        }f("on_closeBut_clicked()4");
         ui->Attention->setVisible(false);
-        CreateNewCaht();
-        this->hide();
+        emit signalCreateNewCaht(m_newParticipants);
+        f("on_closeBut_clicked()5");
+        //this->hide();
     }
     else
-    {
-        AddNewParticipant();
+    {f("on_closeBut_clicked()6");
+        emit signalAddNewParticipant(m_IDNumber, m_newParticipants);
     }
-
-}
-
-void AddParticipantDialog::AddNewParticipant()
-{
-
-}
-
-void AddParticipantDialog::CreateNewCaht()
-{
 
 }

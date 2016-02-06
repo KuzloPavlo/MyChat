@@ -31,6 +31,8 @@ public:
 
     ReturnValues addFriend(const QString &userLogin, const QString &friendLogin);
 
+    ReturnValues addGroupChat(const QString &admiLogin, QVector<QString> participantslogins, const int &IDNumber, Correspondence *groupCaht);
+
     ReturnValues removeFriend(const QString &userLogin, const QString &friendLogin);
 
     QVector<User> getUserFriends(const QString &userLogin);

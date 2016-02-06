@@ -9,5 +9,6 @@ enum MessageTypes
     removeFriend,
     getFriends,
     getCorrespondence,
+    createChat,
     message
 };

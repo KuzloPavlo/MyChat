@@ -66,6 +66,8 @@ private slots:
 
     void slotNewFriend();
 
+    void slotNewGroupChat();
+
     void slotIncomingMessage(const QString &sender,
                              const QString &message,
                              const QString &time);
