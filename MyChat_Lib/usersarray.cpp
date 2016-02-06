@@ -204,8 +204,9 @@ QVector<Correspondence> UsersArray::getUserCorrespondence(const QString &userLog
     {
         if (userLogin == m_users[i].getLogin())
         {
-        qDebug()<< "1UsersArray::getUserCorrespondence1";
+        qDebug()<< "1UsersArray::getUserCorrespondence2";
             correspondence = m_users[i].getCorrespondence();
+             qDebug()<< "1UsersArray::getUserCorrespondence3";
             break;
         }
     }

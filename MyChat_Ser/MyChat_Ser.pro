@@ -1,7 +1,10 @@
 QT += core
 QT += network
-QT -= gui
-
+//---
+QT += gui
+ QT += widgets
+ TEMPLATE = app
+//--
 TARGET = MyChat_Ser
 CONFIG += console
 CONFIG -= app_bundle
@@ -22,3 +25,5 @@ HEADERS += \
     ../MyChat_Lib/messagetypes.h \
     ../MyChat_Lib/returnvalues.h \
     ../MyChat_Lib/correspondence.h
+
+FORMS +=

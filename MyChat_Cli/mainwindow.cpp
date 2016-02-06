@@ -8,15 +8,25 @@
 
 MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow), m_pSERVER (pSERVER)
+    ui(new Ui::MainWindow), m_pSERVER (pSERVER),addParticipantDialog (new AddParticipantDialog( this))
 {
     ui->setupUi(this);
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Stretch);
     ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
+
     //--------------------------------------------------------------+
     // section for experiments                                      |
     //--------------------------------------------------------------+
+    ui->tableParticipiantsChat->setCellWidget(0,0, new FormParticipant(ui->tableParticipiantsChat));
+    //    ui->tableParticipiantsChat->setCellWidget(0,1, new FormParticipant(ui->tableParticipiantsChat));
+    //    ui->tableParticipiantsChat->setCellWidget(0,2, new FormParticipant(ui->tableParticipiantsChat));
+    //    ui->tableParticipiantsChat->setCellWidget(1,0, new FormParticipant(ui->tableParticipiantsChat));
+    //    ui->tableParticipiantsChat->setCellWidget(1,1, new FormParticipant(ui->tableParticipiantsChat));
+    //    ui->tableParticipiantsChat->setCellWidget(1,2, new FormParticipant(ui->tableParticipiantsChat));
+
+    ui->tableParticipiantsChat->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tableParticipiantsChat->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     //--------------------------------------------------------------+
     // section for experiments                                      |
@@ -165,10 +175,47 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
                 SLOT(slotShowPotentialFriend(QString,QString,QString))
                 );
 
+    connect(
+                addParticipantDialog,
+                SIGNAL(signalFindParticipants(const QString &)),
+                m_pSERVER,
+                SLOT(slotFindParticipants(const QString &))
+                );
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalShowFriend(const QString &)),
+                addParticipantDialog,
+                SLOT(slotFindParticipant(const QString &))
+                );
+
+
+    connect(
+                m_pSERVER,
+                SIGNAL(f(const QString &)),
+                this,
+                SLOT(slotclientdebug(const QString &))
+                );
+
+
+
 }
 
+//-------------------------------------
+// function for debug
+//---------------------------------
 
+void MainWindow::f(const QString &str)
+{
+    ui->forWindDebug->addItem(str);
+}
 
+void MainWindow::slotclientdebug(const QString &str)
+{
+    ui->forClientDebug->addItem(str);
+}
+
+//-----------------------------------
 
 MainWindow::~MainWindow()
 {
@@ -392,6 +439,7 @@ void MainWindow::slotEarlierSendMessage(const QString &recipient, const QString 
 
 void MainWindow::on_MainConnBut_clicked()
 {
+emit f("MainWindow::on_MainConnBut_clicked()1");
     ui->ConntactsListWidget->clear();
 
     emit signalShowListFriends();
@@ -403,6 +451,7 @@ void MainWindow::on_MainConnBut_clicked()
 
     ui->MainStackedWidgetConntact->setCurrentIndex(0);
     ui->MainStackedWidgetInfo->setCurrentIndex(3);
+    emit f("MainWindow::on_MainConnBut_clicked()");
 }
 
 
@@ -410,6 +459,7 @@ void MainWindow::on_MainConnBut_clicked()
 void MainWindow::on_MainChatsBut_clicked()
 {
     ui->MainStackedWidgetConntact->setCurrentIndex(1);
+    ui->MainStackedWidgetInfo->setCurrentIndex(5);
 }
 
 
@@ -590,6 +640,8 @@ void MainWindow::slotShowFriend(QString name, QString surname, QString login)
     ui->FriendSurnameLabel->setText(surname);
     ui->FriendLoginLabel->setText(login);
     ui->MainStackedWidgetInfo->setCurrentIndex(1);
+
+    f("slotShowFriend many");
 }
 
 
@@ -599,4 +651,11 @@ void MainWindow::slotShowPotentialFriend(QString name, QString surname, QString 
     ui->SearchFriendSurnameLabel->setText(surname);
     ui->SearchFriendLoginLabel->setText(login);
     ui->MainStackedWidgetInfo->setCurrentIndex(2);
+}
+
+void MainWindow::on_CreateCahtBut_clicked()
+{
+    addParticipantDialog->setFlagCreatingNewChat();
+    addParticipantDialog->show();
+    f("on_CreateCahtBut_clicked");
 }

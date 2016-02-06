@@ -15,11 +15,14 @@ class Server : public QObject
 public:
     explicit Server(QObject *parent = 0);
 signals:
+
+    void f(const QString &str);
 public slots:
     void slotNewConnection ();
     void slotReadClient();
     void slotDisconnectClient();
 private:
+
     UsersArray m_users;
     QTcpServer *m_pserver;
     quint16 m_nnextBlockSize;

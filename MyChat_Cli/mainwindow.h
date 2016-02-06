@@ -12,6 +12,8 @@
 #include "formmessage.h"
 #include "incomingmessage.h"
 #include "outgoingmessage.h"
+#include "formparticipant.h"
+#include "addparticipantdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +27,7 @@ public:
 
     MainWindow(QWidget *parent = 0, Client *pSERVER = 0);
     ~MainWindow();
+    AddParticipantDialog *addParticipantDialog;
 
 private slots:
 
@@ -115,6 +118,10 @@ private slots:
 
     void slotAddFriendToList(QString login);
 
+    void on_CreateCahtBut_clicked();
+
+    void slotclientdebug(const QString &str);
+
 signals:
 
     void signalAddDataUser(QString *pname,
@@ -140,6 +147,7 @@ private:
 
     void addNewMessage(QTableWidget *tableWidget,QWidget *message);
 
+void f(const QString &str);
 
     Ui::MainWindow *ui;
 };

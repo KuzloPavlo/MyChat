@@ -1,6 +1,7 @@
 #include <QDataStream>
 #include "server.h"
 
+
 Server::Server(QObject *parent) : QObject(parent)
 {
     m_pserver = new QTcpServer(this);
@@ -335,30 +336,32 @@ void Server::getCorrespondence(QDataStream *in, QDataStream *out)
 
     in->setVersion(QDataStream::Qt_5_5);
     out->setVersion(QDataStream::Qt_5_5);
-qDebug()<< "1getCorrespondence1";
+    qDebug()<< "1getCorrespondence1";
     *in >> login;
-qDebug()<< "1getCorrespondence11";
-    QVector<Correspondence> correspondence = m_users.getUserCorrespondence(login);
-qDebug()<< "1getCorrespondence1";
+    qDebug()<< "1getCorrespondence11";
+    QVector<Correspondence> correspondence;
+    qDebug()<< "1getCorrespondence12";
+     correspondence = m_users.getUserCorrespondence(login);
+    qDebug()<< "1getCorrespondence1";
     *out << quint8 (MessageTypes::getCorrespondence)
          << quint8(correspondence.size());
-qDebug()<< "1getCorrespondence1";
+    qDebug()<< "1getCorrespondence1";
     for(int j = 0; j < correspondence.size(); j++)
     {
-    qDebug()<< "1getCorrespondence5";
+        qDebug()<< "1getCorrespondence5";
         *out << quint8 (correspondence[j].getIDNumber());
         qDebug()<< "1getCorrespondence6";
         QVector<QString> participants = correspondence[j].getParticipants();
         qDebug()<< "1getCorrespondence7";
         *out << quint8 (participants.size());
-qDebug()<< "1getCorrespondence8";
+        qDebug()<< "1getCorrespondence8";
         for(int i = 0; i < participants.size(); i++)
         {
-        qDebug()<< "1getCorrespondence9";
+            qDebug()<< "1getCorrespondence9";
             *out << participants[i];
             qDebug()<< "1getCorrespondence10";
         }
-qDebug()<< "1getCorrespondence1";
+        qDebug()<< "1getCorrespondence1";
         QVector<Message> messages = correspondence[j].getCorrespondence();
         *out << quint8(messages.size());
 

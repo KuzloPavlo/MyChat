@@ -47,7 +47,7 @@ void Client::sendToServer(QDataStream *out, QByteArray *block)
 void Client::slotReadServer()
 {
     quint8 requestType;
-
+emit f("Client::slotReadServer()1");
     QDataStream in (m_psocket);
     in.setVersion(QDataStream::Qt_5_5);
 
@@ -65,7 +65,7 @@ void Client::slotReadServer()
 
     switch (static_cast<MessageTypes>(requestType))
     {
-
+emit f("Client::slotReadServer()2");
     case MessageTypes::registration:
         this->processRegistrationResponse(&in);
         break;
@@ -100,6 +100,7 @@ void Client::slotReadServer()
 
     requestType = 0;
     m_nnextBlockSize = 0;
+    emit f("Client::slotReadServer()3");
 }
 
 
@@ -347,7 +348,7 @@ void Client::processAuthorizationResponse(QDataStream *in)
 
 void Client::setAuthorizedUser(QDataStream *in)
 {
-qDebug()<< "1setAuthorizedUser1";
+    qDebug()<< "1setAuthorizedUser1";
     in->setVersion (QDataStream::Qt_5_5);
 
     QString userName;
@@ -355,7 +356,7 @@ qDebug()<< "1setAuthorizedUser1";
     QString userLogin;
     QString userPassword = "";
     QString userIPAddress;
-qDebug()<< "1setAuthorizedUser1";
+    qDebug()<< "1setAuthorizedUser1";
     *in >> userName
             >> userSurname
             >> userLogin
@@ -368,7 +369,7 @@ qDebug()<< "1setAuthorizedUser1";
                   userIPAddress);
 
     this->m_user = tempUser;
-qDebug()<< "1setAuthorizedUser1";
+    qDebug()<< "1setAuthorizedUser1";
     emit signalAuthorized(userName, userSurname, userLogin);
     getFriends();
 }
@@ -384,8 +385,6 @@ void Client::processFindFriendResponse(QDataStream *in)
     in->setVersion(QDataStream::Qt_5_5);
 
     *in >> npotentialFriends;
-
-    qDebug() << "nashel";
 
     for (int i = 0; i < static_cast<int>(npotentialFriends); i++)
     {
@@ -442,7 +441,7 @@ void Client::processAddFriendResponse(QDataStream *in){
 
 void Client::setNewFriend(QDataStream *in)
 {
-qDebug()  << "1";
+    qDebug()  << "1";
     in->setVersion (QDataStream::Qt_5_5);
 
     QString friendName;
@@ -462,7 +461,7 @@ qDebug()  << "1";
                      friendPassword,
                      friendIPAddress);
 
-qDebug()  << "1";
+    qDebug()  << "1";
     m_friends.push_back(tempFriend);
 
     User *newFriend;
@@ -474,11 +473,11 @@ qDebug()  << "1";
             break;
         }
     }
-qDebug()  << "1";
+    qDebug()  << "1";
     Correspondence newCorrespondence(newFriend,&m_user); //create local correspondence
 
     m_Correspondence.push_back(newCorrespondence);
-qDebug()  << "1";
+    qDebug()  << "1";
     emit this->signalNewFriend();
     qDebug()  << "1";
 }
@@ -487,14 +486,14 @@ qDebug()  << "1";
 void Client::getFriends()
 {
     QByteArray block;
-qDebug()<< "1getFriends1";
+    qDebug()<< "1getFriends1";
     QDataStream out (&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_5);
-qDebug()<< "1getFriends1";
+    qDebug()<< "1getFriends1";
     out << quint16(0)
         << quint8(MessageTypes::getFriends)
         << m_user.getLogin();
-qDebug()<< "1getFriends1";
+    qDebug()<< "1getFriends1";
     out.device()->seek(0);
     out << quint16 (block.size() - sizeof(quint16));
     m_psocket->write(block);
@@ -505,14 +504,14 @@ qDebug()<< "1getFriends1";
 void Client::getCorrespondence()
 {
     QByteArray block;
-qDebug()<< "1getCorrespondence1";
+    qDebug()<< "1getCorrespondence1";
     QDataStream out (&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_5);
-qDebug()<< "1getCorrespondence1";
+    qDebug()<< "1getCorrespondence1";
     out << quint16(0)
         << quint8(MessageTypes::getCorrespondence)
         << m_user.getLogin();
-qDebug()<< "1getCorrespondence2";
+    qDebug()<< "1getCorrespondence2";
     out.device()->seek(0);
     out << quint16 (block.size() - sizeof(quint16));
     m_psocket->write(block);
@@ -522,11 +521,11 @@ qDebug()<< "1getCorrespondence2";
 void Client::setFriends(QDataStream *in)
 {
     quint8 nfriends;
-qDebug()<< "1setFriends1";
+    qDebug()<< "1setFriends1";
     in->setVersion(QDataStream::Qt_5_5);
 
     *in >> nfriends;
-qDebug()<< "1setFriends1";
+    qDebug()<< "1setFriends1";
     for(int i = 0; i < static_cast<int>(nfriends); i++)
     {
         QString friendName;
@@ -537,7 +536,7 @@ qDebug()<< "1setFriends1";
         *in >> friendName
                 >> friendSurname
                 >> friendLogin;
-qDebug()<< "1setFriends1";
+        qDebug()<< "1setFriends1";
         User tempFriend(
                     friendName,
                     friendSurname,
@@ -547,7 +546,7 @@ qDebug()<< "1setFriends1";
                     );
         m_friends.push_back(tempFriend);
     }
-qDebug()<< "1setFriends1";
+    qDebug()<< "1setFriends1";
     getCorrespondence();
     qDebug()<< "1setFriends2";
 }
@@ -561,7 +560,7 @@ void Client::setCorrespondence(QDataStream *in)
     in->setVersion(QDataStream::Qt_5_5);
 
     *in >> ncorrespondence;
-qDebug()<< "1setCorrespondence1";
+    qDebug()<< "1setCorrespondence1";
     for(int j = 0; j < static_cast<int> (ncorrespondence); j++)
     {
         quint8 IDNumber;
@@ -571,7 +570,7 @@ qDebug()<< "1setCorrespondence1";
         *in >> nparticipants;
 
         Correspondence messages;
-qDebug()<< "1setCorrespondence1";
+        qDebug()<< "1setCorrespondence1";
         for(int i = 0; i < static_cast<int> (nparticipants); i++)
         {
             QString participantLogin;
@@ -593,7 +592,7 @@ qDebug()<< "1setCorrespondence1";
                 }
             }
         }
-qDebug()<< "1setCorrespondence1";
+        qDebug()<< "1setCorrespondence1";
         quint8 nmessages;
         *in >> nmessages;
 
@@ -601,14 +600,14 @@ qDebug()<< "1setCorrespondence1";
         {
             QString sender,recipient,messageText;
             QDateTime dataTime;
-qDebug()<< "1setCorrespondence1";
+            qDebug()<< "1setCorrespondence1";
             *in >> sender
                     >> recipient
                     >> messageText
                     >> dataTime;
 
             Message tempMessage;
-qDebug()<< "1setCorrespondence1";
+            qDebug()<< "1setCorrespondence1";
             tempMessage.mSender = sender;
             tempMessage.mRecipient = recipient;
             tempMessage.mMessageText = messageText;
@@ -620,7 +619,7 @@ qDebug()<< "1setCorrespondence1";
         }
         m_Correspondence.push_back(messages);
     }
-qDebug()<< "1setCorrespondence2";
+    qDebug()<< "1setCorrespondence2";
     //    for(int h = 0; h < m_Correspondence.size(); h++)
     //    { qDebug()<<"5";
     //        Message temp = m_Correspondence[h].getLastMessage();
@@ -674,6 +673,22 @@ void Client::slotShowListFriends()
     }
 }
 
+
+void Client::slotFindParticipants(const QString &tokenParticipant)
+{
+    emit f("slotFindParticipants1");
+    for(int i = 0; i < m_friends.size(); i++)
+    {emit f("slotFindParticipants2");
+        if(m_friends[i].getName().indexOf(tokenParticipant) != -1 ||
+                m_friends[i].getSurname().indexOf(tokenParticipant) != -1 ||
+                m_friends[i].getLogin().indexOf(tokenParticipant) != -1)
+        {
+            emit signalShowFriend(m_friends[i].getLogin());
+            emit f("slotFindParticipants3");
+        }
+    }
+    emit f("slotFindParticipants4");
+}
 
 void Client::slotShowFriend(const QString &login)
 {

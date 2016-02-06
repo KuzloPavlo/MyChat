@@ -87,9 +87,13 @@ signals:
                           const QString &surname,
                           const QString &login);
 
+    void signalShowFriend(const QString &login);
+
     void signalShowPotentialFriend(const QString &name,
                                    const QString &surname,
                                    const QString &login);
+
+    void f(const QString &str);
 
 private:
     QTcpSocket *m_psocket;
@@ -118,6 +122,8 @@ private:
 
     void receiveMessage(QDataStream *in);
 
+
+
 private slots:
     void slotReadServer();
     void slotSetUser(const QString &pname,
@@ -127,6 +133,7 @@ private slots:
                      const QString &pipAddress);
 
     void slotShowListFriends();
+    void slotFindParticipants(const QString &tokenParticipant);
 
     void slotShowFriend(const QString &login);
 
