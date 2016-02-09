@@ -104,9 +104,7 @@ void Server::slotReadClient()
         break;
 
     case MessageTypes::createChat:
-        f("switch createchat");
         createNewGroupChat(&in, &out);
-        f("switch createchat break");
         break;
 
     default:
@@ -342,14 +340,14 @@ void Server::getFriends(QDataStream *in, QDataStream *out)
 
 
 void Server::getCorrespondence(QDataStream *in, QDataStream *out)
-{qDebug()<< "1getCorrespondence1";
+{
     QString login;
 
     in->setVersion(QDataStream::Qt_5_5);
     out->setVersion(QDataStream::Qt_5_5);
-    qDebug()<< "1getCorrespondence1";
+
     *in >> login;
-    qDebug()<< "1getCorrespondence11";
+
     QVector<Correspondence> correspondence;
     qDebug()<< "1getCorrespondence12";
     correspondence = m_users.getUserCorrespondence(login);
@@ -434,44 +432,43 @@ void Server::receiveMessage(QDataStream *in, QDataStream *out)
 
 
 void Server::createNewGroupChat(QDataStream *in, QDataStream *out)
-{f("Server::createNewGroupChat1");
+{
     QString adminLogin;
     quint8 nparticipant;
     QVector<QString> participants;
-    f("Server::createNewGroupChat2");
+
     in->setVersion(QDataStream::Qt_5_5);
     out->setVersion(QDataStream::Qt_5_5);
-    f("Server::createNewGroupChat3");
+
     *in >> adminLogin >> nparticipant;
-    f("Server::createNewGroupChat31");
+
     for(int i =0; i < static_cast<int>(nparticipant); i++)
-    { f("Server::createNewGroupChat32");
+    {
         QString participant;
-        f("Server::createNewGroupChat33");
         *in >> participant;
-        f("Server::createNewGroupChat34");
         participants.push_back(participant);
-        f("Server::createNewGroupChat35");
     }
-    f("Server::createNewGroupChat4");
-    Correspondence *groupCorrespondence = NULL;
-    f("Server::createNewGroupChat41");
-    ReturnValues respond = m_users.addGroupChat(adminLogin,participants,++m_ngroupChats, groupCorrespondence);
-    f("Server::createNewGroupChat5");
-    if(respond == ReturnValues::createdChat)
-    {f("Server::createNewGroupChat6");
+
+    ReturnValues respond = m_users.addGroupChat(adminLogin,participants,++m_ngroupChats);
+    Correspondence *groupCorrespondence = m_users.getGroupChat(m_ngroupChats);
+
+    *out << quint8 (MessageTypes::createChat)
+         << quint8 (respond);
+
+    if(respond == ReturnValues::createdChat && groupCorrespondence !=NULL)
+    {
+    qDebug() << "if(respond == ReturnValues::createdChat && groupCorrespondence !=NULL)";
         for(int j = 0; j < participants.size(); j++)
-        {f("Server::createNewGroupChat7");
+        {
             QTcpSocket *pfriendSocket = NULL;
-            f("Server::createNewGroupChat71");
             pfriendSocket = m_users.getUserTcpSocket(participants[j]);
-            f("Server::createNewGroupChat72");
+
             if(pfriendSocket)
-            {f("Server::createNewGroupChat8");
+            {
                 QByteArray block;
                 QDataStream toparticipant (&block, QIODevice::WriteOnly);
-
                 toparticipant.setVersion(QDataStream::Qt_5_5);
+
                 toparticipant << quint16(0)
                               << quint8 (MessageTypes::createChat)
                               << quint8 (respond)
@@ -480,44 +477,22 @@ void Server::createNewGroupChat(QDataStream *in, QDataStream *out)
                               << quint8 (participants.size());
 
                 for(int t = 0; t < participants.size(); t++)
-                {f("Server::createNewGroupChat9");
+                {
                     toparticipant << participants[t];
                 }
-
-                if (block.size())
-                {f("Server::createNewGroupChat10");
                     toparticipant.device()->seek(0);
                     toparticipant << quint16 (block.size() - sizeof(quint16));
                     pfriendSocket->write(block);
-                }
             }
         }
-        f("Server::createNewGroupChat11");
-        out->setVersion(QDataStream::Qt_5_5);
-        f("Server::createNewGroupChat13");
-        *out << quint16(0);
-        f("Server::createNewGroupChat14");
-        *out << quint8 (MessageTypes::createChat);
-        *out << quint8 (respond);
-        f("Server::createNewGroupChat15");
-        if(groupCorrespondence){
-            f("groupCorrespondence!=NULL");
-        }
-        //-------------------------------------------
-        //  groupCorrespondence ПОЧЕМУТО = NULL
-        //  СПРАВЬ
-        //
 
-        *out << quint8( groupCorrespondence->getIDNumber());
-        f("Server::createNewGroupChat16");
-        *out << adminLogin;
-        f("Server::createNewGroupChat17");
-        *out << quint8 (participants.size());
+        *out  << quint8( groupCorrespondence->getIDNumber())
+              << adminLogin
+              << quint8 (participants.size());
 
         for(int n = 0; n < participants.size(); n++)
-        {f("Server::createNewGroupChat18");
+        {
             *out << participants[n];
         }
     }
-    f("Server::createNewGroupChat19");
 }

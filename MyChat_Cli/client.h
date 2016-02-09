@@ -84,6 +84,8 @@ signals:
 
     void signalAddFriendToList(const QString &login);
 
+    void signalAddChatToList(const int &IDNumber);
+
     void signalShowFriend(const QString &name,
                           const QString &surname,
                           const QString &login);
@@ -136,6 +138,9 @@ private slots:
                      const QString &pipAddress);
 
     void slotShowListFriends();
+
+    void slotShowListChats();
+
     void slotFindParticipants(const QString &tokenParticipant);
 
     void slotShowFriend(const QString &login);

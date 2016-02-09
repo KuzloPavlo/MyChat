@@ -11,7 +11,7 @@ Correspondence::Correspondence(User *sender, User *recipient)
 {
     m_participants.push_back(sender);
     m_participants.push_back(recipient);
-    m_IDNumber = 0; // it is tet-a-tet chat
+    m_IDNumber = 0;                       // it is a Tet-a-Tet - chat
 }
 
 
@@ -73,16 +73,13 @@ bool Correspondence::findIDNumber(const int &IDNumber)
     if(m_IDNumber != IDNumber)
     {
         return false;
-    }qDebug() << "Correspondence::findIDNumbe";
-    qDebug() << m_IDNumber;
+    }
     return true;
 }
 
 int Correspondence::getIDNumber()
 {
-qDebug()<< "Correspondence::getIDNumber()1";
     return m_IDNumber;
-
 }
 
 void Correspondence::setIDNumber(int IDNumber)

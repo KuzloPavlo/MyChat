@@ -176,7 +176,7 @@ ReturnValues UsersArray::addFriend(const QString &userLogin,
 }
 
 
-ReturnValues UsersArray::addGroupChat(const QString &admiLogin, QVector<QString> participantslogins, const int &IDNumber,Correspondence *groupCaht)
+ReturnValues UsersArray::addGroupChat(const QString &admiLogin, QVector<QString> participantslogins, const int &IDNumber)/*,Correspondence *groupCaht)*/
 {
     qDebug() << "UsersArray::addGroupChat1";
     User *admin;
@@ -206,11 +206,11 @@ ReturnValues UsersArray::addGroupChat(const QString &admiLogin, QVector<QString>
     {qDebug() << "UsersArray::addGroupChat52";
         if(m_Correspondence[t].findIDNumber(IDNumber))
         {
-            groupCaht =& m_Correspondence[t];
-            qDebug() << groupCaht->getIDNumber();
+            // groupCaht =& m_Correspondence[t];
+            // qDebug() << groupCaht->getIDNumber();
             qDebug() << "UsersArray::addGroupChat6";
             admin->addGroupCorrespondence(&m_Correspondence[t]);
-qDebug() << "UsersArray::addGroupChat7";
+            qDebug() << "UsersArray::addGroupChat7";
             for(int h = 0; h < participants.size(); h++)
             {qDebug() << "UsersArray::addGroupChat8";
                 participants[h]->addGroupCorrespondence(&m_Correspondence[t]);
@@ -223,6 +223,18 @@ qDebug() << "UsersArray::addGroupChat7";
     return createdChat;
 }
 
+
+Correspondence* UsersArray::getGroupChat(const int &IDNumber)
+{
+    for(int i = 0; i < m_Correspondence.size(); i++)
+    {
+        if(m_Correspondence[i].findIDNumber(IDNumber))
+        {
+            return &m_Correspondence[i];
+        }
+    }
+    return NULL;
+}
 
 QVector<User> UsersArray::getUserFriends(const QString &userLogin)
 {

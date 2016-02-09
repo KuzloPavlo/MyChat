@@ -14,6 +14,7 @@
 #include "outgoingmessage.h"
 #include "formparticipant.h"
 #include "addparticipantdialog.h"
+#include "formchat.h"
 
 namespace Ui {
 class MainWindow;
@@ -120,9 +121,13 @@ private slots:
 
     void slotAddFriendToList(QString login);
 
+    void slotAddChatToList(const int &IDNumber);
+
     void on_CreateCahtBut_clicked();
 
     void slotclientdebug(const QString &str);
+
+    void on_ChatListWidget_itemClicked(QListWidgetItem *item);
 
 signals:
 
@@ -133,6 +138,8 @@ signals:
                            QString *pipAddress);
 
     void signalShowListFriends();
+
+    void signalShowListChats();
 
     void signalShowFriend(const QString &login);
 
@@ -149,7 +156,7 @@ private:
 
     void addNewMessage(QTableWidget *tableWidget,QWidget *message);
 
-void f(const QString &str);
+    void f(const QString &str);
 
     Ui::MainWindow *ui;
 };

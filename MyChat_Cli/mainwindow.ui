@@ -57,7 +57,7 @@
        <number>1</number>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="LoginPage">
        <layout class="QGridLayout" name="gridLayout_22">
@@ -1159,7 +1159,7 @@
                   <item row="1" column="0" colspan="5">
                    <widget class="QStackedWidget" name="MainStackedWidgetConntact">
                     <property name="currentIndex">
-                     <number>0</number>
+                     <number>1</number>
                     </property>
                     <widget class="QWidget" name="MainConnPage">
                      <layout class="QGridLayout" name="gridLayout_11">
@@ -1208,11 +1208,21 @@
                       </property>
                       <item row="0" column="0">
                        <widget class="QListWidget" name="ChatListWidget">
-                        <item>
-                         <property name="text">
-                          <string>chat</string>
-                         </property>
-                        </item>
+                        <property name="frameShape">
+                         <enum>QFrame::NoFrame</enum>
+                        </property>
+                        <property name="lineWidth">
+                         <number>0</number>
+                        </property>
+                        <property name="verticalScrollBarPolicy">
+                         <enum>Qt::ScrollBarAlwaysOff</enum>
+                        </property>
+                        <property name="sizeAdjustPolicy">
+                         <enum>QAbstractScrollArea::AdjustToContents</enum>
+                        </property>
+                        <property name="editTriggers">
+                         <set>QAbstractItemView::NoEditTriggers</set>
+                        </property>
                        </widget>
                       </item>
                      </layout>
@@ -1364,7 +1374,7 @@
                </size>
               </property>
               <property name="currentIndex">
-               <number>4</number>
+               <number>6</number>
               </property>
               <widget class="QWidget" name="MainUserInfo">
                <layout class="QGridLayout" name="gridLayout_16">

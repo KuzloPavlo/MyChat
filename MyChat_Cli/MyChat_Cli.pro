@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     outgoingmessage.cpp \
     servermessage.cpp \
     formparticipant.cpp \
-    addparticipantdialog.cpp
+    addparticipantdialog.cpp \
+    formchat.cpp
 
 HEADERS  += mainwindow.h \
     ../MyChat_Lib/user.h \
@@ -36,12 +37,14 @@ HEADERS  += mainwindow.h \
     outgoingmessage.h \
     servermessage.h \
     formparticipant.h \
-    addparticipantdialog.h
+    addparticipantdialog.h \
+    formchat.h
 
 FORMS    += mainwindow.ui \
     formmessage.ui \
     formparticipant.ui \
-    addparticipantdialog.ui
+    addparticipantdialog.ui \
+    formchat.ui
 
 
 INCLUDEPATH += "C:/MyChat/MyChat/MyChat_Lib"

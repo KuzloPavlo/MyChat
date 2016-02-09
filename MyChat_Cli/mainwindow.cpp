@@ -6,6 +6,7 @@
 #include <QSpacerItem>
 #include <QString>
 
+
 MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), m_pSERVER (pSERVER),addParticipantDialog (new AddParticipantDialog( this))
@@ -13,7 +14,6 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
     ui->setupUi(this);
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Stretch);
     ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
 
     //--------------------------------------------------------------+
     // section for experiments                                      |
@@ -28,6 +28,26 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
     ui->tableParticipiantsChat->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableParticipiantsChat->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+    int ID = 77;
+    QString adm = "PAVEL";
+    QString chtname = "Chat Name 77";
+    QString us1 = "name1";
+    QString us2 = "name2";
+    QString us3 = "name3";
+    QVector <QString> part;
+
+    part.push_back(us1);
+    part.push_back(us2);
+    part.push_back(us3);
+    part.push_back(adm);
+
+
+    // ui->ChatListWidget->setCellWidget(0,0 ,new FormChat(ID,chtname,adm, part, ui->ChatListWidget));
+
+    for(int i = 0; i < 20; i++)
+    {
+        FormChat *newchat =  new FormChat(ID,chtname,adm, part, ui->ChatListWidget);
+    }
     //--------------------------------------------------------------+
     // section for experiments                                      |
     //--------------------------------------------------------------+
@@ -148,6 +168,20 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
 
     connect(
                 this,
+                SIGNAL(signalShowListChats()),
+                m_pSERVER,
+                SLOT(slotShowListChats())
+                );
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalAddChatToList(int)),
+                this,
+                SLOT(slotAddChatToList(int))
+                );
+
+    connect(
+                this,
                 SIGNAL(signalShowFriend(QString)),
                 m_pSERVER,
                 SLOT(slotShowFriend(QString))
@@ -196,6 +230,30 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
                 SLOT(slotCrateNewGroupChat(QVector<QString>))
 
                 );
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalNewGroupChat()),
+                this,
+                SLOT( slotNewGroupChat())
+                );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     connect(
@@ -455,7 +513,6 @@ void MainWindow::slotEarlierSendMessage(const QString &recipient, const QString 
 
 void MainWindow::on_MainConnBut_clicked()
 {
-    emit f("MainWindow::on_MainConnBut_clicked()1");
     ui->ConntactsListWidget->clear();
 
     emit signalShowListFriends();
@@ -474,6 +531,10 @@ void MainWindow::on_MainConnBut_clicked()
 
 void MainWindow::on_MainChatsBut_clicked()
 {
+    ui->ChatListWidget->clear();
+
+    emit signalShowListChats();
+
     ui->MainStackedWidgetConntact->setCurrentIndex(1);
     ui->MainStackedWidgetInfo->setCurrentIndex(5);
 }
@@ -650,6 +711,13 @@ void MainWindow::slotAddFriendToList(QString login)
     ui->ConntactsListWidget->addItem(login);
 }
 
+
+void MainWindow::slotAddChatToList(const int &IDNumber)
+{
+    // ui->ChatTableWidget->addItem(QString::number(IDNumber));
+}
+
+
 void MainWindow::slotShowFriend(QString name, QString surname, QString login)
 {
     ui->FriendNameLabel->setText(name);
@@ -674,4 +742,17 @@ void MainWindow::on_CreateCahtBut_clicked()
     addParticipantDialog->setFlagCreatingNewChat();
     addParticipantDialog->show();
     f("on_CreateCahtBut_clicked");
+}
+
+
+void MainWindow::on_ChatListWidget_itemClicked(QListWidgetItem *item)
+{
+    f("MainWindow::on_ChatListWidget_itemClicked(QListWidgetItem *item)");
+
+
+    FormChat *currChat = dynamic_cast<FormChat*>(ui->ChatListWidget->itemWidget(item));
+ f("MainWindow::on_ChatListWidget_itemClicked(QListWidgetItem *item)");
+    f(currChat->m_admin);
+    f(currChat->m_ChatName);
+
 }

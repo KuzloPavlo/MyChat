@@ -95,7 +95,9 @@ void Client::slotReadServer()
         break;
 
     case MessageTypes::createChat:
+        emit f("Client::slotReadServer()case MessageTypes::createChat:1");
         this->processCreateGroupChatResponse(&in);
+        emit f("Client::slotReadServer()case MessageTypes::createChat:2");
         break;
 
 
@@ -679,6 +681,18 @@ void Client::slotShowListFriends()
 }
 
 
+void Client::slotShowListChats()
+{
+    for(int i = 0; i < m_Correspondence.size(); i++)
+    {
+        if(m_Correspondence[i].getIDNumber() != 0)
+        {
+            emit signalAddChatToList(m_Correspondence[i].getIDNumber());
+        }
+    }
+}
+
+
 void Client::slotFindParticipants(const QString &tokenParticipant)
 {
     emit f("slotFindParticipants1");
@@ -814,7 +828,7 @@ void Client::slotCrateNewGroupChat(QVector<QString> participants)
 
 
 void Client::processCreateGroupChatResponse(QDataStream *in)
-{
+{ emit f("Client::processCreateGroupChatResponse1");
     quint8 response;
 
     in->setVersion (QDataStream::Qt_5_5);
@@ -823,6 +837,7 @@ void Client::processCreateGroupChatResponse(QDataStream *in)
     switch(static_cast<ReturnValues>(response))
     {
     case ReturnValues::createdChat:
+        emit f("Client::processCreateGroupChatResponse2");
         setNewGroupChat(in);
         break;
 
@@ -834,7 +849,7 @@ void Client::processCreateGroupChatResponse(QDataStream *in)
 
 void Client::setNewGroupChat(QDataStream *in)
 {
-
+    emit f(" Client::setNewGroupChat1");
     quint8 IDNumber;
     quint8 nparticipant;
     QString adminLogin;
@@ -843,7 +858,7 @@ void Client::setNewGroupChat(QDataStream *in)
     QVector<User*> participants;
     QVector<QString> notFriends;
 
-
+    emit f(" Client::setNewGroupChat2");
     in->setVersion (QDataStream::Qt_5_5);
 
     *in >> IDNumber
@@ -851,7 +866,7 @@ void Client::setNewGroupChat(QDataStream *in)
             >> nparticipant;
 
     for (int i = 0; i < static_cast<int>(nparticipant); i++)
-    {
+    {emit f(" Client::setNewGroupChat3");
         QString participant;
         *in >> participant;
         participantsLogins.push_back(participant);
@@ -864,6 +879,7 @@ void Client::setNewGroupChat(QDataStream *in)
             if(participantsLogins[j] == m_friends[h].getLogin())
             {
                 participants.push_back(&m_friends[h]);
+                emit f(" Client::setNewGroupChat3");
                 break;
             }
         }
@@ -891,7 +907,7 @@ void Client::setNewGroupChat(QDataStream *in)
             }
         }
     }
-
+    emit f(" Client::setNewGroupChat4");
 
     if(adminLogin == m_user.getLogin())
     {
@@ -908,7 +924,7 @@ void Client::setNewGroupChat(QDataStream *in)
             }
         }
     }
-
+    emit f(" Client::setNewGroupChat5");
     Correspondence groupCorrespondence(admin,participants,IDNumber);
 
     for(int y = 0; y < notFriends.size(); y++)
