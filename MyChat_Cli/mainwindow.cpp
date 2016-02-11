@@ -18,7 +18,8 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
     //--------------------------------------------------------------+
     // section for experiments                                      |
     //--------------------------------------------------------------+
-    ui->tableParticipiantsChat->setCellWidget(0,0, new FormParticipant(ui->tableParticipiantsChat));
+    ui->tableParticipiantsChat->setCellWidget(0,0, new FormParticipant("Pavlo","Kuzlo", "KPV", ui->tableParticipiantsChat));
+
     //    ui->tableParticipiantsChat->setCellWidget(0,1, new FormParticipant(ui->tableParticipiantsChat));
     //    ui->tableParticipiantsChat->setCellWidget(0,2, new FormParticipant(ui->tableParticipiantsChat));
     //    ui->tableParticipiantsChat->setCellWidget(1,0, new FormParticipant(ui->tableParticipiantsChat));
@@ -46,7 +47,8 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
 
     for(int i = 0; i < 20; i++)
     {
-        FormChat *newchat =  new FormChat(ID,chtname,adm, part, ui->ChatListWidget);
+        emit slotAddChatToList(ID,chtname,part);
+        // FormChat *newchat =  new FormChat(ID,chtname,adm, part, ui->ChatListWidget);
     }
     //--------------------------------------------------------------+
     // section for experiments                                      |
@@ -712,9 +714,11 @@ void MainWindow::slotAddFriendToList(QString login)
 }
 
 
-void MainWindow::slotAddChatToList(const int &IDNumber)
+void MainWindow::slotAddChatToList(const int &IDNumer,
+                                   const QString &chatName,
+                                   QVector<QString> participants)
 {
-    // ui->ChatTableWidget->addItem(QString::number(IDNumber));
+    FormChat *newChat  = new FormChat(IDNumer,chatName,participants,ui->ChatListWidget);
 }
 
 
@@ -727,6 +731,59 @@ void MainWindow::slotShowFriend(QString name, QString surname, QString login)
 
     f("slotShowFriend many");
 }
+
+
+void MainWindow::slotShowChat(
+        const int &IDNumber,const QString &chatName,
+        QVector<QString> admin, QVector<QString> friends, QVector<QString> notFriends)
+{
+    if(!m_сurrentTetATetChat && IDNumber == m_currentGroupChat)
+    {
+        int rowCount = 1;
+        int nColumn = 0;
+
+        ui->tableParticipiantsChat->clearContents();
+        ui->tableParticipiantsChat->setRowCount(rowCount);
+
+        ui->ChatNameLabel->setText(chatName);
+
+        ui->AdminLabel->setText(admin[0] + " " + admin[1]);
+
+        for(int i = 0; i < friends.size(); i += 3)
+        {
+            FormParticipant *tempParticipant = new FormParticipant(friends[i+0],
+                    friends[i+1], friends[i+2],ui->tableParticipiantsChat);
+
+            if(nColumn == 3)
+            {
+                ui->tableParticipiantsChat->insertRow(rowCount);
+                rowCount++;
+                nColumn = 0;
+            }
+
+            ui->tableParticipiantsChat->setCellWidget(rowCount-1,nColumn,tempParticipant);
+            nColumn++;
+        }
+
+        for(int j = 0; j < notFriends.size(); j++)
+        {
+            FormParticipant *tempParticipant = new FormParticipant(
+                        notFriends[j], ui->tableParticipiantsChat);
+
+            if(nColumn == 3)
+            {
+                ui->tableParticipiantsChat->insertRow(rowCount);
+                rowCount++;
+                nColumn = 0;
+            }
+
+            ui->tableParticipiantsChat->setCellWidget(rowCount-1, nColumn,tempParticipant);
+            nColumn++;
+        }
+    }
+}
+
+
 
 
 void MainWindow::slotShowPotentialFriend(QString name, QString surname, QString login)
@@ -747,12 +804,8 @@ void MainWindow::on_CreateCahtBut_clicked()
 
 void MainWindow::on_ChatListWidget_itemClicked(QListWidgetItem *item)
 {
-    f("MainWindow::on_ChatListWidget_itemClicked(QListWidgetItem *item)");
-
-
-    FormChat *currChat = dynamic_cast<FormChat*>(ui->ChatListWidget->itemWidget(item));
- f("MainWindow::on_ChatListWidget_itemClicked(QListWidgetItem *item)");
-    f(currChat->m_admin);
-    f(currChat->m_ChatName);
-
+    FormChat *currChat = dynamic_cast<FormChat*> (ui->ChatListWidget->itemWidget(item));
+    m_сurrentTetATetChat = false;
+    m_currentGroupChat = currChat->getIDNumber();
+    emit signalShowChat(currChat->getIDNumber());
 }

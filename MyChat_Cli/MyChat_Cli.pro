@@ -20,9 +20,10 @@ SOURCES += main.cpp\
     incomingmessage.cpp \
     outgoingmessage.cpp \
     servermessage.cpp \
-    formparticipant.cpp \
     addparticipantdialog.cpp \
-    formchat.cpp
+    formchat.cpp \
+    formfriend.cpp \
+    formparticipant.cpp
 
 HEADERS  += mainwindow.h \
     ../MyChat_Lib/user.h \
@@ -36,20 +37,21 @@ HEADERS  += mainwindow.h \
     incomingmessage.h \
     outgoingmessage.h \
     servermessage.h \
-    formparticipant.h \
     addparticipantdialog.h \
-    formchat.h
+    formchat.h \
+    formfriend.h \
+    formparticipant.h
 
 FORMS    += mainwindow.ui \
     formmessage.ui \
-    formparticipant.ui \
     addparticipantdialog.ui \
-    formchat.ui
+    formchat.ui \
+    formfriend.ui
 
 
 INCLUDEPATH += "C:/MyChat/MyChat/MyChat_Lib"
 
-LIBS += "C:/MyChat/MyChat/build-MyChat_Lib-Desktop_Qt_5_5_1_MSVC2013_64bit-Release/release/MyChat_Lib.lib"
+LIBS += "C:/MyChat/MyChat/build-MyChat_Lib-Desktop_Qt_5_5_1_MSVC2013_64bit-Debug/debug/MyChat_Lib.lib"
 
 RESOURCES += \
     mychat_cli_res.qrc

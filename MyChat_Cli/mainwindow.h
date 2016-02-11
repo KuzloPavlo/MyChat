@@ -12,6 +12,7 @@
 #include "formmessage.h"
 #include "incomingmessage.h"
 #include "outgoingmessage.h"
+#include "formfriend.h"
 #include "formparticipant.h"
 #include "addparticipantdialog.h"
 #include "formchat.h"
@@ -115,13 +116,22 @@ private slots:
                         QString login
                         );
 
+    void slotShowChat(
+            const int &IDNumber,
+            const QString &chatName,
+            QVector<QString> admin,
+            QVector<QString> friends,
+            QVector<QString> notFriends);
+
     void slotShowPotentialFriend(QString name,
                                  QString surname,
                                  QString login);
 
     void slotAddFriendToList(QString login);
 
-    void slotAddChatToList(const int &IDNumber);
+    void slotAddChatToList(const int &IDNumer,
+                           const QString &chatName,
+                           QVector<QString> participants);
 
     void on_CreateCahtBut_clicked();
 
@@ -143,6 +153,8 @@ signals:
 
     void signalShowFriend(const QString &login);
 
+    void signalShowChat(const int &IDNumber);
+
     void signalShowPotentialFriend(const QString &login);
 
 private:
@@ -153,6 +165,10 @@ private:
 
     QVector<User>m_friends;
     QVector<Correspondence> m_Correspondence;
+
+    bool m_сurrentTetATetChat;
+    QString m_currentFriend;
+    int m_currentGroupChat;
 
     void addNewMessage(QTableWidget *tableWidget,QWidget *message);
 

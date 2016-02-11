@@ -687,7 +687,10 @@ void Client::slotShowListChats()
     {
         if(m_Correspondence[i].getIDNumber() != 0)
         {
-            emit signalAddChatToList(m_Correspondence[i].getIDNumber());
+            emit signalAddChatToList(
+                        m_Correspondence[i].getIDNumber(),
+                        m_Correspondence[i].getChatName(),
+                        m_Correspondence[i].getParticipants());
         }
     }
 }
@@ -775,6 +778,39 @@ void Client::slotShowFriend(const QString &login)
 //    }
 
 //}
+
+
+
+void Client::slotShowChat(const int &IDNumber)
+{
+    int chatIDNumber;
+    QString nameChat;
+    QVector<QString> admin;
+    QVector<QString> friends;
+    QVector<QString> notFriends;
+
+    for(int i = 0; i < m_Correspondence.size(); i++)
+    {
+        if(IDNumber == m_Correspondence[i].getIDNumber())
+        {
+            chatIDNumber = m_Correspondence[i].getIDNumber();
+
+            nameChat = m_Correspondence[i].getChatName();
+
+            admin = m_Correspondence[i].getDataAdmin();
+
+            friends = m_Correspondence[i].getDataParticipants();
+
+            notFriends = m_Correspondence[i].getNotFriends();
+
+            break;
+        }
+    }
+
+    emit signalShowChat(chatIDNumber,nameChat,admin,friends,notFriends);
+}
+
+
 
 void Client::slotShowPotentialFriend(const QString &login)
 {

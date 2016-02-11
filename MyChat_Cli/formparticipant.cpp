@@ -1,16 +1,17 @@
 #include "formparticipant.h"
-#include "ui_formparticipant.h"
+#include "ui_formfriend.h"
 
-FormParticipant::FormParticipant(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::FormParticipant)
+FormParticipant::FormParticipant(
+        const QString &name,
+        const QString &surname,
+        const QString &login,
+        QWidget *parent) : FormFriend(name,surname,login,parent)
 {
-    ui->setupUi(this);
-    ui->deleteParticipant->setVisible(false);
-    ui->Online->setVisible(false);
+    ui->deleteParticipant->setVisible(true);
 }
 
-FormParticipant::~FormParticipant()
+FormParticipant::FormParticipant(const QString &login,
+                                 QWidget *parent) : FormFriend(login,login,login,parent)
 {
-    delete ui;
+    ui->Login->setText(login);
 }

@@ -178,13 +178,13 @@ ReturnValues UsersArray::addFriend(const QString &userLogin,
 
 ReturnValues UsersArray::addGroupChat(const QString &admiLogin, QVector<QString> participantslogins, const int &IDNumber)/*,Correspondence *groupCaht)*/
 {
-    qDebug() << "UsersArray::addGroupChat1";
+
     User *admin;
     QVector<User*> participants;
     for(int i = 0; i < m_users.size(); i++)
-    {qDebug() << "UsersArray::addGroupChat11";
+    {
         if(admiLogin == m_users[i].getLogin())
-        {qDebug() << "UsersArray::addGroupChat2";
+        {
             admin =& m_users[i];
             continue;
         }
@@ -198,10 +198,10 @@ ReturnValues UsersArray::addGroupChat(const QString &admiLogin, QVector<QString>
             }
         }
     }
-    qDebug() << "UsersArray::addGroupChat5";
+
     Correspondence correspondence(admin, participants,IDNumber);
     m_Correspondence.push_back(correspondence);
-    qDebug() << "UsersArray::addGroupChat51";
+
     for(int t = 0; t < m_Correspondence.size(); t++)
     {qDebug() << "UsersArray::addGroupChat52";
         if(m_Correspondence[t].findIDNumber(IDNumber))

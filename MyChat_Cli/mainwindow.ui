@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>923</width>
-    <height>555</height>
+    <width>762</width>
+    <height>524</height>
    </rect>
   </property>
   <property name="baseSize">
@@ -1897,27 +1897,23 @@ Take a look in the chats list.</string>
                 </property>
                 <item row="0" column="0">
                  <layout class="QGridLayout" name="gridLayout_30">
-                  <item row="3" column="0" colspan="4">
-                   <widget class="QLabel" name="label_15">
-                    <property name="text">
-                     <string>   Сreation...</string>
+                  <item row="1" column="0">
+                   <spacer name="horizontalSpacer_40">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
                     </property>
-                   </widget>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Expanding</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
                   </item>
-                  <item row="1" column="1" rowspan="2">
-                   <widget class="QLabel" name="label_8">
-                    <property name="layoutDirection">
-                     <enum>Qt::LeftToRight</enum>
-                    </property>
-                    <property name="text">
-                     <string>Create new group chat?</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0" rowspan="2">
+                  <item row="1" column="2">
                    <spacer name="horizontalSpacer_41">
                     <property name="orientation">
                      <enum>Qt::Horizontal</enum>
@@ -1930,40 +1926,7 @@ Take a look in the chats list.</string>
                     </property>
                    </spacer>
                   </item>
-                  <item row="1" column="3" rowspan="2">
-                   <widget class="QPushButton" name="CreateCahtBut">
-                    <property name="text">
-                     <string>Create</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="4" rowspan="2">
-                   <spacer name="horizontalSpacer_40">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item row="1" column="2">
-                   <spacer name="horizontalSpacer_42">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item row="4" column="0" colspan="5">
+                  <item row="0" column="1">
                    <spacer name="verticalSpacer_18">
                     <property name="orientation">
                      <enum>Qt::Vertical</enum>
@@ -1976,7 +1939,20 @@ Take a look in the chats list.</string>
                     </property>
                    </spacer>
                   </item>
-                  <item row="0" column="0" colspan="5">
+                  <item row="1" column="1">
+                   <widget class="QPushButton" name="CreateCahtBut">
+                    <property name="minimumSize">
+                     <size>
+                      <width>130</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Create New Group Chat  </string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
                    <spacer name="verticalSpacer_20">
                     <property name="orientation">
                      <enum>Qt::Vertical</enum>
@@ -1988,6 +1964,13 @@ Take a look in the chats list.</string>
                      </size>
                     </property>
                    </spacer>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_15">
+                    <property name="text">
+                     <string>   Сreation...</string>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </item>
@@ -2012,6 +1995,48 @@ Take a look in the chats list.</string>
                 </property>
                 <item row="1" column="2">
                  <layout class="QGridLayout" name="gridLayout_29">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <item row="0" column="0" colspan="2">
+                   <widget class="QLabel" name="ChatNameLabel">
+                    <property name="font">
+                     <font>
+                      <pointsize>10</pointsize>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Chat Name</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_14">
+                    <property name="minimumSize">
+                     <size>
+                      <width>45</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>40</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>   Admin: </string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="0" column="2">
                    <widget class="QPushButton" name="ExitFromChat">
                     <property name="minimumSize">
@@ -2050,28 +2075,8 @@ Take a look in the chats list.</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_14">
-                    <property name="maximumSize">
-                     <size>
-                      <width>35</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Admin:</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0" colspan="2">
-                   <widget class="QLabel" name="label_7">
-                    <property name="text">
-                     <string>Chat Name</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="1" column="1">
-                   <widget class="QLabel" name="Admin">
+                   <widget class="QLabel" name="AdminLabel">
                     <property name="text">
                      <string>TextLabel</string>
                     </property>
@@ -2107,7 +2112,7 @@ Take a look in the chats list.</string>
                      <bool>true</bool>
                     </property>
                     <property name="rowCount">
-                     <number>2</number>
+                     <number>1</number>
                     </property>
                     <attribute name="horizontalHeaderVisible">
                      <bool>false</bool>
@@ -2121,11 +2126,6 @@ Take a look in the chats list.</string>
                     <attribute name="verticalHeaderShowSortIndicator" stdset="0">
                      <bool>true</bool>
                     </attribute>
-                    <row>
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </row>
                     <row/>
                     <column>
                      <property name="text">
@@ -2189,6 +2189,32 @@ Take a look in the chats list.</string>
               <property name="sizeHint" stdset="0">
                <size>
                 <width>500</width>
+                <height>0</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="3">
+             <widget class="QListWidget" name="forWindDebug">
+              <property name="maximumSize">
+               <size>
+                <width>150</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="3">
+             <spacer name="horizontalSpacer_17">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Minimum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>300</width>
                 <height>0</height>
                </size>
               </property>
@@ -2268,32 +2294,6 @@ Take a look in the chats list.</string>
                </property>
               </column>
              </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QListWidget" name="forWindDebug">
-              <property name="maximumSize">
-               <size>
-                <width>150</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0" colspan="3">
-             <spacer name="horizontalSpacer_17">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Minimum</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>300</width>
-                <height>0</height>
-               </size>
-              </property>
-             </spacer>
             </item>
             <item row="2" column="2">
              <widget class="QPushButton" name="SendMessageBut">

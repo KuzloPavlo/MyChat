@@ -4,15 +4,12 @@
 FormChat::FormChat(
         const int &IDNumer,
         const QString &chatName,
-        const QString &admin,
         QVector<QString> participants,
         QListWidget *listWidget,
         QWidget *parent) :
 
     m_IDNumber(IDNumer),
     m_ChatName(chatName),
-    m_admin(admin),
-    m_participants(participants),
     m_listWidget(listWidget),
     QWidget(listWidget),
     ui(new Ui::FormChat)
@@ -22,9 +19,9 @@ FormChat::FormChat(
 
     QString participantsLogin = "";
 
-    for (int i = 0; i < m_participants.size(); i++)
+    for (int i = 0; i < participants.size() && i < 3 ; i++)
     {
-        QString participant = " " + m_participants[i] + ",";
+        QString participant = " " + participants[i] + ",";
 
         participantsLogin += participant;
     }
@@ -39,4 +36,10 @@ FormChat::FormChat(
 FormChat::~FormChat()
 {
     delete ui;
+}
+
+
+int FormChat::getIDNumber()
+{
+    return m_IDNumber;
 }

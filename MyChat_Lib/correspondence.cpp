@@ -18,9 +18,8 @@ Correspondence::Correspondence(User *sender, User *recipient)
 Correspondence::Correspondence(User *admin, QVector<User *> participants, const int &IDNumber):
     m_admin(admin),m_participants(participants)
 {
-    qDebug() << "Correspondence::User *admin, QVector<User *> participants, const int &IDNumber";
     m_IDNumber = IDNumber;
-    qDebug() << m_IDNumber;
+
     m_participants.push_back(admin);
 }
 
@@ -111,4 +110,39 @@ Message Correspondence::getLastMessage()
 User* Correspondence::getAdmin()
 {
     return m_admin;
+}
+
+QVector<QString> Correspondence::getDataParticipants()
+{
+    QVector<QString> dataParticipants;
+
+    for(int i = 0; i < m_participants.size(); i++)
+    {
+        dataParticipants.push_back(m_participants[i]->getName());
+        dataParticipants.push_back(m_participants[i]->getSurname());
+        dataParticipants.push_back(m_participants[i]->getLogin());
+    }
+
+    return dataParticipants;
+}
+
+QVector<QString> Correspondence::getNotFriends()
+{
+    return m_notFriends;
+}
+
+QString Correspondence::getChatName()
+{
+    return m_ChatName;
+}
+
+QVector<QString> Correspondence::getDataAdmin()
+{
+    QVector<QString> dataAdmin;
+
+    dataAdmin.push_back(m_admin->getName());
+    dataAdmin.push_back(m_admin->getSurname());
+    dataAdmin.push_back(m_admin->getLogin());
+
+    return dataAdmin;
 }

@@ -5,7 +5,7 @@ IncomingMessage::IncomingMessage(
         const QString &sender,
         const QString &message,
         const QString &time,
-        QWidget *parent ) : FormMessage (sender, message, time, parent)
+        QWidget *parent ) : FormMessage(sender, message, time, parent)
 {
     this->ui->empty->setMinimumWidth(40);
     this->ui->empty->setMaximumWidth(40);

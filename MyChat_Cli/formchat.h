@@ -16,20 +16,16 @@ public:
     explicit FormChat(
             const int &IDNumer,
             const QString &chatName,
-            const QString &admin,
             QVector<QString> participants,
             QListWidget *listWidget,
             QWidget *parent = 0);
     ~FormChat();
 
+    int getIDNumber();
+
 private:
     Ui::FormChat *ui;
-public:
     int m_IDNumber;
     QString m_ChatName;
-    QString m_admin;
-    QVector <QString> m_participants;
     QListWidget *m_listWidget;
-
-
 };

@@ -1,22 +1,18 @@
-#ifndef FORMPARTICIPANT_H
-#define FORMPARTICIPANT_H
+#pragma once
+#include <formfriend.h>
 
-#include <QWidget>
-
-namespace Ui {
-class FormParticipant;
-}
-
-class FormParticipant : public QWidget
+class FormParticipant : public FormFriend
 {
+
     Q_OBJECT
 
 public:
-    explicit FormParticipant(QWidget *parent = 0);
-    ~FormParticipant();
+    FormParticipant(
+            const QString &name,
+            const QString &surname,
+            const QString &login,
+            QWidget *parent = 0);
 
-private:
-    Ui::FormParticipant *ui;
+    FormParticipant(const QString &login,
+                    QWidget *parent = 0);
 };
-
-#endif // FORMPARTICIPANT_H

@@ -22,11 +22,16 @@ public:
     int getIDNumber();
     void setIDNumber(int IDNumber);
     QVector<QString> getParticipants();
+    QVector<QString> getDataParticipants();
+    QVector<QString> getDataAdmin();
+    QVector<QString> getNotFriends();
     User* getAdmin();
+    QString getChatName();
 private:
     QVector<Message> m_Messages;
     QVector<User*> m_participants;
     QVector<QString> m_notFriends;
+    QString m_ChatName;
     int m_IDNumber;
     User *m_admin;
 };
