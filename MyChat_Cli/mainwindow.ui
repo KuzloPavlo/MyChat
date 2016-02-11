@@ -57,7 +57,7 @@
        <number>1</number>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="LoginPage">
        <layout class="QGridLayout" name="gridLayout_22">
@@ -1159,7 +1159,7 @@
                   <item row="1" column="0" colspan="5">
                    <widget class="QStackedWidget" name="MainStackedWidgetConntact">
                     <property name="currentIndex">
-                     <number>1</number>
+                     <number>0</number>
                     </property>
                     <widget class="QWidget" name="MainConnPage">
                      <layout class="QGridLayout" name="gridLayout_11">

@@ -15,19 +15,12 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(0,QHeaderView::Stretch);
     ui->tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
+    ui->tableParticipiantsChat->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->tableParticipiantsChat->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     //--------------------------------------------------------------+
     // section for experiments                                      |
     //--------------------------------------------------------------+
     ui->tableParticipiantsChat->setCellWidget(0,0, new FormParticipant("Pavlo","Kuzlo", "KPV", ui->tableParticipiantsChat));
-
-    //    ui->tableParticipiantsChat->setCellWidget(0,1, new FormParticipant(ui->tableParticipiantsChat));
-    //    ui->tableParticipiantsChat->setCellWidget(0,2, new FormParticipant(ui->tableParticipiantsChat));
-    //    ui->tableParticipiantsChat->setCellWidget(1,0, new FormParticipant(ui->tableParticipiantsChat));
-    //    ui->tableParticipiantsChat->setCellWidget(1,1, new FormParticipant(ui->tableParticipiantsChat));
-    //    ui->tableParticipiantsChat->setCellWidget(1,2, new FormParticipant(ui->tableParticipiantsChat));
-
-    ui->tableParticipiantsChat->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    ui->tableParticipiantsChat->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     int ID = 77;
     QString adm = "PAVEL";
@@ -177,9 +170,35 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
 
     connect(
                 m_pSERVER,
-                SIGNAL(signalAddChatToList(int)),
+                SIGNAL(signalAddChatToList(const int &,
+                                           const QString &,
+                                           QVector<QString> )),
                 this,
-                SLOT(slotAddChatToList(int))
+                SLOT(slotAddChatToList(const int &,
+                                       const QString &,
+                                       QVector<QString> ))
+                );
+
+    connect(
+                this,
+                SIGNAL(signalShowChat(const int &)),
+                m_pSERVER,
+                SLOT(slotShowChat(const int &))
+                );
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalShowChat(const int &,
+                                      const QString &,
+                                      QVector<QString>,
+                                      QVector<QString>,
+                                      QVector<QString>)),
+                this,
+                SLOT(slotShowChat(const int &,
+                                  const QString &,
+                                  QVector<QString>,
+                                  QVector<QString>,
+                                  QVector<QString>))
                 );
 
     connect(
@@ -633,26 +652,10 @@ void MainWindow::on_MainUserBut_clicked()
 
 void MainWindow::on_ConntactsListWidget_currentTextChanged(const QString &currentText)
 {
-    //    for (int i = 0; i < m_friends.size(); i++)
-    //    {
-    //        if (currentText == m_friends[i].getLogin())
-    //        {
-    //            ui->FriendNameLabel->setText(m_friends[i].getName());
-    //            ui->FriendSurnameLabel->setText(m_friends[i].getSurname());
-    //            ui->FriendLoginLabel->setText(m_friends[i].getLogin());
-    //            return;
-    //        }
-    //    }
-    //    ui->DeleteConBut->setVisible(true);  // WHOT THIS??
-    //    ui->MainStackedWidgetInfo->setCurrentIndex(1);
-
+    m_сurrentTetATetChat = true;
+    m_currentFriend = currentText;
     ui->tableWidget->setRowCount(0);
     emit signalShowFriend(currentText);
-
-
-
-
-    // Тут потрібно дописати підгрузку та відображення попередньої переписки
 }
 
 
@@ -737,6 +740,7 @@ void MainWindow::slotShowChat(
         const int &IDNumber,const QString &chatName,
         QVector<QString> admin, QVector<QString> friends, QVector<QString> notFriends)
 {
+    f("slotShowChat");
     if(!m_сurrentTetATetChat && IDNumber == m_currentGroupChat)
     {
         int rowCount = 1;
@@ -780,6 +784,7 @@ void MainWindow::slotShowChat(
             ui->tableParticipiantsChat->setCellWidget(rowCount-1, nColumn,tempParticipant);
             nColumn++;
         }
+        ui->MainStackedWidgetInfo->setCurrentIndex(6);
     }
 }
 
@@ -807,5 +812,7 @@ void MainWindow::on_ChatListWidget_itemClicked(QListWidgetItem *item)
     FormChat *currChat = dynamic_cast<FormChat*> (ui->ChatListWidget->itemWidget(item));
     m_сurrentTetATetChat = false;
     m_currentGroupChat = currChat->getIDNumber();
+    f("on_ChatListWidget_itemClicked");
+    ui->tableWidget->setRowCount(0);
     emit signalShowChat(currChat->getIDNumber());
 }
