@@ -27,7 +27,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     ../MyChat_Lib/user.h \
-    ../MyChat_Lib/usersarray.h \
+    ../MyChat_Lib/users.h \
     ../MyChat_Lib/messagetypes.h \
      ../MyChat_Lib/message.h \
     ../MyChat_Lib/returnvalues.h \

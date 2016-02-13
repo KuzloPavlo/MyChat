@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QDataStream>
 #include <QString>
+#include <QList>
 #include "user.h"
 #include "messagetypes.h"
 #include "returnvalues.h"
@@ -44,11 +45,16 @@ public:
             const QString &messageText,
             const QDateTime &dataTime);
 
+    void sendMessage(
+            const QString &sender,
+            const int & IDNumber,
+            const QString &messageText,
+            const QDateTime &dataTime);
+
 public:
 
-    //  QVector<User> m_potentialFriends;          // ПИТАЙ!!!!!
-    QByteArray m_block; //
-    QDataStream *m_out; //
+    QByteArray m_block;
+    QDataStream *m_out;
 
 
 signals:
@@ -68,6 +74,12 @@ signals:
     void signalNewFriend();
     void signalNewGroupChat();
     void signalIncomingMessage(
+            const QString &sender,
+            const QString &message,
+            const QString &time);
+
+    void signalGroupIncomingMessage(
+            const int &IDnumber,
             const QString &sender,
             const QString &message,
             const QString &time);
@@ -112,8 +124,8 @@ private:
     quint16 m_nnextBlockSize;
     User m_user;
     QVector<User> m_potentialFriends;
-    QVector<User> m_friends;
-    QVector<Correspondence> m_Correspondence;
+    QList<User> m_friends;
+    QList<Correspondence> m_Correspondence;
 
 
 
@@ -136,15 +148,17 @@ private:
 
     void receiveMessage(QDataStream *in);
 
+    void receiveGroupMessage(QDataStream *in);
+
 
 
 private slots:
     void slotReadServer();
-    void slotSetUser(const QString &pname,
-                     const QString &psurname,
-                     const QString &plogin,
-                     const QString &ppassword,
-                     const QString &pipAddress);
+    //    void slotSetUser(const QString &pname,
+    //                     const QString &psurname,
+    //                     const QString &plogin,
+    //                     const QString &ppassword,
+    //                     const QString &pipAddress);
 
     void slotShowListFriends();
 

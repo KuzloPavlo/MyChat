@@ -49,15 +49,12 @@ QVector<User> User::getFriends()
 
 QVector<Correspondence> User::getCorrespondence()
 {
-    qDebug()<< "User::getCorrespondence()11";
     QVector<Correspondence> correspondence;
-    qDebug()<< "User::getCorrespondence()12";
+
     for(int i = 0; i < m_correspondence.size(); i++)
-    {qDebug()<< "User::getCorrespondence()33";
+    {
         correspondence.push_back(*(m_correspondence[i]));
-        qDebug()<< "User::getCorrespondence()4";
     }
-    qDebug()<< "User::getCorrespondence()5";
     return correspondence;
 }
 

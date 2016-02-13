@@ -1,16 +1,17 @@
 #pragma once
 #include <QDebug>
 #include <QVector>
+#include <QList>
 #include <QDataStream>
 #include <QTcpSocket>
 #include "user.h"
-
+// efrherthrthertherthertherthe
 #include "messagetypes.h"
 #include "returnvalues.h"
 #include "correspondence.h"
 #include "message.h"
 
-class UsersArray
+class Users
 {
 
 public:
@@ -27,7 +28,7 @@ public:
 
     User getUser(const QString &login);                  // !!!! Обсуди с Романом
 
-    int showUsersLogin(QDataStream *pAuthoInfo);
+    //  int showUsersLogin(QDataStream *pAuthoInfo);
 
     ReturnValues addFriend(const QString &userLogin, const QString &friendLogin);
 
@@ -49,17 +50,17 @@ public:
 
     void receiveMessage(const Message &newmessage);
 
+    QVector<QTcpSocket*> reciveGroupMessage(const int &IDNumber, const Message &newmessage);
+
 signals:
-    //registration signals
-    // void signalRegistered (QString login, QString password);
-    void signalLoginBusu ();
-
-    //authorization signals
-    void signalAuthorized (); // в етом сигнале будет отправлятся многое ПОМНИ
-    void signalLoginWrong ();
-    void signalPasswordWrong();
-
+    //    void signalLoginBusu ();
+    //    void signalAuthorized ();
+    //    void signalLoginWrong ();
+    //    void signalPasswordWrong();
 private:
-    QVector<User> m_users;
-    QVector<Correspondence> m_Correspondence;
+    // QVector<User> m_users;
+    QList<User> m_users;
+    //QVector<Correspondence> m_Correspondence;
+    QList<Correspondence> m_Correspondence;
+
 };

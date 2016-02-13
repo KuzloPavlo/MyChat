@@ -12,15 +12,15 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 SOURCES += user.cpp \
-    usersarray.cpp \
-    correspondence.cpp
+    correspondence.cpp \
+    users.cpp
 
 HEADERS += user.h \
     messagetypes.h \
     returnvalues.h \
-    usersarray.h \
     message.h \
-    correspondence.h
+    correspondence.h \
+    users.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

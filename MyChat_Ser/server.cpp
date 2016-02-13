@@ -103,6 +103,10 @@ void Server::slotReadClient()
         receiveMessage(&in, &out);
         break;
 
+    case MessageTypes::groupMessage:
+        reciveGroupMessage(&in, &out);
+        break;
+
     case MessageTypes::createChat:
         createNewGroupChat(&in, &out);
         break;
@@ -159,8 +163,7 @@ void Server::registerUser(QDataStream *in, QDataStream *out)
         qDebug() << "Name:     " << user.getName();
         qDebug() << "Surname:  " << user.getSurname();
         qDebug() << "Login:    " << user.getLogin();
-        qDebug() << "Password: " << user.getPassword();
-        qDebug() << "IPAdress: " << user.getIPAddress() << endl << endl;
+        qDebug() << "Password: " << user.getPassword() << endl << endl;
     }
 }
 
@@ -191,7 +194,7 @@ void Server::authorizationUser(QDataStream *in, QDataStream *out, QTcpSocket *pC
              << user.getIPAddress();
 
         qDebug() << "Authorized User:";
-        qDebug() << "Login:    " << user.getLogin();
+        qDebug() << "Login:    " << user.getLogin() << endl;
     }
 }
 
@@ -206,10 +209,6 @@ void Server::findFriend(QDataStream *in, QDataStream *out)
 
     *in >> tokenFriend;
 
-    //----------------------
-    // qDebug() << tokenFriend;
-    //---------------------
-
     QVector<User> potentialFriends = m_users.findFriend(tokenFriend);
 
     *out << quint8 (MessageTypes::searchFriend)
@@ -220,9 +219,6 @@ void Server::findFriend(QDataStream *in, QDataStream *out)
         *out << potentialFriends[t].getName()
              << potentialFriends[t].getSurname()
              << potentialFriends[t].getLogin();
-
-        qDebug() << "Server";
-        qDebug() << potentialFriends[t].getLogin();
     }
 }
 
@@ -286,8 +282,6 @@ void Server::addFriend(QDataStream *in, QDataStream *out)
 
 
 
-
-
 void Server::removeFriend(QDataStream *in, QDataStream *out)
 {
     QString userLogin;
@@ -310,8 +304,6 @@ void Server::removeFriend(QDataStream *in, QDataStream *out)
 
     }
 }
-
-
 
 
 
@@ -349,28 +341,25 @@ void Server::getCorrespondence(QDataStream *in, QDataStream *out)
     *in >> login;
 
     QVector<Correspondence> correspondence;
-    qDebug()<< "1getCorrespondence12";
+
     correspondence = m_users.getUserCorrespondence(login);
-    qDebug()<< "1getCorrespondence1";
+
     *out << quint8 (MessageTypes::getCorrespondence)
          << quint8(correspondence.size());
-    qDebug()<< "1getCorrespondence1";
+
     for(int j = 0; j < correspondence.size(); j++)
     {
-        qDebug()<< "1getCorrespondence5";
         *out << quint8 (correspondence[j].getIDNumber());
-        qDebug()<< "1getCorrespondence6";
+
         QVector<QString> participants = correspondence[j].getParticipants();
-        qDebug()<< "1getCorrespondence7";
+
         *out << quint8 (participants.size());
-        qDebug()<< "1getCorrespondence8";
+
         for(int i = 0; i < participants.size(); i++)
         {
-            qDebug()<< "1getCorrespondence9";
             *out << participants[i];
-            qDebug()<< "1getCorrespondence10";
         }
-        qDebug()<< "1getCorrespondence1";
+
         QVector<Message> messages = correspondence[j].getCorrespondence();
         *out << quint8(messages.size());
 
@@ -381,7 +370,7 @@ void Server::getCorrespondence(QDataStream *in, QDataStream *out)
                  << messages[k].mMessageText
                  << messages[k].mDataTime;
         }
-    }qDebug()<< "1getCorrespondence2";
+    }
 }
 
 
@@ -422,13 +411,50 @@ void Server::receiveMessage(QDataStream *in, QDataStream *out)
         toRecipient << quint16 (block.size() - sizeof(quint16));
         pRecipientSocket->write(block);
     }
-
-    //    *out << quint8(MessageTypes::message) // ЗАЧЕМ????????????????????
-    //         << newmessage.mSender
-    //         << newmessage.mRecipient
-    //         << newmessage.mMessageText
-    //         << newmessage.mDataTime;
 }
+
+
+
+void Server::reciveGroupMessage(QDataStream *in, QDataStream *out)
+{
+    quint8 IDNumber;
+    Message newmessage;
+    QVector<QTcpSocket*> recipientsTcpSockets;
+
+    in->setVersion (QDataStream::Qt_5_5);
+    out->setVersion(QDataStream::Qt_5_5);
+
+    *in >> IDNumber
+            >> newmessage.mSender
+            >> newmessage.mMessageText
+            >> newmessage.mDataTime;
+
+    newmessage.mRecipient = "";
+
+    recipientsTcpSockets = m_users.reciveGroupMessage(static_cast<int>(IDNumber),newmessage);
+
+    for(int i = 0; i < recipientsTcpSockets.size(); i++)
+    {
+        if(recipientsTcpSockets[i])
+        {
+            QByteArray block;
+            QDataStream toRecipient (&block, QIODevice::WriteOnly);
+            toRecipient.setVersion(QDataStream::Qt_5_5);
+            toRecipient << quint16(0);
+
+            toRecipient << quint8(MessageTypes::groupMessage)
+                        << IDNumber
+                        << newmessage.mSender
+                        << newmessage.mMessageText
+                        << newmessage.mDataTime;
+
+            toRecipient.device()->seek(0);
+            toRecipient << quint16 (block.size() - sizeof(quint16));
+            recipientsTcpSockets[i]->write(block);
+        }
+    }
+}
+
 
 
 void Server::createNewGroupChat(QDataStream *in, QDataStream *out)
@@ -457,7 +483,6 @@ void Server::createNewGroupChat(QDataStream *in, QDataStream *out)
 
     if(respond == ReturnValues::createdChat && groupCorrespondence !=NULL)
     {
-    qDebug() << "if(respond == ReturnValues::createdChat && groupCorrespondence !=NULL)";
         for(int j = 0; j < participants.size(); j++)
         {
             QTcpSocket *pfriendSocket = NULL;
@@ -480,9 +505,9 @@ void Server::createNewGroupChat(QDataStream *in, QDataStream *out)
                 {
                     toparticipant << participants[t];
                 }
-                    toparticipant.device()->seek(0);
-                    toparticipant << quint16 (block.size() - sizeof(quint16));
-                    pfriendSocket->write(block);
+                toparticipant.device()->seek(0);
+                toparticipant << quint16 (block.size() - sizeof(quint16));
+                pfriendSocket->write(block);
             }
         }
 

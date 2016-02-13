@@ -4,7 +4,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QString>
-#include "usersarray.h"
+#include "users.h"
 #include "returnvalues.h"
 #include "messagetypes.h"
 #include "message.h"
@@ -24,7 +24,7 @@ public slots:
     void slotDisconnectClient();
 private:
 
-    UsersArray m_users;
+    Users m_users;
     QTcpServer *m_pserver;
     quint16 m_nnextBlockSize;
     int m_ngroupChats;
@@ -44,6 +44,8 @@ private:
     void getCorrespondence(QDataStream *in, QDataStream *out);
 
     void receiveMessage(QDataStream *in, QDataStream *out);
+
+    void reciveGroupMessage(QDataStream *in, QDataStream *out);
 
     void sendMessage();
 

@@ -29,8 +29,6 @@ void Correspondence::addNewMessage(const Message &message)
 
     // Тут необхідно дописати сортування масиву по даті
     //при добавлені нового повідомлення
-
-    qDebug() << "From correspondenc Class" << message.mMessageText;
 }
 
 
@@ -88,15 +86,13 @@ void Correspondence::setIDNumber(int IDNumber)
 
 QVector<QString> Correspondence::getParticipants()
 {
-    qDebug()<< "Correspondence::getParticipants()1";
     QVector<QString> Participants;
-    qDebug()<< "Correspondence::getParticipants()2";
+
     for(int i = 0; i < m_participants.size(); i++)
-    {qDebug()<< "Correspondence::getParticipants()3";
+    {
         Participants.push_back(m_participants[i]->getLogin());
-        qDebug()<< "Correspondence::getParticipants()4";
     }
-    qDebug()<< "Correspondence::getParticipants()5";
+
     return Participants;
 }
 

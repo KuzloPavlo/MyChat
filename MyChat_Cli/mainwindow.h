@@ -2,7 +2,7 @@
 
 #include <QMainWindow>
 #include "user.h"
-#include "usersarray.h"
+#include "users.h"
 #include <Client.h>
 #include <user.h>
 #include "message.h"
@@ -73,6 +73,12 @@ private slots:
     void slotIncomingMessage(const QString &sender,
                              const QString &message,
                              const QString &time);
+
+    void slotGroupIncomingMessage(
+            const int &IDnumber,
+            const QString &sender,
+            const QString &message,
+            const QString &time);
 
     void slotEarlierReceivedMessage(
             const QString &sender,
@@ -173,6 +179,18 @@ private:
     void addNewMessage(QTableWidget *tableWidget,QWidget *message);
 
     void f(const QString &str);
+
+    void f(const int &str)
+    {
+        qDebug() << "INT= " << str;
+    }
+
+    void f(const bool* str)
+    {
+        qDebug() << "BOOL= " << *str;
+    }
+
+
 
     Ui::MainWindow *ui;
 };

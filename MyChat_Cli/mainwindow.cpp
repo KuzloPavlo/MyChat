@@ -17,6 +17,11 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
 
     ui->tableParticipiantsChat->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableParticipiantsChat->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    m_currentFriend = "";
+    m_сurrentTetATetChat = true;
+    m_currentGroupChat = -1;
+
     //--------------------------------------------------------------+
     // section for experiments                                      |
     //--------------------------------------------------------------+
@@ -106,14 +111,11 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
                 this,
                 SLOT (slotIsEmty()));
 
-
-
     connect(
                 m_pSERVER,
                 SIGNAL (signalFoundFriend(QString)),
                 this,
                 SLOT (slotFoundFriend(QString)));
-
 
     connect(
                 m_pSERVER,
@@ -130,6 +132,13 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
                 SLOT(slotIncomingMessage(const QString &,
                                          const QString &,
                                          const QString &))
+                );
+
+    connect(
+                m_pSERVER,
+                SIGNAL(signalGroupIncomingMessage(int,QString,QString,QString)),
+                this,
+                SLOT(slotGroupIncomingMessage(int,QString,QString,QString))
                 );
 
 
@@ -296,6 +305,8 @@ void MainWindow::f(const QString &str)
 {
     ui->forWindDebug->addItem(str);
 }
+
+//void
 
 void MainWindow::slotclientdebug(const QString &str)
 {
@@ -505,7 +516,16 @@ void MainWindow::slotIncomingMessage(const QString &sender,
                                      const QString &message,
                                      const QString &time)
 {
-    if (ui->FriendLoginLabel->text() == sender)
+    if (sender == m_currentFriend && m_сurrentTetATetChat)
+    {
+        addNewMessage(ui->tableWidget, new IncomingMessage(sender,message,time,ui->tableWidget));
+    }
+}
+
+
+void MainWindow::slotGroupIncomingMessage(const int &IDnumber, const QString &sender, const QString &message, const QString &time)
+{
+    if(IDnumber == m_currentGroupChat && !m_сurrentTetATetChat)
     {
         addNewMessage(ui->tableWidget, new IncomingMessage(sender,message,time,ui->tableWidget));
     }
@@ -538,14 +558,10 @@ void MainWindow::on_MainConnBut_clicked()
 
     emit signalShowListFriends();
 
-    //    for (int i = 0; i < m_friends.size(); i++)
-    //    {
-    //        ui->ConntactsListWidget->addItem(m_friends[i].getLogin());
-    //    }
-
     ui->MainStackedWidgetConntact->setCurrentIndex(0);
     ui->MainStackedWidgetInfo->setCurrentIndex(3);
-    emit f("MainWindow::on_MainConnBut_clicked()");
+
+    // m_сurrentTetATetChat = true;
 }
 
 
@@ -558,6 +574,8 @@ void MainWindow::on_MainChatsBut_clicked()
 
     ui->MainStackedWidgetConntact->setCurrentIndex(1);
     ui->MainStackedWidgetInfo->setCurrentIndex(5);
+
+    // m_сurrentTetATetChat = false;
 }
 
 
@@ -649,14 +667,14 @@ void MainWindow::on_MainUserBut_clicked()
 
 
 
-
 void MainWindow::on_ConntactsListWidget_currentTextChanged(const QString &currentText)
 {
-    m_сurrentTetATetChat = true;
     m_currentFriend = currentText;
+    m_сurrentTetATetChat = true;
     ui->tableWidget->setRowCount(0);
     emit signalShowFriend(currentText);
 }
+
 
 
 void MainWindow::on_DeleteConBut_clicked()
@@ -666,6 +684,8 @@ void MainWindow::on_DeleteConBut_clicked()
     ui->NotRmoveFriendBut->setVisible(true);
     ui->DeleteConBut->setVisible(false);
 }
+
+
 
 void MainWindow::on_NotRmoveFriendBut_clicked()
 {
@@ -688,15 +708,33 @@ void MainWindow::on_RemoveFriendBut_clicked()
 
 void MainWindow::on_SendMessageBut_clicked()
 {
-    if (!ui->messageEdit->toPlainText().isEmpty() && !ui->FriendLoginLabel->text().isEmpty())
-    {
+    f("on_SendMessageBut_clicked()1");
+    f(&m_сurrentTetATetChat);
+    f(m_currentGroupChat);
+    f(m_currentFriend);
+
+    if (!ui->messageEdit->toPlainText().isEmpty() &&
+            m_currentFriend != "" && m_currentGroupChat != -1)
+    {f("on_SendMessageBut_clicked()2");
         QDateTime dataTimeMessage = QDateTime::currentDateTime();
 
-        m_pSERVER->sendMessage(
-                    ui->UserLoginLabel->text(),
-                    ui->FriendLoginLabel->text(),
-                    ui->messageEdit->toPlainText(),
-                    dataTimeMessage);
+        if(m_сurrentTetATetChat)
+        {f("on_SendMessageBut_clicked()3");
+            m_pSERVER->sendMessage(
+                        ui->UserLoginLabel->text(),
+                        m_currentFriend,
+                        ui->messageEdit->toPlainText(),
+                        dataTimeMessage);
+        }
+
+        if(!m_сurrentTetATetChat)
+        {f("on_SendMessageBut_clicked()4");
+            m_pSERVER->sendMessage(
+                        ui->UserLoginLabel->text(),
+                        m_currentGroupChat,
+                        ui->messageEdit->toPlainText(),
+                        dataTimeMessage);
+        }
 
         addNewMessage(
                     ui->tableWidget,
@@ -707,7 +745,7 @@ void MainWindow::on_SendMessageBut_clicked()
                         ui->tableWidget));
 
         ui->messageEdit->clear();
-    }
+    }f("on_SendMessageBut_clicked()5");
 }
 
 
@@ -790,7 +828,6 @@ void MainWindow::slotShowChat(
 
 
 
-
 void MainWindow::slotShowPotentialFriend(QString name, QString surname, QString login)
 {
     ui->SearchFriendNameLabel->setText(name);
@@ -799,20 +836,21 @@ void MainWindow::slotShowPotentialFriend(QString name, QString surname, QString 
     ui->MainStackedWidgetInfo->setCurrentIndex(2);
 }
 
+
+
 void MainWindow::on_CreateCahtBut_clicked()
 {
     addParticipantDialog->setFlagCreatingNewChat();
     addParticipantDialog->show();
-    f("on_CreateCahtBut_clicked");
 }
+
 
 
 void MainWindow::on_ChatListWidget_itemClicked(QListWidgetItem *item)
 {
     FormChat *currChat = dynamic_cast<FormChat*> (ui->ChatListWidget->itemWidget(item));
-    m_сurrentTetATetChat = false;
     m_currentGroupChat = currChat->getIDNumber();
-    f("on_ChatListWidget_itemClicked");
+    m_сurrentTetATetChat = false;
     ui->tableWidget->setRowCount(0);
     emit signalShowChat(currChat->getIDNumber());
 }

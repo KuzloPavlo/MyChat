@@ -10,5 +10,6 @@ enum MessageTypes
     getFriends,
     getCorrespondence,
     createChat,
-    message
+    message,
+    groupMessage
 };

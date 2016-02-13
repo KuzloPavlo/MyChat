@@ -1,7 +1,7 @@
 #include <QCoreApplication>
 #include "server.h"
 #include "user.h"
-#include "usersarray.h"
+#include "users.h"
 #include <QString>
 #include <QDebug>
 
