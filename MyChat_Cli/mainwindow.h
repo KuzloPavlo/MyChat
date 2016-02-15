@@ -81,11 +81,13 @@ private slots:
             const QString &time);
 
     void slotEarlierReceivedMessage(
+            const int &IDNumber,
             const QString &sender,
             const QString &message,
             const QString &time);
 
     void slotEarlierSendMessage(
+            const int &IDNumber,
             const QString &sender,
             const QString &message,
             const QString &time);

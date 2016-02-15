@@ -43,11 +43,11 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
 
     // ui->ChatListWidget->setCellWidget(0,0 ,new FormChat(ID,chtname,adm, part, ui->ChatListWidget));
 
-    for(int i = 0; i < 20; i++)
-    {
-        emit slotAddChatToList(ID,chtname,part);
-        // FormChat *newchat =  new FormChat(ID,chtname,adm, part, ui->ChatListWidget);
-    }
+    //    for(int i = 0; i < 20; i++)
+    //    {
+    //        emit slotAddChatToList(ID,chtname,part);
+    //        // FormChat *newchat =  new FormChat(ID,chtname,adm, part, ui->ChatListWidget);
+    //    }
     //--------------------------------------------------------------+
     // section for experiments                                      |
     //--------------------------------------------------------------+
@@ -144,16 +144,16 @@ MainWindow::MainWindow(QWidget *parent, Client *pSERVER) :
 
     connect(
                 m_pSERVER,
-                SIGNAL(signalEarlierReceivedMessage(const QString &,const QString &,const QString &)),
+                SIGNAL(signalEarlierReceivedMessage(const int&,const QString &,const QString &,const QString &)),
                 this,
-                SLOT(slotEarlierReceivedMessage(const QString &,const QString &,const QString &))
+                SLOT(slotEarlierReceivedMessage(const int&,const QString &,const QString &,const QString &))
                 );
 
     connect(
                 m_pSERVER,
-                SIGNAL(signalEarlierSendMessage(const QString &,const QString &,const QString &)),
+                SIGNAL(signalEarlierSendMessage(const int&,const QString &,const QString &,const QString &)),
                 this,
-                SLOT(slotEarlierSendMessage(const QString &,const QString &,const QString &))
+                SLOT(slotEarlierSendMessage(const int&,const QString &,const QString &,const QString &))
                 );
 
     connect(
@@ -532,23 +532,25 @@ void MainWindow::slotGroupIncomingMessage(const int &IDnumber, const QString &se
 }
 
 
-void MainWindow::slotEarlierReceivedMessage(const QString &sender, const QString &message, const QString &time)
+void MainWindow::slotEarlierReceivedMessage(const int &IDNumber,const QString &sender, const QString &message, const QString &time)
 {
-    if (ui->FriendLoginLabel->text() == sender)
+    if ((m_currentFriend == sender && m_сurrentTetATetChat) ||
+            (m_currentGroupChat == IDNumber && !m_сurrentTetATetChat))
     {
         addNewMessage(ui->tableWidget, new IncomingMessage(sender,message,time,ui->tableWidget));
     }
-    qDebug()<< "perepisKA";
+
 }
 
 
-void MainWindow::slotEarlierSendMessage(const QString &recipient, const QString &message, const QString &time)
+void MainWindow::slotEarlierSendMessage(const int &IDNumber,const QString &recipient, const QString &message, const QString &time)
 {
-    if (ui->FriendLoginLabel->text() == recipient)
+    if ((m_currentFriend == recipient && m_сurrentTetATetChat) ||
+            (m_currentGroupChat == IDNumber && !m_сurrentTetATetChat))
     {
-        addNewMessage(ui->tableWidget, new OutgoingMessage (recipient,message,time,ui->tableWidget));
+        addNewMessage(ui->tableWidget, new OutgoingMessage (ui->UserLoginLabel->text(),message,time,ui->tableWidget));
     }
-    qDebug()<< "perepisKA";
+
 }
 
 
@@ -560,8 +562,6 @@ void MainWindow::on_MainConnBut_clicked()
 
     ui->MainStackedWidgetConntact->setCurrentIndex(0);
     ui->MainStackedWidgetInfo->setCurrentIndex(3);
-
-    // m_сurrentTetATetChat = true;
 }
 
 
@@ -574,8 +574,6 @@ void MainWindow::on_MainChatsBut_clicked()
 
     ui->MainStackedWidgetConntact->setCurrentIndex(1);
     ui->MainStackedWidgetInfo->setCurrentIndex(5);
-
-    // m_сurrentTetATetChat = false;
 }
 
 
@@ -671,6 +669,7 @@ void MainWindow::on_ConntactsListWidget_currentTextChanged(const QString &curren
 {
     m_currentFriend = currentText;
     m_сurrentTetATetChat = true;
+    m_currentGroupChat = 0;
     ui->tableWidget->setRowCount(0);
     emit signalShowFriend(currentText);
 }
@@ -713,39 +712,48 @@ void MainWindow::on_SendMessageBut_clicked()
     f(m_currentGroupChat);
     f(m_currentFriend);
 
-    if (!ui->messageEdit->toPlainText().isEmpty() &&
-            m_currentFriend != "" && m_currentGroupChat != -1)
-    {f("on_SendMessageBut_clicked()2");
-        QDateTime dataTimeMessage = QDateTime::currentDateTime();
+    QDateTime dataTimeMessage = QDateTime::currentDateTime();
 
-        if(m_сurrentTetATetChat)
-        {f("on_SendMessageBut_clicked()3");
+    if (!ui->messageEdit->toPlainText().isEmpty())
+    {
+        if(m_сurrentTetATetChat && m_currentFriend != "")
+        {
             m_pSERVER->sendMessage(
                         ui->UserLoginLabel->text(),
                         m_currentFriend,
                         ui->messageEdit->toPlainText(),
                         dataTimeMessage);
+
+            addNewMessage(
+                        ui->tableWidget,
+                        new OutgoingMessage(
+                            ui->UserLoginLabel->text(),
+                            ui->messageEdit->toPlainText(),
+                            dataTimeMessage.time().toString(),
+                            ui->tableWidget));
+
+            ui->messageEdit->clear();
         }
 
-        if(!m_сurrentTetATetChat)
-        {f("on_SendMessageBut_clicked()4");
+        if(!m_сurrentTetATetChat && m_currentGroupChat > 0)
+        {
             m_pSERVER->sendMessage(
                         ui->UserLoginLabel->text(),
                         m_currentGroupChat,
                         ui->messageEdit->toPlainText(),
                         dataTimeMessage);
+
+            addNewMessage(
+                        ui->tableWidget,
+                        new OutgoingMessage(
+                            ui->UserLoginLabel->text(),
+                            ui->messageEdit->toPlainText(),
+                            dataTimeMessage.time().toString(),
+                            ui->tableWidget));
+
+            ui->messageEdit->clear();
         }
-
-        addNewMessage(
-                    ui->tableWidget,
-                    new OutgoingMessage(
-                        ui->UserLoginLabel->text(),
-                        ui->messageEdit->toPlainText(),
-                        dataTimeMessage.time().toString(),
-                        ui->tableWidget));
-
-        ui->messageEdit->clear();
-    }f("on_SendMessageBut_clicked()5");
+    }
 }
 
 
@@ -759,7 +767,9 @@ void MainWindow::slotAddChatToList(const int &IDNumer,
                                    const QString &chatName,
                                    QVector<QString> participants)
 {
+    f("MainWindow::slotAddChatToList1");
     FormChat *newChat  = new FormChat(IDNumer,chatName,participants,ui->ChatListWidget);
+    f("MainWindow::slotAddChatToList2");
 }
 
 
@@ -847,10 +857,11 @@ void MainWindow::on_CreateCahtBut_clicked()
 
 
 void MainWindow::on_ChatListWidget_itemClicked(QListWidgetItem *item)
-{
+{ f("MainWindow::on_ChatListWidget_itemClicked1");
     FormChat *currChat = dynamic_cast<FormChat*> (ui->ChatListWidget->itemWidget(item));
     m_currentGroupChat = currChat->getIDNumber();
     m_сurrentTetATetChat = false;
     ui->tableWidget->setRowCount(0);
     emit signalShowChat(currChat->getIDNumber());
+    f("MainWindow::on_ChatListWidget_itemClicked2");
 }

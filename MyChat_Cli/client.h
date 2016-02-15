@@ -85,11 +85,14 @@ signals:
             const QString &time);
 
     void signalEarlierReceivedMessage(
+            const int &IDNumber,
             const QString &sender,
             const QString &message,
-            const QString &time);
+            const QString &time
+            );
 
     void signalEarlierSendMessage(
+            const int &IDNumber,
             const QString &sender,
             const QString &message,
             const QString &time);

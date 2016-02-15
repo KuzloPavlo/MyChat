@@ -82,11 +82,15 @@ void Client::slotReadServer()
         break;
 
     case MessageTypes::getFriends:
+        emit f( "case MessageTypes::getFriends:1");
         this->setFriends(&in);
+        emit f( "case MessageTypes::getFriends:2");
         break;
 
     case MessageTypes::getCorrespondence:
+        emit f( "case MessageTypes::getCorrespondence:1");
         this->setCorrespondence(&in);
+        emit f( "case MessageTypes::getCorrespondence:2");
         break;
 
     case MessageTypes::message:
@@ -743,7 +747,7 @@ void Client::slotShowListChats()
 
     while(i != m_Correspondence.end())
     {
-        if((*i).getIDNumber() != 0)
+        if((*i).getIDNumber() > 0)
         {
             emit signalAddChatToList(
                         (*i).getIDNumber(),
@@ -804,6 +808,7 @@ void Client::slotShowFriend(const QString &login)
         if(correspondence[n].mSender == login)
         {
             emit signalEarlierReceivedMessage(
+                        0,
                         correspondence[n].mSender,
                         correspondence[n].mMessageText,
                         correspondence[n].mDataTime.time().toString());
@@ -812,6 +817,7 @@ void Client::slotShowFriend(const QString &login)
         else
         {
             emit signalEarlierSendMessage(
+                        0,
                         correspondence[n].mRecipient,
                         correspondence[n].mMessageText,
                         correspondence[n].mDataTime.time().toString());
@@ -823,28 +829,13 @@ void Client::slotShowFriend(const QString &login)
 
 void Client::slotShowChat(const int &IDNumber)
 {
-    f("slotShowChat");
-    //    int chatIDNumber;
-    //    QString nameChat;
-    //    QVector<QString> admin;
-    //    QVector<QString> friends;
-    //    QVector<QString> notFriends;
+    f("Client::slotShowChat1");
 
     QList<Correspondence>::iterator i = m_Correspondence.begin();
     while(i != m_Correspondence.end())
     {
         if(IDNumber == (*i).getIDNumber())
         {
-            //            chatIDNumber = m_Correspondence[i].getIDNumber();
-
-            //            nameChat = m_Correspondence[i].getChatName();
-
-            //            admin = m_Correspondence[i].getDataAdmin();
-
-            //            friends = m_Correspondence[i].getDataParticipants();
-
-            //            notFriends = m_Correspondence[i].getNotFriends();
-
             emit signalShowChat(
                         (*i).getIDNumber(),
                         (*i).getChatName(),
@@ -852,12 +843,34 @@ void Client::slotShowChat(const int &IDNumber)
                         (*i).getDataParticipants(),
                         (*i).getNotFriends()
                         );
+
+            QVector<Message> correspondence = (*i).getCorrespondence();
+
+            for(int j = 0; j < correspondence.size(); j++)
+            {
+                if(correspondence[j].mSender == m_user.getLogin())
+                {
+                    emit signalEarlierSendMessage(
+                                (*i).getIDNumber(),
+                                "",
+                                correspondence[j].mMessageText,
+                                correspondence[j].mDataTime.toString());
+                }
+                else
+                {
+                    emit signalEarlierReceivedMessage(
+                                (*i).getIDNumber(),
+                                correspondence[j].mSender,
+                                correspondence[j].mMessageText,
+                                correspondence[j].mDataTime.toString());
+                }
+            }
+            f("Client::slotShowChat2");
             break;
         }
         i++;
     }
 
-    // emit signalShowChat(chatIDNumber,nameChat,admin,friends,notFriends);
 }
 
 
